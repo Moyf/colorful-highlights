@@ -24,29 +24,42 @@
 
 /* ── Slot → active color ── */
 
+/*
+ * Each slot also overrides --text-highlight-bg locally, so theme rules that
+ * derive styling from Obsidian's native highlight variable (text color,
+ * selection, etc.) follow the slot color instead of the theme's default
+ * yellow. The value carries the configured opacity — what you see is what
+ * the variable contains.
+ */
+
 .markdown-rendered mark.ch-reading-highlight-yellow,
 .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-yellow) {
 	--ch-active-color: var(--ch-highlight-yellow, #ffd700);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-green,
 .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-green) {
 	--ch-active-color: var(--ch-highlight-green, #96ceb4);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-red,
 .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-red) {
 	--ch-active-color: var(--ch-highlight-red, #ff6b6b);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-purple,
 .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-purple) {
 	--ch-active-color: var(--ch-highlight-purple, #a78bfa);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-blue,
 .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-blue) {
 	--ch-active-color: var(--ch-highlight-blue, #45b7d1);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
 /* Fallback color for plain highlights (used by style variants). */
