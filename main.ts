@@ -1,4 +1,4 @@
-import { Editor, Menu, MenuItem, Plugin } from 'obsidian';
+import { addIcon, Editor, Menu, MenuItem, Plugin } from 'obsidian';
 import type { Extension } from '@codemirror/state';
 import {
 	COLOR_SLOTS,
@@ -41,6 +41,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		initI18n();
 		await this.loadSettings();
 		this.renderer = new ReadingHighlightRenderer(() => this.settings);
+		this.registerColorIcons();
 
 		this.rebuildEditorExtensions();
 		this.registerEditorExtension(this.editorExtensions);
@@ -203,8 +204,8 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		for (const slot of COLOR_SLOTS) {
 			menu.addItem((item) => {
 				item
-					.setTitle(this.buildColorMenuTitle(slot))
-					.setIcon('highlighter')
+					.setTitle(t(`colors.${slot}`))
+					.setIcon(`ch-dot-${slot}`)
 					.setSection('colorful-highlights')
 					.onClick(() => {
 						applyHighlightAction(editor, { type: 'color', slot }, this.getActionContext());
@@ -223,14 +224,20 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		});
 	}
 
-	/** Menu label: a colored dot swatch followed by the color name. */
-	private buildColorMenuTitle(slot: ColorSlotKey): DocumentFragment {
-		const frag = activeDocument.createDocumentFragment();
-		frag
-			.createSpan({ cls: 'ch-menu-dot' })
-			.setCssProps({ '--ch-dot-color': this.settings.customColors[slot] });
-		frag.createSpan({ text: t(`colors.${slot}`) });
-		return frag;
+	/**
+	 * Per-slot circle icons for menu items. The fill reads the live
+	 * --ch-highlight-{slot} CSS variable, so menu swatches always match the
+	 * configured colors. The hex attribute is the pre-override fallback.
+	 */
+	private registerColorIcons() {
+		for (const slot of COLOR_SLOTS) {
+			// addIcon normalizes custom icons into a 100×100 viewBox wrapper —
+			// author the SVG at that size or it renders scaled down.
+			addIcon(
+				`ch-dot-${slot}`,
+				`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="33" fill="${DEFAULT_SETTINGS.customColors[slot]}" style="fill: var(--ch-highlight-${slot}, ${DEFAULT_SETTINGS.customColors[slot]})" stroke="var(--background-modifier-border)" stroke-width="4"/></svg>`
+			);
+		}
 	}
 
 	private getActionContext(): HighlightActionContext {

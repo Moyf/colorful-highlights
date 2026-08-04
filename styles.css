@@ -235,19 +235,6 @@ body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selectio
 	text-decoration-color: inherit;
 }
 
-/* ── Editor context menu color dot ── */
-
-.ch-menu-dot {
-	display: inline-block;
-	width: 0.75em;
-	height: 0.75em;
-	border-radius: 50%;
-	background-color: var(--ch-dot-color, var(--text-highlight-bg));
-	border: 1px solid var(--background-modifier-border);
-	margin-right: 6px;
-	vertical-align: -0.1em;
-}
-
 /* ── Settings: highlight style live preview ──
  * Mirrors the global variants, keyed on the element's own
  * data-ch-preview-style attribute so it updates instantly in the
