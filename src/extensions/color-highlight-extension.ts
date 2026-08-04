@@ -25,7 +25,11 @@ import {
 	type ColorSlotKey,
 	type DefaultColorSlot,
 } from '../settings';
-import { buildEmojiToColorSlotMap, detectEmojiPrefix } from '../utils/emoji-utils';
+import {
+	buildEmojiToColorSlotMap,
+	createHighlightRegex,
+	detectEmojiPrefix,
+} from '../utils/emoji-utils';
 
 // ── Public config type ──────────────────────────────────────────────
 
@@ -50,10 +54,6 @@ const colorMarkDecos: Record<ColorSlotKey, Decoration> = {
 /** Replaces a range with nothing — used to visually hide the emoji character. */
 const hideEmoji = Decoration.replace({});
 
-// ── Highlight regex (single source of truth for ==...== spans) ──────
-
-export const HIGHLIGHT_RE = /==((?:[^=]|=[^=])+?)==/g;
-
 function isSourceMode(view: EditorView): boolean {
 	return view.dom.closest('.markdown-source-view')?.classList.contains('is-live-preview') === false;
 }
@@ -62,12 +62,13 @@ function isSourceMode(view: EditorView): boolean {
 
 function buildDecorations(
 	view: EditorView,
-	config: ColorHighlightConfig
+	config: ColorHighlightConfig,
+	emojiMap: Map<string, ColorSlotKey>
 ): DecorationSet {
-	const emojiMap = buildEmojiToColorSlotMap(config.emojiMappings);
 	const showEmojiPrefix = config.showPrefixInSourceMode && isSourceMode(view);
 
 	const ranges: Range<Decoration>[] = [];
+	const highlightRe = createHighlightRegex();
 
 	// Collect all selection ranges for cursor-intersection checks
 	const selRanges = view.state.selection.ranges;
@@ -79,10 +80,10 @@ function buildDecorations(
 
 	for (const { from, to } of view.visibleRanges) {
 		const text = view.state.doc.sliceString(from, to);
-		HIGHLIGHT_RE.lastIndex = 0;
+		highlightRe.lastIndex = 0;
 
 		let match: RegExpExecArray | null;
-		while ((match = HIGHLIGHT_RE.exec(text)) !== null) {
+		while ((match = highlightRe.exec(text)) !== null) {
 			const innerText = match[1];                       // text between == markers
 			const matchStart = from + match.index;          // absolute offset of first =
 			const matchEnd = matchStart + match[0].length;  // absolute offset past last =
@@ -91,9 +92,9 @@ function buildDecorations(
 
 			if (innerStart >= innerEnd) continue;
 
-			const { slot, emojiLength } = emojiMap.size > 0
+			const { slot, emojiOffset, emojiLength } = emojiMap.size > 0
 				? detectEmojiPrefix(innerText, emojiMap)
-				: { slot: undefined, emojiLength: 0 };
+				: { slot: undefined, emojiOffset: 0, emojiLength: 0 };
 
 			if (slot) {
 				// ── Emoji-prefixed highlight: use the emoji's color ──
@@ -106,8 +107,8 @@ function buildDecorations(
 				// closing ==), so it only disappears once the cursor has clearly
 				// left — avoiding a pop-in/out flicker at the boundary.
 				if (!showEmojiPrefix && emojiLength > 0) {
-					const emojiFrom = innerStart;
-					const emojiTo = innerStart + emojiLength;
+					const emojiFrom = innerStart + emojiOffset;
+					const emojiTo = emojiFrom + emojiLength;
 					const cursorInside = selRanges.some(
 						r => r.from <= matchEnd && r.to >= matchStart
 					);
@@ -130,12 +131,15 @@ function buildDecorations(
 // ── ViewPlugin ──────────────────────────────────────────────────────
 
 function createViewPlugin(config: ColorHighlightConfig) {
+	// The config is immutable for this extension's lifetime — build once.
+	const emojiMap = buildEmojiToColorSlotMap(config.emojiMappings);
+
 	return ViewPlugin.fromClass(
 		class {
 			decorations: DecorationSet;
 
 			constructor(view: EditorView) {
-				this.decorations = buildDecorations(view, config);
+				this.decorations = buildDecorations(view, config, emojiMap);
 			}
 
 			update(update: ViewUpdate) {
@@ -144,7 +148,7 @@ function createViewPlugin(config: ColorHighlightConfig) {
 					update.viewportChanged ||
 					update.selectionSet
 				) {
-					this.decorations = buildDecorations(update.view, config);
+					this.decorations = buildDecorations(update.view, config, emojiMap);
 				}
 			}
 		},

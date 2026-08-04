@@ -87,16 +87,17 @@ export class ReadingHighlightRenderer {
 
 			if (slot && emojiLength > 0) {
 				// Strip the emoji from the first text node descendant only,
-				// leaving any inline child elements (e.g. <strong>) intact.
+				// leaving leading whitespace and inline child elements intact.
 				const textNode = firstTextNode(markEl);
 				if (textNode) {
 					const nodeValue = textNode.nodeValue ?? '';
-					const { emojiLength: nodeEmojiLen } = detectEmojiPrefix(nodeValue, emojiMap);
+					const { emojiOffset, emojiLength: nodeEmojiLen } = detectEmojiPrefix(nodeValue, emojiMap);
 					if (nodeEmojiLen > 0) {
 						if (markEl.dataset.chOriginalFirstNode === undefined) {
 							markEl.dataset.chOriginalFirstNode = nodeValue;
 						}
-						textNode.nodeValue = nodeValue.slice(nodeEmojiLen);
+						textNode.nodeValue =
+							nodeValue.slice(0, emojiOffset) + nodeValue.slice(emojiOffset + nodeEmojiLen);
 						markEl.dataset.chTextMutated = '1';
 					}
 				}

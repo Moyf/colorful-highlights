@@ -9,6 +9,23 @@
 import { COLOR_SLOTS, type ColorSlotKey } from '../settings';
 
 /**
+ * Matches ==...== highlights. Single `=` characters are allowed inside as
+ * long as they are not followed by another `=` (e.g. `==a=b==`).
+ *
+ * Newlines are deliberately excluded: without that, `a == b` prose on one
+ * line would pair with a `==` on a later line, corrupting unrelated text
+ * when unwrapping and letting CM6 replace-decorations span a line break
+ * (a hard RangeError). Line-scoped matching mirrors how Obsidian renders
+ * highlights in practice.
+ *
+ * Always create a fresh instance via this factory — a shared /g regex
+ * carries mutable `lastIndex` state across call sites.
+ */
+export function createHighlightRegex(): RegExp {
+	return /==((?:[^=\n]|=[^=\n])+?)==/g;
+}
+
+/**
  * Parse a comma-separated emoji alias string into a deduplicated array.
  * e.g. '🟥,🔴,🟥' → ['🟥', '🔴']
  */
@@ -41,25 +58,32 @@ export function buildEmojiToColorSlotMap(
 	return new Map(entries);
 }
 
+export interface EmojiPrefixMatch {
+	/** Inner text with the emoji removed (leading whitespace preserved). */
+	strippedText: string;
+	/** Matched color slot, if any. */
+	slot?: ColorSlotKey;
+	/** Offset of the emoji within the inner text (i.e. leading whitespace length). */
+	emojiOffset: number;
+	/** Length of the emoji itself, in UTF-16 code units. 0 when no match. */
+	emojiLength: number;
+}
+
 /**
  * Given the inner text of a `==...==` highlight, detect and strip any
  * leading emoji that maps to a known color slot.
- *
- * Returns the stripped text, the matched color slot (if any), and the
- * character length of the matched emoji (useful for decoration range
- * calculations).
  */
 export function detectEmojiPrefix(
 	innerText: string,
 	emojiMap: Map<string, ColorSlotKey>
-): { strippedText: string; slot?: ColorSlotKey; emojiLength: number } {
+): EmojiPrefixMatch {
 	// Preserve leading whitespace
 	const wsMatch = innerText.match(/^\s*/u);
 	const leadingWs = wsMatch ? wsMatch[0] : '';
 	const remaining = innerText.slice(leadingWs.length);
 
 	if (!remaining) {
-		return { strippedText: innerText, emojiLength: 0 };
+		return { strippedText: innerText, emojiOffset: 0, emojiLength: 0 };
 	}
 
 	for (const [emoji, slot] of emojiMap.entries()) {
@@ -67,10 +91,11 @@ export function detectEmojiPrefix(
 			return {
 				strippedText: `${leadingWs}${remaining.slice(emoji.length)}`,
 				slot,
-				emojiLength: leadingWs.length + emoji.length,
+				emojiOffset: leadingWs.length,
+				emojiLength: emoji.length,
 			};
 		}
 	}
 
-	return { strippedText: innerText, emojiLength: 0 };
+	return { strippedText: innerText, emojiOffset: 0, emojiLength: 0 };
 }
