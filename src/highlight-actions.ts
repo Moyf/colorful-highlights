@@ -22,7 +22,7 @@
 
 import { Editor } from 'obsidian';
 import { type ColorSlotKey, type DefaultColorSlot } from './settings';
-import { detectEmojiPrefix } from './utils/emoji-utils';
+import { createHighlightRegex, detectEmojiPrefix } from './utils/emoji-utils';
 
 export interface HighlightActionContext {
 	emojiMap: Map<string, ColorSlotKey>;
@@ -35,19 +35,17 @@ export type HighlightAction =
 	| { type: 'remove' }
 	| { type: 'color'; slot: ColorSlotKey };
 
-/** Same expression as the CM6 extension — keep both in sync. */
-const HIGHLIGHT_RE = /==((?:[^=]|=[^=])+?)==/g;
-
 interface HighlightMatch {
 	from: number;
 	to: number;
 	inner: string;
 }
 
-export function findHighlightAtOffset(doc: string, offset: number): HighlightMatch | null {
-	HIGHLIGHT_RE.lastIndex = 0;
+/** Find a ==...== span containing `offset` within `text` (offsets relative to `text`). */
+export function findHighlightAtOffset(text: string, offset: number): HighlightMatch | null {
+	const highlightRe = createHighlightRegex();
 	let match: RegExpExecArray | null;
-	while ((match = HIGHLIGHT_RE.exec(doc)) !== null) {
+	while ((match = highlightRe.exec(text)) !== null) {
 		const from = match.index;
 		const to = from + match[0].length;
 		if (from > offset) {
@@ -60,19 +58,27 @@ export function findHighlightAtOffset(doc: string, offset: number): HighlightMat
 	return null;
 }
 
+/**
+ * Find the ==...== span around the cursor, scanning only the cursor's line —
+ * highlights are line-scoped, so this is O(line) instead of a full-document
+ * scan. Returned offsets are document-absolute.
+ */
 export function findHighlightAtCursor(editor: Editor): HighlightMatch | null {
-	return findHighlightAtOffset(
-		editor.getValue(),
-		editor.posToOffset(editor.getCursor())
-	);
+	const cursor = editor.getCursor();
+	const lineStart = editor.posToOffset({ line: cursor.line, ch: 0 });
+	const match = findHighlightAtOffset(editor.getLine(cursor.line), cursor.ch);
+	if (!match) {
+		return null;
+	}
+	return { from: lineStart + match.from, to: lineStart + match.to, inner: match.inner };
 }
 
 /** Every ==...== span intersecting [from, to), in document order. */
 function collectOverlappingHighlights(doc: string, from: number, to: number): HighlightMatch[] {
 	const matches: HighlightMatch[] = [];
-	HIGHLIGHT_RE.lastIndex = 0;
+	const highlightRe = createHighlightRegex();
 	let match: RegExpExecArray | null;
-	while ((match = HIGHLIGHT_RE.exec(doc)) !== null) {
+	while ((match = highlightRe.exec(doc)) !== null) {
 		const matchFrom = match.index;
 		const matchTo = matchFrom + match[0].length;
 		if (matchFrom >= to) {
@@ -105,6 +111,13 @@ function stripInner(inner: string, ctx: HighlightActionContext): string {
 	return detectEmojiPrefix(inner, ctx.emojiMap).strippedText;
 }
 
+/** Strip every ==...== span in `text`, dropping emoji prefixes. */
+function stripAllHighlights(text: string, ctx: HighlightActionContext): string {
+	return text.replace(createHighlightRegex(), (_whole, inner: string) =>
+		stripInner(inner, ctx)
+	);
+}
+
 export function applyHighlightAction(
 	editor: Editor,
 	action: HighlightAction,
@@ -116,7 +129,7 @@ export function applyHighlightAction(
 	}
 
 	const cursorOffset = editor.posToOffset(editor.getCursor());
-	const match = findHighlightAtOffset(editor.getValue(), cursorOffset);
+	const match = findHighlightAtCursor(editor);
 	if (match) {
 		handleExisting(editor, match, action, ctx, cursorOffset);
 		return;
@@ -139,16 +152,18 @@ function handleSelection(editor: Editor, action: HighlightAction, ctx: Highlight
 		if (overlapping.length === 0) {
 			return;
 		}
-		// Replace from last to first so earlier offsets stay valid
-		for (let i = overlapping.length - 1; i >= 0; i--) {
-			const match = overlapping[i];
-			editor.replaceRange(
-				stripInner(match.inner, ctx),
-				editor.offsetToPos(match.from),
-				editor.offsetToPos(match.to)
-			);
+		// One atomic replace over the union range — a single undo step.
+		let unionFrom = selFrom;
+		let unionTo = selTo;
+		for (const match of overlapping) {
+			unionFrom = Math.min(unionFrom, match.from);
+			unionTo = Math.max(unionTo, match.to);
 		}
-		editor.setCursor(editor.offsetToPos(Math.min(selFrom, overlapping[0].from)));
+		const stripped = stripAllHighlights(doc.slice(unionFrom, unionTo), ctx);
+		editor.replaceRange(stripped, editor.offsetToPos(unionFrom), editor.offsetToPos(unionTo));
+		editor.setCursor(
+			editor.offsetToPos(unionFrom + Math.min(Math.max(0, selFrom - unionFrom), stripped.length))
+		);
 		return;
 	}
 
@@ -174,10 +189,7 @@ function handleSelection(editor: Editor, action: HighlightAction, ctx: Highlight
 		unionTo = Math.max(unionTo, match.to);
 	}
 
-	const mergedText = doc.slice(unionFrom, unionTo);
-	const stripped = mergedText.replace(HIGHLIGHT_RE, (_whole, inner: string) =>
-		stripInner(inner, ctx)
-	);
+	const stripped = stripAllHighlights(doc.slice(unionFrom, unionTo), ctx);
 	const wsParts = stripped.match(/^(\s*)([\s\S]*?)(\s*)$/);
 	const core = wsParts ? wsParts[2] : stripped;
 	if (!core) {
