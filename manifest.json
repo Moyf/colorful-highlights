@@ -2,7 +2,7 @@
 	"id": "colorful-highlights",
 	"name": "Colorful Highlights",
 	"version": "1.0.0",
-	"minAppVersion": "1.8.0",
+	"minAppVersion": "1.8.7",
 	"description": "Colorize ==highlights== with emoji prefixes (e.g. ==🟥text==). Customizable colors, styles, and opacity.",
 	"author": "Moyf",
 	"authorUrl": "https://github.com/Moyf",

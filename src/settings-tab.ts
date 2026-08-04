@@ -29,10 +29,23 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 	icon = 'highlighter';
 
 	private mappingPersistTimer: number | null = null;
+	private appearancePersistTimer: number | null = null;
 
 	constructor(app: App, plugin: ColorfulHighlightsPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
+	}
+
+	hide(): void {
+		if (this.mappingPersistTimer !== null) {
+			window.clearTimeout(this.mappingPersistTimer);
+			this.mappingPersistTimer = null;
+		}
+		if (this.appearancePersistTimer !== null) {
+			window.clearTimeout(this.appearancePersistTimer);
+			this.appearancePersistTimer = null;
+		}
+		super.hide();
 	}
 
 	display(): void {
@@ -111,9 +124,11 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						.setLimits(10, 100, 5)
 						.setValue(settings.colorOpacity)
 						.setDynamicTooltip()
-						.onChange(async (value) => {
+						.onChange((value) => {
 							settings.colorOpacity = value;
-							await this.persistAndRefresh();
+							// Cheap visual update on every tick; disk write is debounced.
+							this.plugin.refreshAppearance();
+							this.debouncedPersistAppearance();
 						})
 				);
 		});
@@ -214,9 +229,11 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						})
 					)
 					.addColorPicker((picker) =>
-						picker.setValue(settings.customColors[slot]).onChange(async (value) => {
+						picker.setValue(settings.customColors[slot]).onChange((value) => {
 							settings.customColors[slot] = value;
-							await this.persistAndRefresh();
+							// Cheap visual update on every tick; disk write is debounced.
+							this.plugin.refreshAppearance();
+							this.debouncedPersistAppearance();
 						})
 					);
 			});
@@ -265,6 +282,17 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 		this.mappingPersistTimer = window.setTimeout(() => {
 			this.mappingPersistTimer = null;
 			void this.persistAndRefresh();
+		}, 500);
+	}
+
+	/** Sliders and color pickers fire per drag tick — persist once it settles. */
+	private debouncedPersistAppearance(): void {
+		if (this.appearancePersistTimer !== null) {
+			window.clearTimeout(this.appearancePersistTimer);
+		}
+		this.appearancePersistTimer = window.setTimeout(() => {
+			this.appearancePersistTimer = null;
+			void this.persist();
 		}, 500);
 	}
 

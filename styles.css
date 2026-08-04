@@ -68,6 +68,12 @@
 	--ch-plain-color: var(--text-highlight-bg, rgba(var(--text-highlight-bg-rgb), 0.4));
 }
 
+/* Declared so the underline-style variants never read an undefined variable;
+ * override from a CSS snippet if a stronger underline is preferred. */
+body {
+	--ch-underline-opacity: 85%;
+}
+
 /* ── Base colored background ──
  * Skipped in native render mode: the theme's own highlight rule paints
  * from the per-element --text-highlight-bg override instead. */
