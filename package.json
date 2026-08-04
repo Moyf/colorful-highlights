@@ -37,6 +37,5 @@
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "^5.9.3"
-	},
-	"dependencies": {}
+	}
 }
