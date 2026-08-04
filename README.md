@@ -34,6 +34,7 @@ This is a ==🟦theoretical description==, and ==🟩the correct way to handle i
 | Highlight style | Default / half-strike / double-strike / underline only / underline with background / rounded / outline / wavy underline / gradient. |
 | Default highlight color | Color for plain `==text==`; switching to it removes the emoji prefix. |
 | Color intensity | Background mix percentage (10–100%). |
+| Color rendering | Plugin styles paint the background directly; theme native only overrides `--text-highlight-bg` and lets your theme paint highlights. |
 | Decorate in editor / Reading view | Toggle each surface independently. |
 | Colors | Hex color per slot. |
 | Emoji mappings | Comma-separated aliases per slot; first alias is used for write-back. |

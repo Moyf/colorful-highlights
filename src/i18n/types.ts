@@ -30,6 +30,11 @@ export interface BaseMessage {
 		};
 		defaultColor: { name: string; desc: string; none: string };
 		opacity: { name: string; desc: string };
+		renderMode: {
+			name: string;
+			desc: string;
+			options: { plugin: string; native: string };
+		};
 		editorMenu: { name: string; desc: string };
 		submenu: { name: string; desc: string };
 		editorDecorator: { name: string; desc: string };

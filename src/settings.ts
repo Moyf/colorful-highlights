@@ -19,6 +19,14 @@ export type HighlightStyle =
 
 
 
+/**
+ * How colored highlights are painted:
+ * - 'plugin': our CSS rules paint the background (guaranteed look).
+ * - 'native': only --text-highlight-bg is overridden per highlight, letting
+ *   the theme's own .cm-highlight / mark rules do the painting.
+ */
+export type RenderMode = 'plugin' | 'native';
+
 export const COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'green', 'red', 'purple', 'blue'];
 
 export const HIGHLIGHT_STYLES: HighlightStyle[] = [
@@ -48,6 +56,8 @@ export interface ColorfulHighlightsSettings {
 	useSubmenu: boolean;
 	/** Background color mix percentage (10–100). */
 	colorOpacity: number;
+	/** Who paints the colored background: plugin CSS or the theme via --text-highlight-bg. */
+	renderMode: RenderMode;
 	/** Visual style applied to all highlights. */
 	highlightStyle: HighlightStyle;
 	/** Slot used for plain ==text== without emoji; switching to it strips the prefix. */
@@ -66,6 +76,7 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	showColorMenuInEditorMenu: true,
 	useSubmenu: false,
 	colorOpacity: 60,
+	renderMode: 'plugin',
 	highlightStyle: 'default',
 	defaultColorSlot: 'yellow',
 	emojiMappings: {

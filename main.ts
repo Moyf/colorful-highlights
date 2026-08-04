@@ -18,6 +18,7 @@ import { ColorfulHighlightsSettingTab } from './src/settings-tab';
 import { initI18n, t } from './src/i18n';
 
 const STYLE_ATTR = 'data-ch-highlight-style';
+const COLOR_MODE_ATTR = 'data-ch-color-mode';
 const OPACITY_VAR = '--ch-highlight-opacity';
 const SLOT_VAR_PREFIX = '--ch-highlight-';
 
@@ -68,6 +69,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		this.renderer.clearAll();
 		const body = activeDocument.body;
 		body.removeAttribute(STYLE_ATTR);
+		body.removeAttribute(COLOR_MODE_ATTR);
 		body.style.removeProperty(OPACITY_VAR);
 		for (const slot of COLOR_SLOTS) {
 			body.style.removeProperty(`${SLOT_VAR_PREFIX}${slot}`);
@@ -96,6 +98,16 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	}
 
 	/**
+	 * Lighter refresh for appearance-only changes (colors, opacity, render
+	 * mode, highlight style) — no CM6 reconfiguration needed since those
+	 * values flow through CSS variables and body attributes.
+	 */
+	refreshAppearance() {
+		this.applyAppearance();
+		this.renderer.refreshAll();
+	}
+
+	/**
 	 * Rebuild the CM6 extension array for editor highlight decorations.
 	 * Mutates the registered Extension[] in place and triggers a workspace refresh.
 	 */
@@ -113,7 +125,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		this.app.workspace.updateOptions();
 	}
 
-	/** Push colors, opacity, and the style variant onto CSS (body-scoped). */
+	/** Push colors, opacity, render mode, and the style variant onto CSS (body-scoped). */
 	private applyAppearance() {
 		const body = activeDocument.body;
 		for (const slot of COLOR_SLOTS) {
@@ -124,6 +136,11 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			body.removeAttribute(STYLE_ATTR);
 		} else {
 			body.setAttribute(STYLE_ATTR, this.settings.highlightStyle);
+		}
+		if (this.settings.renderMode === 'native') {
+			body.setAttribute(COLOR_MODE_ATTR, 'native');
+		} else {
+			body.removeAttribute(COLOR_MODE_ATTR);
 		}
 	}
 

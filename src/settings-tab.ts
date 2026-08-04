@@ -6,6 +6,7 @@ import {
 	type ColorSlotKey,
 	type DefaultColorSlot,
 	type HighlightStyle,
+	type RenderMode,
 } from './settings';
 import { parseEmojiAliases } from './utils/emoji-utils';
 import { createSettingsGroup } from './utils/settings-group';
@@ -83,6 +84,22 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 					await this.persistAndRefresh();
 				});
 			});
+		});
+
+		group.addSetting((setting) => {
+			setting
+				.setName(t('settings.renderMode.name'))
+				.setDesc(t('settings.renderMode.desc'))
+				.addDropdown((dropdown) => {
+					dropdown
+						.addOption('plugin', t('settings.renderMode.options.plugin'))
+						.addOption('native', t('settings.renderMode.options.native'))
+						.setValue(settings.renderMode)
+						.onChange(async (value) => {
+							settings.renderMode = value as RenderMode;
+							await this.persistAndRefreshAppearance();
+						});
+				});
 		});
 
 		group.addSetting((setting) => {
@@ -258,5 +275,10 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 	private async persistAndRefresh(): Promise<void> {
 		await this.plugin.saveSettings();
 		this.plugin.refresh();
+	}
+
+	private async persistAndRefreshAppearance(): Promise<void> {
+		await this.plugin.saveSettings();
+		this.plugin.refreshAppearance();
 	}
 }

@@ -37,6 +37,14 @@ const en: BaseMessage = {
 			name: 'Color intensity',
 			desc: 'Background color mix percentage for colored highlights (10–100%).',
 		},
+		renderMode: {
+			name: 'Color rendering',
+			desc: 'Plugin styles paint the configured background directly. Theme native only overrides the --text-highlight-bg variable per highlight and lets the theme paint it.',
+			options: {
+				plugin: 'Plugin styles',
+				native: 'Theme native',
+			},
+		},
 
 		editorMenu: {
 			name: 'Color actions in editor menu',

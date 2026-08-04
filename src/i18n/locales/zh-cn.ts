@@ -37,6 +37,14 @@ const zhCn: BaseMessage = {
 			name: '颜色强度',
 			desc: '彩色高亮背景色的混合百分比（10–100%）。',
 		},
+		renderMode: {
+			name: '着色方式',
+			desc: '「插件样式」由插件直接绘制配置的背景；「主题原生」只为高亮覆盖 --text-highlight-bg 变量，交由主题绘制。',
+			options: {
+				plugin: '插件样式',
+				native: '主题原生',
+			},
+		},
 
 		editorMenu: {
 			name: '编辑器右键菜单颜色操作',

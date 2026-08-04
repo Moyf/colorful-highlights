@@ -68,10 +68,12 @@
 	--ch-plain-color: var(--text-highlight-bg, rgba(var(--text-highlight-bg-rgb), 0.4));
 }
 
-/* ── Base colored background ── */
+/* ── Base colored background ──
+ * Skipped in native render mode: the theme's own highlight rule paints
+ * from the per-element --text-highlight-bg override instead. */
 
-.markdown-rendered mark[class*="ch-reading-highlight-"],
-.cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
+body:not([data-ch-color-mode="native"]) .markdown-rendered mark[class*="ch-reading-highlight-"],
+body:not([data-ch-color-mode="native"]) .cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
 	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
