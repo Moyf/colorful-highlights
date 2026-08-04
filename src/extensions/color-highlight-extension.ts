@@ -41,10 +41,10 @@ export interface ColorHighlightConfig {
 
 const colorMarkDecos: Record<ColorSlotKey, Decoration> = {
 	yellow: Decoration.mark({ class: 'ch-editor-highlight-yellow' }),
-	red: Decoration.mark({ class: 'ch-editor-highlight-red' }),
-	teal: Decoration.mark({ class: 'ch-editor-highlight-teal' }),
-	blue: Decoration.mark({ class: 'ch-editor-highlight-blue' }),
 	green: Decoration.mark({ class: 'ch-editor-highlight-green' }),
+	red: Decoration.mark({ class: 'ch-editor-highlight-red' }),
+	purple: Decoration.mark({ class: 'ch-editor-highlight-purple' }),
+	blue: Decoration.mark({ class: 'ch-editor-highlight-blue' }),
 };
 
 /** Replaces a range with nothing — used to visually hide the emoji character. */

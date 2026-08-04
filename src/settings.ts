@@ -2,7 +2,7 @@
  * Shared settings model for Colorful Highlights.
  */
 
-export type ColorSlotKey = 'yellow' | 'red' | 'teal' | 'blue' | 'green';
+export type ColorSlotKey = 'yellow' | 'green' | 'red' | 'purple' | 'blue';
 
 export type DefaultColorSlot = 'none' | ColorSlotKey;
 
@@ -11,9 +11,13 @@ export type HighlightStyle =
 	| 'half-strike'
 	| 'double-strike'
 	| 'underline-only'
-	| 'underline-with-bg';
+	| 'underline-with-bg'
+	| 'rounded'
+	| 'outline'
+	| 'wavy-underline'
+	| 'gradient';
 
-export const COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'red', 'teal', 'blue', 'green'];
+export const COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'green', 'red', 'purple', 'blue'];
 
 export const HIGHLIGHT_STYLES: HighlightStyle[] = [
 	'default',
@@ -21,6 +25,10 @@ export const HIGHLIGHT_STYLES: HighlightStyle[] = [
 	'double-strike',
 	'underline-only',
 	'underline-with-bg',
+	'rounded',
+	'outline',
+	'wavy-underline',
+	'gradient',
 ];
 
 export interface ColorfulHighlightsSettings {
@@ -57,16 +65,16 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	defaultColorSlot: 'yellow',
 	emojiMappings: {
 		yellow: '🟨,🟡',
-		red: '🟥,🔴',
-		teal: '🩵,🔹',
-		blue: '🟦,🔵',
 		green: '🟩,🟢',
+		red: '🟥,🔴',
+		purple: '🟪,🟣',
+		blue: '🟦,🔵',
 	},
 	customColors: {
 		yellow: '#ffd700',
-		red: '#ff6b6b',
-		teal: '#4ecdc4',
-		blue: '#45b7d1',
 		green: '#96ceb4',
+		red: '#ff6b6b',
+		purple: '#a78bfa',
+		blue: '#45b7d1',
 	},
 };

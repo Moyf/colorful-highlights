@@ -15,12 +15,17 @@ export interface BaseMessage {
 		highlightStyle: {
 			name: string;
 			desc: string;
+			preview: string;
 			options: {
 				default: string;
 				halfStrike: string;
 				doubleStrike: string;
 				underlineOnly: string;
 				underlineWithBg: string;
+				rounded: string;
+				outline: string;
+				wavyUnderline: string;
+				gradient: string;
 			};
 		};
 		defaultColor: { name: string; desc: string; none: string };
@@ -37,10 +42,10 @@ export interface BaseMessage {
 	};
 	colors: {
 		yellow: string;
-		red: string;
-		teal: string;
-		blue: string;
 		green: string;
+		red: string;
+		purple: string;
+		blue: string;
 	};
 	commands: {
 		toggle: string;

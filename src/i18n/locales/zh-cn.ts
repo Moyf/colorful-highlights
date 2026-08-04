@@ -15,12 +15,17 @@ const zhCn: BaseMessage = {
 		highlightStyle: {
 			name: '高亮样式',
 			desc: '应用于编辑器和阅读视图中所有高亮的视觉样式。',
+			preview: '示例文本',
 			options: {
 				default: '默认',
 				halfStrike: '半填充',
 				doubleStrike: '加深填充',
 				underlineOnly: '仅下划线',
 				underlineWithBg: '下划线加背景',
+				rounded: '圆角填充',
+				outline: '描边',
+				wavyUnderline: '波浪下划线',
+				gradient: '渐变填充',
 			},
 		},
 		defaultColor: {
@@ -59,10 +64,10 @@ const zhCn: BaseMessage = {
 	},
 	colors: {
 		yellow: '黄色',
-		red: '红色',
-		teal: '青色',
-		blue: '蓝色',
 		green: '绿色',
+		red: '红色',
+		purple: '紫色',
+		blue: '蓝色',
 	},
 	commands: {
 		toggle: '切换高亮',

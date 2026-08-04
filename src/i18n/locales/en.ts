@@ -15,12 +15,17 @@ const en: BaseMessage = {
 		highlightStyle: {
 			name: 'Highlight style',
 			desc: 'Visual style applied to all highlights in the editor and reading view.',
+			preview: 'Sample text',
 			options: {
 				default: 'Default',
 				halfStrike: 'Half-strike',
 				doubleStrike: 'Double-strike',
 				underlineOnly: 'Underline only',
 				underlineWithBg: 'Underline with background',
+				rounded: 'Rounded',
+				outline: 'Outline',
+				wavyUnderline: 'Wavy underline',
+				gradient: 'Gradient',
 			},
 		},
 		defaultColor: {
@@ -60,10 +65,10 @@ const en: BaseMessage = {
 	},
 	colors: {
 		yellow: 'Yellow',
-		red: 'Red',
-		teal: 'Teal',
-		blue: 'Blue',
 		green: 'Green',
+		red: 'Red',
+		purple: 'Purple',
+		blue: 'Blue',
 	},
 	commands: {
 		toggle: 'Toggle highlight',

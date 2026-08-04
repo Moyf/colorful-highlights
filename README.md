@@ -9,10 +9,10 @@ This is a ==🟦theoretical description==, and ==🟩the correct way to handle i
 
 ## Features
 
-- **Emoji-prefixed colors** — any emoji can map to any of the 5 color slots (yellow / red / teal / blue / green), e.g. `==🍎text==` for red. The first alias per slot is the one written by color commands.
+- **Emoji-prefixed colors** — any emoji can map to any of the 5 color slots (yellow / green / red / purple / blue), e.g. `==🍎text==` for red. The first alias per slot is the one written by color commands.
 - **Live Preview & Source mode decoration** — colored backgrounds in the editor; the emoji hides until the cursor enters the highlight (Source mode can keep it visible).
 - **Reading view rendering** — `<mark>` elements get colored and the emoji prefix is stripped from the rendered text.
-- **Highlight styles** — default, half-strike, double-strike, underline only, underline with background, applied to all highlights.
+- **Highlight styles** — default, half-strike, double-strike, underline only, underline with background, rounded, outline, wavy underline, and gradient, applied to all highlights.
 - **Adjustable opacity** — background color intensity from 30–100%.
 - **Default color** — plain `==text==` without an emoji can map to a color slot; switching a highlight to that color strips its prefix.
 - **Commands & context menu** — toggle highlight, highlight with each color, and remove highlight. Right-click a selection (or an existing highlight) for the color actions.
@@ -31,7 +31,7 @@ This is a ==🟦theoretical description==, and ==🟩the correct way to handle i
 | Setting | Description |
 | ------- | ----------- |
 | Enable colorful highlights | Master switch for parsing and decoration. |
-| Highlight style | Default / half-strike / double-strike / underline only / underline with background. |
+| Highlight style | Default / half-strike / double-strike / underline only / underline with background / rounded / outline / wavy underline / gradient. |
 | Default highlight color | Color for plain `==text==`; switching to it removes the emoji prefix. |
 | Color intensity | Background mix percentage (30–100%). |
 | Decorate in editor / Reading view | Toggle each surface independently. |

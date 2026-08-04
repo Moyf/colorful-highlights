@@ -17,6 +17,10 @@ const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
 	'double-strike': 'settings.highlightStyle.options.doubleStrike',
 	'underline-only': 'settings.highlightStyle.options.underlineOnly',
 	'underline-with-bg': 'settings.highlightStyle.options.underlineWithBg',
+	'rounded': 'settings.highlightStyle.options.rounded',
+	'outline': 'settings.highlightStyle.options.outline',
+	'wavy-underline': 'settings.highlightStyle.options.wavyUnderline',
+	'gradient': 'settings.highlightStyle.options.gradient',
 };
 
 export class ColorfulHighlightsSettingTab extends PluginSettingTab {
@@ -59,32 +63,26 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 		group.addSetting((setting) => {
 			setting
 				.setName(t('settings.highlightStyle.name'))
-				.setDesc(t('settings.highlightStyle.desc'))
-				.addDropdown((dropdown) => {
-					for (const style of HIGHLIGHT_STYLES) {
-						dropdown.addOption(style, t(STYLE_OPTION_KEYS[style]));
-					}
-					dropdown.setValue(settings.highlightStyle).onChange(async (value) => {
-						settings.highlightStyle = value as HighlightStyle;
-						await this.persistAndRefresh();
-					});
-				});
-		});
+				.setDesc(t('settings.highlightStyle.desc'));
 
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.defaultColor.name'))
-				.setDesc(t('settings.defaultColor.desc'))
-				.addDropdown((dropdown) => {
-					dropdown.addOption('none', t('settings.defaultColor.none'));
-					for (const slot of COLOR_SLOTS) {
-						dropdown.addOption(slot, t(`colors.${slot}`));
-					}
-					dropdown.setValue(settings.defaultColorSlot).onChange(async (value) => {
-						settings.defaultColorSlot = value as DefaultColorSlot;
-						await this.persistAndRefresh();
-					});
+			// Live sample to the left of the dropdown; it reads the global
+			// --ch-highlight-opacity var, so the intensity slider affects it.
+			const previewEl = setting.controlEl.createSpan({
+				cls: 'ch-style-preview-sample',
+				text: t('settings.highlightStyle.preview'),
+			});
+			previewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
+
+			setting.addDropdown((dropdown) => {
+				for (const style of HIGHLIGHT_STYLES) {
+					dropdown.addOption(style, t(STYLE_OPTION_KEYS[style]));
+				}
+				dropdown.setValue(settings.highlightStyle).onChange(async (value) => {
+					settings.highlightStyle = value as HighlightStyle;
+					previewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
+					await this.persistAndRefresh();
 				});
+			});
 		});
 
 		group.addSetting((setting) => {
@@ -101,6 +99,22 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 							await this.persistAndRefresh();
 						})
 				);
+		});
+
+		group.addSetting((setting) => {
+			setting
+				.setName(t('settings.defaultColor.name'))
+				.setDesc(t('settings.defaultColor.desc'))
+				.addDropdown((dropdown) => {
+					dropdown.addOption('none', t('settings.defaultColor.none'));
+					for (const slot of COLOR_SLOTS) {
+						dropdown.addOption(slot, t(`colors.${slot}`));
+					}
+					dropdown.setValue(settings.defaultColorSlot).onChange(async (value) => {
+						settings.defaultColorSlot = value as DefaultColorSlot;
+						await this.persistAndRefresh();
+					});
+				});
 		});
 
 		group.addSetting((setting) => {
