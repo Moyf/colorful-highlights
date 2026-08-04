@@ -3,10 +3,18 @@
  *
  * Used by commands and the editor context menu:
  *
- * - toggle: wrap the selection (or word) in ==...==, or unwrap an existing highlight
- * - remove: unwrap an existing highlight, dropping any emoji prefix
+ * - toggle: wrap the selection (or word) in ==...==; when the selection
+ *   overlaps existing highlights, unwrap them instead
+ * - remove: unwrap every highlight overlapping the selection, dropping any
+ *   emoji prefixes
  * - color:  write the slot's first emoji alias into the highlight
- *           (==🟥text==), or strip the prefix when targeting the default slot
+ *   (==🟥text==), or strip the prefix when targeting the default slot
+ *
+ * Markdown highlights cannot nest, so coloring a selection that overlaps
+ * existing highlights ABSORBS them: the affected range expands to the union
+ * of the selection and every overlapping ==...== span, inner markers and
+ * emoji prefixes are stripped, and the merged text is re-wrapped with the
+ * new color.
  *
  * Behavior with no selection: the ==...== span around the cursor is used;
  * otherwise the word under the cursor is wrapped.
@@ -59,6 +67,24 @@ export function findHighlightAtCursor(editor: Editor): HighlightMatch | null {
 	);
 }
 
+/** Every ==...== span intersecting [from, to), in document order. */
+function collectOverlappingHighlights(doc: string, from: number, to: number): HighlightMatch[] {
+	const matches: HighlightMatch[] = [];
+	HIGHLIGHT_RE.lastIndex = 0;
+	let match: RegExpExecArray | null;
+	while ((match = HIGHLIGHT_RE.exec(doc)) !== null) {
+		const matchFrom = match.index;
+		const matchTo = matchFrom + match[0].length;
+		if (matchFrom >= to) {
+			break;
+		}
+		if (matchTo > from) {
+			matches.push({ from: matchFrom, to: matchTo, inner: match[1] });
+		}
+	}
+	return matches;
+}
+
 /** The emoji written for a slot — undefined for the default slot (plain ==text==). */
 function emojiForSlot(slot: ColorSlotKey, ctx: HighlightActionContext): string | undefined {
 	if (ctx.defaultColorSlot !== 'none' && slot === ctx.defaultColorSlot) {
@@ -103,36 +129,67 @@ export function applyHighlightAction(
 }
 
 function handleSelection(editor: Editor, action: HighlightAction, ctx: HighlightActionContext): void {
-	const selection = editor.getSelection();
-	const fromOffset = editor.posToOffset(editor.getCursor('from'));
+	const selFrom = editor.posToOffset(editor.getCursor('from'));
+	const selTo = editor.posToOffset(editor.getCursor('to'));
+	const doc = editor.getValue();
+	const overlapping = collectOverlappingHighlights(doc, selFrom, selTo);
 
-	// Preserve whitespace outside the == markers when the selection wraps a highlight
-	const wrapped = selection.match(/^(\s*)==([\s\S]*?)==(\s*)$/);
-
-	let replacement: string | null = null;
-	if (action.type === 'toggle') {
-		replacement = wrapped
-			? `${wrapped[1]}${stripInner(wrapped[2], ctx)}${wrapped[3]}`
-			: `==${selection}==`;
-	} else if (action.type === 'remove') {
-		if (wrapped) {
-			replacement = `${wrapped[1]}${stripInner(wrapped[2], ctx)}${wrapped[3]}`;
+	// Unwrap paths: remove always unwraps; toggle unwraps when highlights exist
+	if (action.type === 'remove' || (action.type === 'toggle' && overlapping.length > 0)) {
+		if (overlapping.length === 0) {
+			return;
 		}
-	} else {
-		replacement = wrapped
-			? `${wrapped[1]}==${recolorInner(wrapped[2], action.slot, ctx)}==${wrapped[3]}`
-			: `==${emojiForSlot(action.slot, ctx) ?? ''}${selection}==`;
-	}
-
-	if (replacement === null) {
+		// Replace from last to first so earlier offsets stay valid
+		for (let i = overlapping.length - 1; i >= 0; i--) {
+			const match = overlapping[i];
+			editor.replaceRange(
+				stripInner(match.inner, ctx),
+				editor.offsetToPos(match.from),
+				editor.offsetToPos(match.to)
+			);
+		}
+		editor.setCursor(editor.offsetToPos(Math.min(selFrom, overlapping[0].from)));
 		return;
 	}
 
-	editor.replaceSelection(replacement);
+	const emoji = action.type === 'color' ? (emojiForSlot(action.slot, ctx) ?? '') : '';
+
+	if (overlapping.length === 0) {
+		// Plain wrap — no highlights involved
+		const replacement = `==${emoji}${doc.slice(selFrom, selTo)}==`;
+		editor.replaceRange(replacement, editor.offsetToPos(selFrom), editor.offsetToPos(selTo));
+		editor.setSelection(
+			editor.offsetToPos(selFrom),
+			editor.offsetToPos(selFrom + replacement.length)
+		);
+		return;
+	}
+
+	// Absorb: expand to the union of the selection and every overlapping
+	// highlight, strip inner == markers and emoji prefixes, re-wrap once.
+	let unionFrom = selFrom;
+	let unionTo = selTo;
+	for (const match of overlapping) {
+		unionFrom = Math.min(unionFrom, match.from);
+		unionTo = Math.max(unionTo, match.to);
+	}
+
+	const mergedText = doc.slice(unionFrom, unionTo);
+	const stripped = mergedText.replace(HIGHLIGHT_RE, (_whole, inner: string) =>
+		stripInner(inner, ctx)
+	);
+	const wsParts = stripped.match(/^(\s*)([\s\S]*?)(\s*)$/);
+	const core = wsParts ? wsParts[2] : stripped;
+	if (!core) {
+		return;
+	}
+
+	const replacement = `${wsParts?.[1] ?? ''}==${emoji}${core}==${wsParts?.[3] ?? ''}`;
+	editor.replaceRange(replacement, editor.offsetToPos(unionFrom), editor.offsetToPos(unionTo));
 	// Keep the replaced text selected so colors can be switched repeatedly
 	editor.setSelection(
-		editor.offsetToPos(fromOffset),
-		editor.offsetToPos(fromOffset + replacement.length)
+		editor.offsetToPos(unionFrom),
+		editor.offsetToPos(unionFrom + replacement.length)
 	);
 }
 
