@@ -8,6 +8,7 @@ export interface BaseMessage {
 		groups: {
 			general: string;
 			decoration: string;
+			menu: string;
 			colors: string;
 			emojiMappings: string;
 		};
@@ -41,8 +42,14 @@ export interface BaseMessage {
 		editorDecorator: { name: string; desc: string };
 		showPrefixInSource: { name: string; desc: string };
 		readingRenderer: { name: string; desc: string };
-		/** "Used for highlights marked with {{emoji}}" */
-		colorSetting: { desc: string };
+		/** Per-slot custom color description shown under each color picker. */
+		colorSetting: {
+			yellow: string;
+			green: string;
+			red: string;
+			purple: string;
+			blue: string;
+		};
 		emojiMappingIntro: string;
 		/** "Write-back emoji: {{emoji}} (first alias)" */
 		emojiMapping: { desc: string; placeholder: string };

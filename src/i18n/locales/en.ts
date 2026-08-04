@@ -5,6 +5,7 @@ const en: BaseMessage = {
 		groups: {
 			general: 'General',
 			decoration: 'Decoration',
+			menu: 'Menu',
 			colors: 'Colors',
 			emojiMappings: 'Emoji mappings',
 		},
@@ -71,10 +72,14 @@ const en: BaseMessage = {
 			desc: 'Color highlights in reading view and hide the matched emoji prefix from the rendered text.',
 		},
 		colorSetting: {
-			desc: 'Used for highlights marked with {{emoji}}.',
+			yellow: 'Choose a custom color for yellow highlights.',
+			green: 'Choose a custom color for green highlights.',
+			red: 'Choose a custom color for red highlights.',
+			purple: 'Choose a custom color for purple highlights.',
+			blue: 'Choose a custom color for blue highlights.',
 		},
 		emojiMappingIntro:
-			'Comma-separated emoji aliases per color. The first emoji is the one written into the note when applying a color.',
+			'Comma-separated emoji aliases per color. Every listed emoji is parsed as that color, but the first emoji is the one written into the note when applying a color.',
 		emojiMapping: {
 			desc: 'Write-back emoji: {{emoji}} (first alias)',
 			placeholder: '🟥,🔴',

@@ -5,6 +5,7 @@ const zhCn: BaseMessage = {
 		groups: {
 			general: '常规',
 			decoration: '装饰',
+			menu: '菜单',
 			colors: '颜色',
 			emojiMappings: 'Emoji 映射',
 		},
@@ -71,9 +72,13 @@ const zhCn: BaseMessage = {
 			desc: '在阅读视图中为高亮着色，并从渲染文本中隐藏匹配的 emoji 前缀。',
 		},
 		colorSetting: {
-			desc: '用于标记 {{emoji}} 的高亮。',
+			yellow: '为黄色高亮选择自定义颜色。',
+			green: '为绿色高亮选择自定义颜色。',
+			red: '为红色高亮选择自定义颜色。',
+			purple: '为紫色高亮选择自定义颜色。',
+			blue: '为蓝色高亮选择自定义颜色。',
 		},
-		emojiMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。应用颜色时写入第一个 emoji。',
+		emojiMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。所有填写的 emoji 都会被解析成对应颜色，但应用颜色时只会写入第一个 emoji。',
 		emojiMapping: {
 			desc: '回写 emoji：{{emoji}}（列表第一项）',
 			placeholder: '🟥,🔴',

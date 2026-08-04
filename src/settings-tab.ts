@@ -54,6 +54,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 
 		this.renderGeneralSection(containerEl);
 		this.renderDecorationSection(containerEl);
+		this.renderMenuSection(containerEl);
 		this.renderColorsSection(containerEl);
 		this.renderEmojiMappingsSection(containerEl);
 	}
@@ -116,22 +117,6 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 
 		group.addSetting((setting) => {
 			setting
-				.setName(t('settings.renderMode.name'))
-				.setDesc(t('settings.renderMode.desc'))
-				.addDropdown((dropdown) => {
-					dropdown
-						.addOption('plugin', t('settings.renderMode.options.plugin'))
-						.addOption('native', t('settings.renderMode.options.native'))
-						.setValue(settings.renderMode)
-						.onChange(async (value) => {
-							settings.renderMode = value as RenderMode;
-							await this.persistAndRefreshAppearance();
-						});
-				});
-		});
-
-		group.addSetting((setting) => {
-			setting
 				.setName(t('settings.opacity.name'))
 				.setDesc(t('settings.opacity.desc'))
 				.addSlider((slider) =>
@@ -183,29 +168,6 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				});
 		});
 
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.editorMenu.name'))
-				.setDesc(t('settings.editorMenu.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.showColorMenuInEditorMenu).onChange(async (value) => {
-						settings.showColorMenuInEditorMenu = value;
-						await this.persist();
-					})
-				);
-		});
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.submenu.name'))
-				.setDesc(t('settings.submenu.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.useSubmenu).onChange(async (value) => {
-						settings.useSubmenu = value;
-						await this.persist();
-					})
-				);
-		});
 	}
 
 	private renderDecorationSection(containerEl: HTMLElement): void {
@@ -247,6 +209,51 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 					})
 				);
 		});
+
+		group.addSetting((setting) => {
+			setting
+				.setName(t('settings.renderMode.name'))
+				.setDesc(t('settings.renderMode.desc'))
+				.addDropdown((dropdown) => {
+					dropdown
+						.addOption('plugin', t('settings.renderMode.options.plugin'))
+						.addOption('native', t('settings.renderMode.options.native'))
+						.setValue(settings.renderMode)
+						.onChange(async (value) => {
+							settings.renderMode = value as RenderMode;
+							await this.persistAndRefreshAppearance();
+						});
+				});
+		});
+	}
+
+	private renderMenuSection(containerEl: HTMLElement): void {
+		const group = createSettingsGroup(containerEl, t('settings.groups.menu'));
+		const settings = this.plugin.settings;
+
+		group.addSetting((setting) => {
+			setting
+				.setName(t('settings.editorMenu.name'))
+				.setDesc(t('settings.editorMenu.desc'))
+				.addToggle((toggle) =>
+					toggle.setValue(settings.showColorMenuInEditorMenu).onChange(async (value) => {
+						settings.showColorMenuInEditorMenu = value;
+						await this.persist();
+					})
+				);
+		});
+
+		group.addSetting((setting) => {
+			setting
+				.setName(t('settings.submenu.name'))
+				.setDesc(t('settings.submenu.desc'))
+				.addToggle((toggle) =>
+					toggle.setValue(settings.useSubmenu).onChange(async (value) => {
+						settings.useSubmenu = value;
+						await this.persist();
+					})
+				);
+		});
 	}
 
 	private renderColorsSection(containerEl: HTMLElement): void {
@@ -257,11 +264,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 			group.addSetting((setting) => {
 				setting
 					.setName(t(`colors.${slot}`))
-					.setDesc(
-						t('settings.colorSetting.desc', {
-							emoji: parseEmojiAliases(settings.emojiMappings[slot])[0] ?? '∅',
-						})
-					)
+					.setDesc(t(`settings.colorSetting.${slot}`))
 					.addColorPicker((picker) =>
 						picker.setValue(settings.customColors[slot]).onChange((value) => {
 							settings.customColors[slot] = value;
