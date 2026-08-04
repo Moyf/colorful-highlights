@@ -30,6 +30,7 @@ export interface BaseMessage {
 		};
 		defaultColor: { name: string; desc: string; none: string };
 		opacity: { name: string; desc: string };
+		secondaryOpacity: { name: string; desc: string };
 		renderMode: {
 			name: string;
 			desc: string;

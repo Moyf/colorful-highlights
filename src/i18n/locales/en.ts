@@ -37,6 +37,10 @@ const en: BaseMessage = {
 			name: 'Color intensity',
 			desc: 'Background color mix percentage for colored highlights (10–100%).',
 		},
+		secondaryOpacity: {
+			name: 'Secondary color intensity',
+			desc: 'Intensity of the second layer in the double-strike and underline-with-background styles (10–100%).',
+		},
 		renderMode: {
 			name: 'Color rendering',
 			desc: 'Plugin styles paint the configured background directly. Theme native only overrides the --text-highlight-bg variable per highlight and lets the theme paint it.',

@@ -74,13 +74,27 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				);
 		});
 
+		// Styles with a second layer driven by the secondary intensity slider
+		const STYLES_WITH_SECONDARY: HighlightStyle[] = ['double-strike', 'underline-with-bg'];
+		let secondarySetting: Setting | null = null;
+		const updateSecondaryVisibility = () => {
+			if (!secondarySetting) {
+				return;
+			}
+			if (STYLES_WITH_SECONDARY.includes(settings.highlightStyle)) {
+				secondarySetting.settingEl.show();
+			} else {
+				secondarySetting.settingEl.hide();
+			}
+		};
+
 		group.addSetting((setting) => {
 			setting
 				.setName(t('settings.highlightStyle.name'))
 				.setDesc(t('settings.highlightStyle.desc'));
 
 			// Live sample to the left of the dropdown; it reads the global
-			// --ch-highlight-opacity var, so the intensity slider affects it.
+			// opacity vars, so both intensity sliders affect it.
 			const previewEl = setting.controlEl.createSpan({
 				cls: 'ch-style-preview-sample',
 				text: t('settings.highlightStyle.preview'),
@@ -94,6 +108,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				dropdown.setValue(settings.highlightStyle).onChange(async (value) => {
 					settings.highlightStyle = value as HighlightStyle;
 					previewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
+					updateSecondaryVisibility();
 					await this.persistAndRefresh();
 				});
 			});
@@ -132,6 +147,25 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						})
 				);
 		});
+
+		group.addSetting((setting) => {
+			secondarySetting = setting;
+			setting
+				.setName(t('settings.secondaryOpacity.name'))
+				.setDesc(t('settings.secondaryOpacity.desc'))
+				.addSlider((slider) =>
+					slider
+						.setLimits(10, 100, 5)
+						.setValue(settings.secondaryColorOpacity)
+						.setDynamicTooltip()
+						.onChange((value) => {
+							settings.secondaryColorOpacity = value;
+							this.plugin.refreshAppearance();
+							this.debouncedPersistAppearance();
+						})
+				);
+		});
+		updateSecondaryVisibility();
 
 		group.addSetting((setting) => {
 			setting

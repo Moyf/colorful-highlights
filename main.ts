@@ -20,6 +20,7 @@ import { initI18n, t } from './src/i18n';
 const STYLE_ATTR = 'data-ch-highlight-style';
 const COLOR_MODE_ATTR = 'data-ch-color-mode';
 const OPACITY_VAR = '--ch-highlight-opacity';
+const SECONDARY_OPACITY_VAR = '--ch-underline-opacity';
 const SLOT_VAR_PREFIX = '--ch-highlight-';
 
 /**
@@ -72,6 +73,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		body.removeAttribute(STYLE_ATTR);
 		body.removeAttribute(COLOR_MODE_ATTR);
 		body.style.removeProperty(OPACITY_VAR);
+		body.style.removeProperty(SECONDARY_OPACITY_VAR);
 		for (const slot of COLOR_SLOTS) {
 			body.style.removeProperty(`${SLOT_VAR_PREFIX}${slot}`);
 		}
@@ -133,6 +135,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			body.style.setProperty(`${SLOT_VAR_PREFIX}${slot}`, this.settings.customColors[slot]);
 		}
 		body.style.setProperty(OPACITY_VAR, `${this.settings.colorOpacity}%`);
+		body.style.setProperty(SECONDARY_OPACITY_VAR, `${this.settings.secondaryColorOpacity}%`);
 		if (this.settings.highlightStyle === 'default') {
 			body.removeAttribute(STYLE_ATTR);
 		} else {

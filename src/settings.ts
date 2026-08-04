@@ -8,14 +8,14 @@ export type DefaultColorSlot = 'none' | ColorSlotKey;
 
 export type HighlightStyle =
 	| 'default'
+	| 'rounded'
 	| 'half-strike'
 	| 'double-strike'
+	| 'gradient'
 	| 'underline-only'
-	| 'underline-with-bg'
-	| 'rounded'
-	| 'outline'
 	| 'wavy-underline'
-	| 'gradient';
+	| 'underline-with-bg'
+	| 'outline';
 
 
 
@@ -31,14 +31,14 @@ export const COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'green', 'red', 'purple', 
 
 export const HIGHLIGHT_STYLES: HighlightStyle[] = [
 	'default',
+	'rounded',
 	'half-strike',
 	'double-strike',
-	'underline-only',
-	'underline-with-bg',
-	'rounded',
-	'outline',
-	'wavy-underline',
 	'gradient',
+	'underline-only',
+	'wavy-underline',
+	'underline-with-bg',
+	'outline',
 ];
 
 export interface ColorfulHighlightsSettings {

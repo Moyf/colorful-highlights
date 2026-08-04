@@ -37,6 +37,10 @@ const zhCn: BaseMessage = {
 			name: '颜色强度',
 			desc: '彩色高亮背景色的混合百分比（10–100%）。',
 		},
+		secondaryOpacity: {
+			name: '第二层颜色强度',
+			desc: '「加深填充」和「下划线加背景」样式中第二层的混合百分比（10–100%）。',
+		},
 		renderMode: {
 			name: '着色方式',
 			desc: '「插件样式」由插件直接绘制配置的背景；「主题原生」只为高亮覆盖 --text-highlight-bg 变量，交由主题绘制。',
