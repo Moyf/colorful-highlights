@@ -64,11 +64,11 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	highlightStyle: 'default',
 	defaultColorSlot: 'yellow',
 	emojiMappings: {
-		yellow: '🟨,🟡',
-		green: '🟩,🟢',
-		red: '🟥,🔴',
-		purple: '🟪,🟣',
-		blue: '🟦,🔵',
+		yellow: '🟨,🟡,💛,⭐',
+		green: '🟩,🟢,💚,🍀',
+		red: '🟥,🔴,❤️,🍎',
+		purple: '🟪,🟣,💜,🍇',
+		blue: '🟦,🔵,💙,💧',
 	},
 	customColors: {
 		yellow: '#ffd700',

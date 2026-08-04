@@ -13,7 +13,7 @@ This is a ==🟦theoretical description==, and ==🟩the correct way to handle i
 - **Live Preview & Source mode decoration** — colored backgrounds in the editor; the emoji hides until the cursor enters the highlight (Source mode can keep it visible).
 - **Reading view rendering** — `<mark>` elements get colored and the emoji prefix is stripped from the rendered text.
 - **Highlight styles** — default, half-strike, double-strike, underline only, underline with background, rounded, outline, wavy underline, and gradient, applied to all highlights.
-- **Adjustable opacity** — background color intensity from 30–100%.
+- **Adjustable opacity** — background color intensity from 10–100%.
 - **Default color** — plain `==text==` without an emoji can map to a color slot; switching a highlight to that color strips its prefix.
 - **Commands & context menu** — toggle highlight, highlight with each color, and remove highlight. Right-click a selection (or an existing highlight) for the color actions.
 - **Customizable colors** — each slot's hex color is configurable.
@@ -33,7 +33,7 @@ This is a ==🟦theoretical description==, and ==🟩the correct way to handle i
 | Enable colorful highlights | Master switch for parsing and decoration. |
 | Highlight style | Default / half-strike / double-strike / underline only / underline with background / rounded / outline / wavy underline / gradient. |
 | Default highlight color | Color for plain `==text==`; switching to it removes the emoji prefix. |
-| Color intensity | Background mix percentage (30–100%). |
+| Color intensity | Background mix percentage (10–100%). |
 | Decorate in editor / Reading view | Toggle each surface independently. |
 | Colors | Hex color per slot. |
 | Emoji mappings | Comma-separated aliases per slot; first alias is used for write-back. |

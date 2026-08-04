@@ -35,7 +35,7 @@ const en: BaseMessage = {
 		},
 		opacity: {
 			name: 'Color intensity',
-			desc: 'Background color mix percentage for colored highlights (30–100%).',
+			desc: 'Background color mix percentage for colored highlights (10–100%).',
 		},
 		editorMenu: {
 			name: 'Color actions in editor menu',

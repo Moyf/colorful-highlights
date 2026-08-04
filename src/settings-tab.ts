@@ -91,7 +91,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				.setDesc(t('settings.opacity.desc'))
 				.addSlider((slider) =>
 					slider
-						.setLimits(30, 100, 5)
+						.setLimits(10, 100, 5)
 						.setValue(settings.colorOpacity)
 						.setDynamicTooltip()
 						.onChange(async (value) => {

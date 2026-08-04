@@ -35,7 +35,7 @@ const zhCn: BaseMessage = {
 		},
 		opacity: {
 			name: '颜色强度',
-			desc: '彩色高亮背景色的混合百分比（30–100%）。',
+			desc: '彩色高亮背景色的混合百分比（10–100%）。',
 		},
 		editorMenu: {
 			name: '编辑器右键菜单颜色操作',
