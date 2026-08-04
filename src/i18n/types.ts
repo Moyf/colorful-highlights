@@ -31,6 +31,7 @@ export interface BaseMessage {
 		defaultColor: { name: string; desc: string; none: string };
 		opacity: { name: string; desc: string };
 		editorMenu: { name: string; desc: string };
+		submenu: { name: string; desc: string };
 		editorDecorator: { name: string; desc: string };
 		showPrefixInSource: { name: string; desc: string };
 		readingRenderer: { name: string; desc: string };
@@ -54,6 +55,7 @@ export interface BaseMessage {
 		setColor: string;
 	};
 	menu: {
+		highlightColor: string;
 		removeHighlight: string;
 	};
 }

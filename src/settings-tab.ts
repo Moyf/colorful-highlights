@@ -128,6 +128,18 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 					})
 				);
 		});
+
+		group.addSetting((setting) => {
+			setting
+				.setName(t('settings.submenu.name'))
+				.setDesc(t('settings.submenu.desc'))
+				.addToggle((toggle) =>
+					toggle.setValue(settings.useSubmenu).onChange(async (value) => {
+						settings.useSubmenu = value;
+						await this.persist();
+					})
+				);
+		});
 	}
 
 	private renderDecorationSection(containerEl: HTMLElement): void {

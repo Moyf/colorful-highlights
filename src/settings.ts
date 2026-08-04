@@ -17,6 +17,8 @@ export type HighlightStyle =
 	| 'wavy-underline'
 	| 'gradient';
 
+
+
 export const COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'green', 'red', 'purple', 'blue'];
 
 export const HIGHLIGHT_STYLES: HighlightStyle[] = [
@@ -42,7 +44,9 @@ export interface ColorfulHighlightsSettings {
 	readingRenderer: boolean;
 	/** Show the color submenu in the editor right-click menu. */
 	showColorMenuInEditorMenu: boolean;
-	/** Background color mix percentage (30–100). */
+	/** Group the color actions under a single submenu item in the editor menu. */
+	useSubmenu: boolean;
+	/** Background color mix percentage (10–100). */
 	colorOpacity: number;
 	/** Visual style applied to all highlights. */
 	highlightStyle: HighlightStyle;
@@ -60,15 +64,16 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	showPrefixInSourceMode: true,
 	readingRenderer: true,
 	showColorMenuInEditorMenu: true,
+	useSubmenu: false,
 	colorOpacity: 60,
 	highlightStyle: 'default',
 	defaultColorSlot: 'yellow',
 	emojiMappings: {
-		yellow: '🟨,🟡,💛,⭐',
-		green: '🟩,🟢,💚,🍀',
-		red: '🟥,🔴,❤️,🍎',
-		purple: '🟪,🟣,💜,🍇',
-		blue: '🟦,🔵,💙,💧',
+		yellow: '🟨,🟡,💛,⭐,🍌',
+		green: '🟩,🟢,💚,🍀,🍏',
+		red: '🟥,🔴,❤️,🍓,🍎',
+		purple: '🟪,🟣,💜,🍇,😈',
+		blue: '🟦,🔵,💙,💧,📘',
 	},
 	customColors: {
 		yellow: '#ffd700',

@@ -37,9 +37,14 @@ const zhCn: BaseMessage = {
 			name: '颜色强度',
 			desc: '彩色高亮背景色的混合百分比（10–100%）。',
 		},
+
 		editorMenu: {
 			name: '编辑器右键菜单颜色操作',
 			desc: '在选中文字或已有高亮上右键时，显示高亮颜色操作。',
+		},
+		submenu: {
+			name: '收纳为二级菜单',
+			desc: '将颜色操作收纳到右键菜单中的单个菜单项下。',
 		},
 		editorDecorator: {
 			name: '编辑器中着色',
@@ -75,6 +80,7 @@ const zhCn: BaseMessage = {
 		setColor: '高亮为{{color}}',
 	},
 	menu: {
+		highlightColor: '高亮颜色',
 		removeHighlight: '移除高亮',
 	},
 };

@@ -37,9 +37,14 @@ const en: BaseMessage = {
 			name: 'Color intensity',
 			desc: 'Background color mix percentage for colored highlights (10–100%).',
 		},
+
 		editorMenu: {
 			name: 'Color actions in editor menu',
 			desc: 'Show highlight color actions when right-clicking a selection or an existing highlight.',
+		},
+		submenu: {
+			name: 'Group into a submenu',
+			desc: 'Nest the color actions under a single menu item in the editor right-click menu.',
 		},
 		editorDecorator: {
 			name: 'Decorate in editor',
@@ -76,6 +81,7 @@ const en: BaseMessage = {
 		setColor: 'Highlight with {{color}}',
 	},
 	menu: {
+		highlightColor: 'Highlight color',
 		removeHighlight: 'Remove highlight',
 	},
 };

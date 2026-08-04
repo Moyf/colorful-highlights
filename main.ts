@@ -1,4 +1,4 @@
-import { Editor, Menu, Plugin } from 'obsidian';
+import { Editor, Menu, MenuItem, Plugin } from 'obsidian';
 import type { Extension } from '@codemirror/state';
 import {
 	COLOR_SLOTS,
@@ -20,6 +20,16 @@ import { initI18n, t } from './src/i18n';
 const STYLE_ATTR = 'data-ch-highlight-style';
 const OPACITY_VAR = '--ch-highlight-opacity';
 const SLOT_VAR_PREFIX = '--ch-highlight-';
+
+/**
+ * `MenuItem.setSubmenu()` ships in Obsidian 1.6+ but is missing from the
+ * public type definitions. Guard it at runtime and fall back to flat menu
+ * items when unavailable.
+ */
+type SubmenuCapableMenuItem = MenuItem & { setSubmenu?: () => Menu };
+
+const SUBMENU_SUPPORTED =
+	typeof (MenuItem.prototype as SubmenuCapableMenuItem).setSubmenu === 'function';
 
 export default class ColorfulHighlightsPlugin extends Plugin {
 	settings: ColorfulHighlightsSettings = DEFAULT_SETTINGS;
@@ -153,10 +163,31 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			return;
 		}
 
+		let populated = false;
+		if (this.settings.useSubmenu && SUBMENU_SUPPORTED) {
+			menu.addItem((item) => {
+				item
+					.setTitle(t('menu.highlightColor'))
+					.setIcon('highlighter')
+					.setSection('colorful-highlights');
+				const submenu = (item as SubmenuCapableMenuItem).setSubmenu?.();
+				if (submenu) {
+					this.populateColorMenu(submenu, editor);
+					populated = true;
+				}
+			});
+		}
+		if (!populated) {
+			this.populateColorMenu(menu, editor);
+		}
+	}
+
+	private populateColorMenu(menu: Menu, editor: Editor) {
 		for (const slot of COLOR_SLOTS) {
 			menu.addItem((item) => {
 				item
 					.setTitle(this.buildColorMenuTitle(slot))
+					.setIcon('highlighter')
 					.setSection('colorful-highlights')
 					.onClick(() => {
 						applyHighlightAction(editor, { type: 'color', slot }, this.getActionContext());
@@ -175,14 +206,13 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		});
 	}
 
-	/** Menu label with a colored dot swatch and the slot's default emoji. */
+	/** Menu label: a colored dot swatch followed by the color name. */
 	private buildColorMenuTitle(slot: ColorSlotKey): DocumentFragment {
 		const frag = activeDocument.createDocumentFragment();
 		frag
 			.createSpan({ cls: 'ch-menu-dot' })
 			.setCssProps({ '--ch-dot-color': this.settings.customColors[slot] });
-		const alias = parseEmojiAliases(this.settings.emojiMappings[slot])[0];
-		frag.createSpan({ text: alias ? `${t(`colors.${slot}`)} ${alias}` : t(`colors.${slot}`) });
+		frag.createSpan({ text: t(`colors.${slot}`) });
 		return frag;
 	}
 
