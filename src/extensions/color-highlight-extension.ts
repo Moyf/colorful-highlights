@@ -100,12 +100,16 @@ function buildDecorations(
 				// Cover the full ==...== range including markers
 				ranges.push(colorMarkDecos[slot].range(matchStart, matchEnd));
 
-				// Hide emoji when configured and cursor is NOT inside this highlight
+				// Hide emoji when configured and cursor is NOT inside this highlight.
+				// Boundaries are inclusive: the emoji stays visible while the cursor
+				// touches either edge of the ==...== span (e.g. right after the
+				// closing ==), so it only disappears once the cursor has clearly
+				// left — avoiding a pop-in/out flicker at the boundary.
 				if (!showEmojiPrefix && emojiLength > 0) {
 					const emojiFrom = innerStart;
 					const emojiTo = innerStart + emojiLength;
 					const cursorInside = selRanges.some(
-						r => r.from < matchEnd && r.to > matchStart
+						r => r.from <= matchEnd && r.to >= matchStart
 					);
 					if (!cursorInside && emojiFrom < emojiTo) {
 						ranges.push(hideEmoji.range(emojiFrom, emojiTo));
