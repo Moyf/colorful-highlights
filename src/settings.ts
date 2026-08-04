@@ -1,0 +1,72 @@
+/**
+ * Shared settings model for Colorful Highlights.
+ */
+
+export type ColorSlotKey = 'yellow' | 'red' | 'teal' | 'blue' | 'green';
+
+export type DefaultColorSlot = 'none' | ColorSlotKey;
+
+export type HighlightStyle =
+	| 'default'
+	| 'half-strike'
+	| 'double-strike'
+	| 'underline-only'
+	| 'underline-with-bg';
+
+export const COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'red', 'teal', 'blue', 'green'];
+
+export const HIGHLIGHT_STYLES: HighlightStyle[] = [
+	'default',
+	'half-strike',
+	'double-strike',
+	'underline-only',
+	'underline-with-bg',
+];
+
+export interface ColorfulHighlightsSettings {
+	/** Master switch for emoji-prefixed highlight parsing. */
+	enabled: boolean;
+	/** Decorate highlights in the editor (Live Preview + Source mode). */
+	editorDecorator: boolean;
+	/** Keep emoji prefixes visible in Source mode while decorating. */
+	showPrefixInSourceMode: boolean;
+	/** Decorate <mark> highlights in Reading view and hide the emoji prefix. */
+	readingRenderer: boolean;
+	/** Show the color submenu in the editor right-click menu. */
+	showColorMenuInEditorMenu: boolean;
+	/** Background color mix percentage (30–100). */
+	colorOpacity: number;
+	/** Visual style applied to all highlights. */
+	highlightStyle: HighlightStyle;
+	/** Slot used for plain ==text== without emoji; switching to it strips the prefix. */
+	defaultColorSlot: DefaultColorSlot;
+	/** Comma-separated emoji aliases per color slot (first alias is used for write-back). */
+	emojiMappings: Record<ColorSlotKey, string>;
+	/** Hex color per slot. */
+	customColors: Record<ColorSlotKey, string>;
+}
+
+export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
+	enabled: true,
+	editorDecorator: true,
+	showPrefixInSourceMode: true,
+	readingRenderer: true,
+	showColorMenuInEditorMenu: true,
+	colorOpacity: 60,
+	highlightStyle: 'default',
+	defaultColorSlot: 'yellow',
+	emojiMappings: {
+		yellow: '🟨,🟡',
+		red: '🟥,🔴',
+		teal: '🩵,🔹',
+		blue: '🟦,🔵',
+		green: '🟩,🟢',
+	},
+	customColors: {
+		yellow: '#ffd700',
+		red: '#ff6b6b',
+		teal: '#4ecdc4',
+		blue: '#45b7d1',
+		green: '#96ceb4',
+	},
+};

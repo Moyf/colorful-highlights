@@ -1,0 +1,148 @@
+/* ────────────────────────────────────────────────────────────────
+ * Colorful Highlights
+ *
+ * Rendering pipeline:
+ * - Editor (CM6): the ViewPlugin wraps ==...== spans in
+ *   `.ch-editor-highlight-{slot}` marks; we recolor the enclosing
+ *   native `.cm-highlight` via :has().
+ * - Reading view: the post-processor adds `.ch-reading-highlight-{slot}`
+ *   to <mark> elements and hides the emoji prefix.
+ *
+ * Each colored element resolves `--ch-active-color` from its slot; style
+ * variants then consume that single variable, so per-slot rules are
+ * declared once.
+ *
+ * Runtime-tunable variables (set from plugin settings on <body>):
+ *   --ch-highlight-{slot}   hex color per slot
+ *   --ch-highlight-opacity  background mix percentage (default 60%)
+ *   --ch-underline-opacity  underline mix percentage (default 85%)
+ * Attribute:
+ *   body[data-ch-highlight-style]  one of: half-strike | double-strike |
+ *                                  underline-only | underline-with-bg
+ * ──────────────────────────────────────────────────────────────── */
+
+/* ── Slot → active color ── */
+
+.markdown-rendered mark.ch-reading-highlight-yellow,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-yellow) {
+	--ch-active-color: var(--ch-highlight-yellow, #ffd700);
+}
+
+.markdown-rendered mark.ch-reading-highlight-red,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-red) {
+	--ch-active-color: var(--ch-highlight-red, #ff6b6b);
+}
+
+.markdown-rendered mark.ch-reading-highlight-teal,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-teal) {
+	--ch-active-color: var(--ch-highlight-teal, #4ecdc4);
+}
+
+.markdown-rendered mark.ch-reading-highlight-blue,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-blue) {
+	--ch-active-color: var(--ch-highlight-blue, #45b7d1);
+}
+
+.markdown-rendered mark.ch-reading-highlight-green,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-green) {
+	--ch-active-color: var(--ch-highlight-green, #96ceb4);
+}
+
+/* Fallback color for plain highlights (used by style variants). */
+.markdown-rendered mark,
+.cm-s-obsidian .cm-highlight {
+	--ch-plain-color: var(--text-highlight-bg, rgba(var(--text-highlight-bg-rgb), 0.4));
+}
+
+/* ── Base colored background ── */
+
+.markdown-rendered mark[class*="ch-reading-highlight-"],
+.cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
+	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+}
+
+/* ── Style variant: half-strike (bottom half filled) ── */
+
+body[data-ch-highlight-style="half-strike"] .markdown-rendered mark[class*="ch-reading-highlight-"],
+body[data-ch-highlight-style="half-strike"] .cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
+	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent) 50%);
+}
+
+body[data-ch-highlight-style="half-strike"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body[data-ch-highlight-style="half-strike"] .cm-s-obsidian .cm-highlight:not(:has([class*="ch-editor-highlight-"])) {
+	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent) 50%);
+}
+
+/* ── Style variant: double-strike (full fill + stronger bottom half) ── */
+
+body[data-ch-highlight-style="double-strike"] .markdown-rendered mark[class*="ch-reading-highlight-"],
+body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
+	background-image:
+		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent)),
+		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent) 50%);
+}
+
+body[data-ch-highlight-style="double-strike"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not(:has([class*="ch-editor-highlight-"])) {
+	background-image:
+		linear-gradient(color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent), color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent)),
+		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 85%), transparent) 50%);
+}
+
+/* ── Style variant: underline-only ── */
+
+body[data-ch-highlight-style="underline-only"] .markdown-rendered mark,
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight {
+	background: transparent;
+	text-decoration: underline;
+	text-decoration-thickness: 3px;
+	text-decoration-skip-ink: none;
+}
+
+body[data-ch-highlight-style="underline-only"] .markdown-rendered mark[class*="ch-reading-highlight-"],
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent);
+}
+
+body[data-ch-highlight-style="underline-only"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight:not(:has([class*="ch-editor-highlight-"])) {
+	text-decoration-color: color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 85%), transparent);
+}
+
+/* ── Style variant: underline-with-bg ── */
+
+body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark,
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight {
+	text-decoration: underline;
+	text-decoration-thickness: 3px;
+	text-decoration-skip-ink: none;
+}
+
+body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark[class*="ch-reading-highlight-"],
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent);
+}
+
+body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight:not(:has([class*="ch-editor-highlight-"])) {
+	text-decoration-color: color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 85%), transparent);
+}
+
+/* Keep underline color stable while selecting text (avoid browser fallback to black). */
+body[data-ch-highlight-style="underline-only"] .markdown-rendered mark::selection,
+body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark::selection {
+	text-decoration-color: inherit;
+}
+
+/* ── Editor context menu color dot ── */
+
+.ch-menu-dot {
+	display: inline-block;
+	width: 0.75em;
+	height: 0.75em;
+	border-radius: 50%;
+	background-color: var(--ch-dot-color, var(--text-highlight-bg));
+	border: 1px solid var(--background-modifier-border);
+	margin-right: 6px;
+	vertical-align: -0.1em;
+}

@@ -1,0 +1,42 @@
+{
+	"name": "colorful-highlights",
+	"version": "1.0.0",
+	"description": "Colorize ==highlights== with emoji prefixes in Obsidian.",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"build:local": "npm run build && npm run copy-to-local",
+		"copy-to-local": "node scripts/copy-to-local.mjs",
+		"version": "node scripts/version-bump-new.mjs && git add manifest.json versions.json package.json",
+		"changelog:u": "conventional-changelog -p angular -i CHANGELOG.md -s -u",
+		"release:pre": "npm run build && npm run version && npm run changelog:u",
+		"release:tag": "node scripts/release-tag.mjs",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
+	},
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"highlight",
+		"color"
+	],
+	"author": "Moyf",
+	"license": "MIT",
+	"devDependencies": {
+		"@codemirror/state": "6.5.0",
+		"@codemirror/view": "6.38.6",
+		"@eslint/js": "^9.39.4",
+		"@types/node": "^20.19.0",
+		"@typescript-eslint/eslint-plugin": "^8.58.0",
+		"@typescript-eslint/parser": "^8.58.0",
+		"conventional-changelog-cli": "^5.0.0",
+		"esbuild": "0.17.3",
+		"eslint": "^9.39.4",
+		"eslint-plugin-obsidianmd": "^0.1.9",
+		"obsidian": "latest",
+		"tslib": "2.4.0",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {}
+}
