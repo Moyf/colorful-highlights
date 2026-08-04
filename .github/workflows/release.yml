@@ -26,11 +26,44 @@ jobs:
       - name: Build plugin
         run: npm run build
 
-      - name: Create release with plugin files
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            dist/main.js
-            dist/manifest.json
-            dist/styles.css
-          generate_release_notes: true
+      # Aggregate every patch block of the tag's minor series (e.g. 1.0.x)
+      # from CHANGELOG.md, so upgraders from any older version see the full
+      # changes. Headers are normalized to the release-body format
+      # (## [x.y.z] YYYY-MM-DD, no dash before the date).
+      - name: Extract release notes from CHANGELOG
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          minor=$(echo "$tag" | sed 's/\.[0-9]*$//')
+
+          python3 - "$minor" <<'PYEOF' > release_notes.md
+          import sys, re
+
+          minor = sys.argv[1]
+          with open("CHANGELOG.md", "r", encoding="utf-8") as f:
+              content = f.read()
+
+          pattern = re.compile(r'^(## \[\d+\.\d+\.\d+\].*?)(?=^## \[|\Z)', re.MULTILINE | re.DOTALL)
+          blocks = pattern.findall(content)
+
+          output = []
+          for block in blocks:
+              m = re.match(r'^## \[(\d+\.\d+)\.\d+\]', block)
+              if m and m.group(1) == minor:
+                  cleaned = re.sub(r'\n---\s*$', '', block.strip())
+                  cleaned = re.sub(r'^(## \[\d+\.\d+\.\d+\]) - ', r'\1 ', cleaned)
+                  output.append(cleaned)
+
+          print("\n\n".join(output))
+          PYEOF
+
+      # Draft first: review/edit the notes on the Releases page, then publish.
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          gh release create "$tag" \
+            --title="$tag" \
+            --draft \
+            --notes-file release_notes.md \
+            dist/main.js dist/manifest.json dist/styles.css
