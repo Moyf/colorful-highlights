@@ -11,7 +11,7 @@ const zhCn: BaseMessage = {
 		},
 		enabled: {
 			name: '启用多彩高亮',
-			desc: '解析带 emoji 前缀的高亮（如 ==🟥文本==）。emoji 决定颜色，并在阅读时保持隐藏。',
+			desc: '解析带 emoji 前缀的高亮（如 ==🔴文本==）。emoji 决定颜色，并在阅读时保持隐藏。',
 		},
 		highlightStyle: {
 			name: '高亮样式',
@@ -22,10 +22,11 @@ const zhCn: BaseMessage = {
 				halfStrike: '半填充',
 				doubleStrike: '加深填充',
 				underlineOnly: '仅下划线',
-				underlineWithBg: '下划线加背景',
+				underlineWithBg: '下划线',
 				rounded: '圆角填充',
 				outline: '描边',
 				wavyUnderline: '波浪下划线',
+				wavyUnderlineOnly: '仅波浪下划线',
 				gradient: '渐变填充',
 			},
 		},
@@ -40,7 +41,7 @@ const zhCn: BaseMessage = {
 		},
 		secondaryOpacity: {
 			name: '第二层颜色强度',
-			desc: '「加深填充」和「下划线加背景」样式中第二层的混合百分比（10–100%）。',
+			desc: '「加深填充」、「下划线」和「波浪下划线」样式中第二层的混合百分比（10–100%）。',
 		},
 		renderMode: {
 			name: '着色方式',
@@ -81,7 +82,7 @@ const zhCn: BaseMessage = {
 		emojiMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。所有填写的 emoji 都会被解析成对应颜色，但应用颜色时只会写入第一个 emoji。',
 		emojiMapping: {
 			desc: '回写 emoji：{{emoji}}（列表第一项）',
-			placeholder: '🟥,🔴',
+			placeholder: '🔴,🟥',
 		},
 	},
 	colors: {

@@ -26,6 +26,7 @@ export interface BaseMessage {
 				rounded: string;
 				outline: string;
 				wavyUnderline: string;
+				wavyUnderlineOnly: string;
 				gradient: string;
 			};
 		};

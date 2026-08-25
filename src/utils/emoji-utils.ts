@@ -27,7 +27,7 @@ export function createHighlightRegex(): RegExp {
 
 /**
  * Parse a comma-separated emoji alias string into a deduplicated array.
- * e.g. '🟥,🔴,🟥' → ['🟥', '🔴']
+ * e.g. '🔴,🟥,🔴' → ['🔴', '🟥']
  */
 export function parseEmojiAliases(value: string): string[] {
 	const items = value

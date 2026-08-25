@@ -8,7 +8,7 @@
  * - remove: unwrap every highlight overlapping the selection, dropping any
  *   emoji prefixes
  * - color:  write the slot's first emoji alias into the highlight
- *   (==🟥text==), or strip the prefix when targeting the default slot
+ *   (==🔴text==), or strip the prefix when targeting the default slot
  *
  * Markdown highlights cannot nest, so coloring a selection that overlaps
  * existing highlights ABSORBS them: the affected range expands to the union

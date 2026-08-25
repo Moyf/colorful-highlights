@@ -1,6 +1,6 @@
 /**
  * CodeMirror 6 editor extension that decorates emoji-prefixed highlights
- * (e.g. ==🟥Important text==) with:
+ * (e.g. ==🔴Important text==) with:
  *
  * 1. A background-color mark matching the configured color slot.
  * 2. An optional Decoration.replace that hides the emoji character — unless

@@ -16,11 +16,11 @@
  *   --ch-highlight-{slot}   hex color per slot
  *   --ch-highlight-opacity  primary layer mix percentage (default 60%)
  *   --ch-underline-opacity  SECOND layer mix for double-strike and
- *                           underline-with-bg only (default 60%)
+ *                           underlines with backgrounds (default 60%)
  * Attribute:
  *   body[data-ch-highlight-style]  one of: half-strike | double-strike |
  *     underline-only | underline-with-bg | rounded | outline |
- *     wavy-underline | gradient
+ *     wavy-underline | wavy-underline-only | gradient
  *   body[data-ch-color-mode="native"]  defer painting to the theme
  * ──────────────────────────────────────────────────────────────── */
 
@@ -190,7 +190,6 @@ body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight:not(:has([c
 
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark,
 body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight {
-	background: transparent;
 	text-decoration-line: underline;
 	text-decoration-style: wavy;
 	text-decoration-thickness: 2px;
@@ -198,15 +197,39 @@ body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight {
 	text-underline-offset: 2px;
 }
 
-/* wavy-underline is a single-layer style: fixed 85% stroke, unaffected
- * by the secondary intensity slider. */
+/* wavy-underline keeps the primary-intensity background and uses the
+ * secondary intensity for its wave stroke. */
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark[class*="ch-reading-highlight-"],
 body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
-	text-decoration-color: color-mix(in srgb, var(--ch-active-color) 85%, transparent);
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent);
 }
 
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
 body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight:not(:has([class*="ch-editor-highlight-"])) {
+	text-decoration-color: color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 85%), transparent);
+}
+
+/* ── Style variant: wavy-underline-only ── */
+
+body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark,
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight {
+	background-color: transparent;
+	text-decoration-line: underline;
+	text-decoration-style: wavy;
+	text-decoration-thickness: 2px;
+	text-decoration-skip-ink: none;
+	text-underline-offset: 2px;
+}
+
+/* wavy-underline-only is a single-layer style: fixed 85% stroke,
+ * unaffected by either background intensity slider. */
+body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark[class*="ch-reading-highlight-"],
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight:has([class*="ch-editor-highlight-"]) {
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color) 85%, transparent);
+}
+
+body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight:not(:has([class*="ch-editor-highlight-"])) {
 	text-decoration-color: color-mix(in srgb, var(--ch-plain-color) 85%, transparent);
 }
 
@@ -233,15 +256,16 @@ body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not(:has([
 /* Keep underline color stable while selecting text (avoid browser fallback to black). */
 body[data-ch-highlight-style="underline-only"] .markdown-rendered mark::selection,
 body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark::selection,
-body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selection {
+body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selection,
+body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark::selection {
 	text-decoration-color: inherit;
 }
 
 /* ── Settings: highlight style live preview ──
  * Mirrors the global variants, keyed on the element's own
  * data-ch-preview-style attribute so it updates instantly in the
- * settings tab. Reads the global --ch-highlight-opacity var, so the
- * intensity slider affects the sample in real time.
+ * settings tab. The settings tab scopes both intensity variables onto
+ * the sample itself so slider changes are visible immediately.
  */
 
 .ch-style-preview-sample {
@@ -294,7 +318,16 @@ body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selectio
 }
 
 .ch-style-preview-sample[data-ch-preview-style="wavy-underline"] {
-	background: transparent;
+	text-decoration-line: underline;
+	text-decoration-style: wavy;
+	text-decoration-thickness: 2px;
+	text-decoration-skip-ink: none;
+	text-underline-offset: 2px;
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent);
+}
+
+.ch-style-preview-sample[data-ch-preview-style="wavy-underline-only"] {
+	background-color: transparent;
 	text-decoration-line: underline;
 	text-decoration-style: wavy;
 	text-decoration-thickness: 2px;

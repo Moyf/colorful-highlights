@@ -11,7 +11,7 @@ const en: BaseMessage = {
 		},
 		enabled: {
 			name: 'Enable colorful highlights',
-			desc: 'Parse highlights with an emoji prefix like ==🟥text==. The emoji picks the color and stays hidden while reading.',
+			desc: 'Parse highlights with an emoji prefix like ==🔴text==. The emoji picks the color and stays hidden while reading.',
 		},
 		highlightStyle: {
 			name: 'Highlight style',
@@ -22,10 +22,11 @@ const en: BaseMessage = {
 				halfStrike: 'Half-strike',
 				doubleStrike: 'Double-strike',
 				underlineOnly: 'Underline only',
-				underlineWithBg: 'Underline with background',
+				underlineWithBg: 'Underline',
 				rounded: 'Rounded',
 				outline: 'Outline',
 				wavyUnderline: 'Wavy underline',
+				wavyUnderlineOnly: 'Wavy underline only',
 				gradient: 'Gradient',
 			},
 		},
@@ -40,7 +41,7 @@ const en: BaseMessage = {
 		},
 		secondaryOpacity: {
 			name: 'Secondary color intensity',
-			desc: 'Intensity of the second layer in the double-strike and underline-with-background styles (10–100%).',
+			desc: 'Intensity of the second layer in the double-strike, underline, and wavy underline styles (10–100%).',
 		},
 		renderMode: {
 			name: 'Color rendering',
@@ -82,7 +83,7 @@ const en: BaseMessage = {
 			'Comma-separated emoji aliases per color. Every listed emoji is parsed as that color, but the first emoji is the one written into the note when applying a color.',
 		emojiMapping: {
 			desc: 'Write-back emoji: {{emoji}} (first alias)',
-			placeholder: '🟥,🔴',
+			placeholder: '🔴,🟥',
 		},
 	},
 	colors: {

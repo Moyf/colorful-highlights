@@ -15,6 +15,7 @@ export type HighlightStyle =
 	| 'underline-only'
 	| 'wavy-underline'
 	| 'underline-with-bg'
+	| 'wavy-underline-only'
 	| 'outline';
 
 
@@ -35,9 +36,10 @@ export const HIGHLIGHT_STYLES: HighlightStyle[] = [
 	'half-strike',
 	'double-strike',
 	'gradient',
-	'underline-only',
-	'wavy-underline',
 	'underline-with-bg',
+	'wavy-underline',
+	'underline-only',
+	'wavy-underline-only',
 	'outline',
 ];
 
@@ -56,7 +58,7 @@ export interface ColorfulHighlightsSettings {
 	useSubmenu: boolean;
 	/** Background color mix percentage (10–100). */
 	colorOpacity: number;
-	/** Second-layer mix percentage (10–100) for double-strike and underline-with-bg. */
+	/** Second-layer mix percentage (10–100) for double-strike and underlines with backgrounds. */
 	secondaryColorOpacity: number;
 	/** Who paints the colored background: plugin CSS or the theme via --text-highlight-bg. */
 	renderMode: RenderMode;
@@ -83,11 +85,11 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	highlightStyle: 'default',
 	defaultColorSlot: 'yellow',
 	emojiMappings: {
-		yellow: '🟨,🟡,💛,⭐,🍌',
-		green: '🟩,🟢,💚,🍀,🍏',
-		red: '🟥,🔴,❤️,🍓,🍎',
-		purple: '🟪,🟣,💜,🍇,😈',
-		blue: '🟦,🔵,💙,💧,📘',
+		yellow: '🟡,🟨,💛,⭐,🍌',
+		green: '🟢,🟩,💚,🍀,🍏',
+		red: '🔴,🟥,❤️,🍓,🍎',
+		purple: '🟣,🟪,💜,🍇,😈',
+		blue: '🔵,🟦,💙,💧,📘',
 	},
 	customColors: {
 		yellow: '#ffd700',

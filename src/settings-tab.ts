@@ -21,6 +21,7 @@ const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
 	'rounded': 'settings.highlightStyle.options.rounded',
 	'outline': 'settings.highlightStyle.options.outline',
 	'wavy-underline': 'settings.highlightStyle.options.wavyUnderline',
+	'wavy-underline-only': 'settings.highlightStyle.options.wavyUnderlineOnly',
 	'gradient': 'settings.highlightStyle.options.gradient',
 };
 
@@ -75,9 +76,24 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				);
 		});
 
-		// Styles with a second layer driven by the secondary intensity slider
-		const STYLES_WITH_SECONDARY: HighlightStyle[] = ['double-strike', 'underline-with-bg'];
+		// Styles with a second layer driven by the secondary intensity slider.
+		const STYLES_WITH_SECONDARY: HighlightStyle[] = [
+			'double-strike',
+			'underline-with-bg',
+			'wavy-underline',
+		];
 		let secondarySetting: Setting | null = null;
+		let stylePreviewEl: HTMLElement | null = null;
+		const syncStylePreview = () => {
+			if (!stylePreviewEl) {
+				return;
+			}
+			stylePreviewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
+			// Keep the sample in sync even when the settings view is rendered in a
+			// container that does not inherit the plugin's body-level variables.
+			stylePreviewEl.style.setProperty('--ch-highlight-opacity', `${settings.colorOpacity}%`);
+			stylePreviewEl.style.setProperty('--ch-underline-opacity', `${settings.secondaryColorOpacity}%`);
+		};
 		const updateSecondaryVisibility = () => {
 			if (!secondarySetting) {
 				return;
@@ -94,13 +110,13 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				.setName(t('settings.highlightStyle.name'))
 				.setDesc(t('settings.highlightStyle.desc'));
 
-			// Live sample to the left of the dropdown; it reads the global
-			// opacity vars, so both intensity sliders affect it.
-			const previewEl = setting.controlEl.createSpan({
+			// Live sample to the left of the dropdown; intensity variables are
+			// scoped directly onto it so both sliders update it immediately.
+			stylePreviewEl = setting.controlEl.createSpan({
 				cls: 'ch-style-preview-sample',
 				text: t('settings.highlightStyle.preview'),
 			});
-			previewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
+			syncStylePreview();
 
 			setting.addDropdown((dropdown) => {
 				for (const style of HIGHLIGHT_STYLES) {
@@ -108,7 +124,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				}
 				dropdown.setValue(settings.highlightStyle).onChange(async (value) => {
 					settings.highlightStyle = value as HighlightStyle;
-					previewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
+					syncStylePreview();
 					updateSecondaryVisibility();
 					await this.persistAndRefresh();
 				});
@@ -126,6 +142,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						.setDynamicTooltip()
 						.onChange((value) => {
 							settings.colorOpacity = value;
+							syncStylePreview();
 							// Cheap visual update on every tick; disk write is debounced.
 							this.plugin.refreshAppearance();
 							this.debouncedPersistAppearance();
@@ -145,6 +162,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						.setDynamicTooltip()
 						.onChange((value) => {
 							settings.secondaryColorOpacity = value;
+							syncStylePreview();
 							this.plugin.refreshAppearance();
 							this.debouncedPersistAppearance();
 						})
