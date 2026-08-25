@@ -35,7 +35,7 @@ export class ReadingHighlightRenderer {
 		private readonly app?: App,
 	) {}
 
-	apply(rootEl: HTMLElement): void {
+	apply(rootEl: ParentNode): void {
 		if (!rootEl) {
 			return;
 		}
@@ -53,7 +53,7 @@ export class ReadingHighlightRenderer {
 			: undefined;
 
 		marks.forEach((mark) => {
-			const markEl = mark as HTMLElement;
+			const markEl = mark;
 
 			for (const slot of COLOR_SLOTS) {
 				markEl.classList.remove(`${SLOT_CLASS_PREFIX}${slot}`);
@@ -115,7 +115,7 @@ export class ReadingHighlightRenderer {
 		for (const targetDocument of getAppDocuments(this.app)) {
 			const previewRoots = targetDocument.querySelectorAll('.markdown-preview-view');
 			previewRoots.forEach((root) => {
-				this.apply(root as HTMLElement);
+				this.apply(root);
 			});
 		}
 	}
@@ -125,9 +125,9 @@ export class ReadingHighlightRenderer {
 		for (const targetDocument of getAppDocuments(this.app)) {
 			const previewRoots = targetDocument.querySelectorAll('.markdown-preview-view');
 			previewRoots.forEach((root) => {
-				const marks = (root as HTMLElement).querySelectorAll('mark');
+				const marks = root.querySelectorAll('mark');
 				marks.forEach((mark) => {
-					const markEl = mark as HTMLElement;
+					const markEl = mark;
 
 					for (const slot of COLOR_SLOTS) {
 						markEl.classList.remove(`${SLOT_CLASS_PREFIX}${slot}`);

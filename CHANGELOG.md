@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.1.1](https://github.com/Moyf/colorful-highlights/compare/1.1.0...1.1.1) - 2026-08-25
+
+### 🚀 Added
+
+- **Declarative settings search**: migrate the settings tab to Obsidian 1.13's declarative API so every setting can appear in Settings search.
+- **Release artifact attestations**: generate GitHub artifact attestations for the packaged plugin assets.
+
+### ⚡ Changed
+
+- **Minimum Obsidian version**: raise the requirement from 1.8.7 to 1.13.0.
+
+### 🐛 Fixed
+
+- **Obsidian API warnings**: remove redundant DOM assertions and deprecated slider tooltip calls.
+
+<details>
+<summary>中文说明（点击展开）</summary>
+
+### 🚀 新增
+
+- **声明式设置搜索**：迁移到 Obsidian 1.13 的声明式设置 API，让所有设置都能出现在设置搜索中。
+- **发布资产证明**：为打包后的插件资产生成 GitHub artifact attestation。
+
+### ⚡ 变更
+
+- **最低 Obsidian 版本**：从 1.8.7 提升到 1.13.0。
+
+### 🐛 修复
+
+- **Obsidian API 警告**：移除多余的 DOM 类型断言和已弃用的滑块提示调用。
+
+</details>
+
+---
+
 ## [1.1.0](https://github.com/Moyf/colorful-highlights/compare/1.0.0...1.1.0) - 2026-08-25
 
 ### 🚀 Added

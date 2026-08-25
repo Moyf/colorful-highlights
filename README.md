@@ -61,7 +61,7 @@ Example results:
 ## Compatibility
 
 - Works on desktop and mobile (`isDesktopOnly: false`).
-- Requires Obsidian 1.8.0+.
+- Requires Obsidian 1.13.0+.
 - Uses only local parsing and rendering — no network requests, no data leaves your vault.
 
 ## Credits

@@ -1,4 +1,5 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
+import type { SettingDefinitionItem, SettingGroupItem } from 'obsidian';
 import type ColorfulHighlightsPlugin from '../main';
 import {
 	COLOR_SLOTS,
@@ -9,7 +10,6 @@ import {
 	type RenderMode,
 } from './settings';
 import { parseEmojiAliases } from './utils/emoji-utils';
-import { createSettingsGroup } from './utils/settings-group';
 import { t } from './i18n';
 
 const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
@@ -25,12 +25,35 @@ const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
 	'gradient': 'settings.highlightStyle.options.gradient',
 };
 
+// Styles whose second layer or line/stroke is driven by the secondary slider.
+const STYLES_WITH_SECONDARY: HighlightStyle[] = [
+	'double-strike',
+	'underline-with-bg',
+	'wavy-underline',
+	'underline-only',
+	'wavy-underline-only',
+	'outline',
+];
+
+function isHighlightStyle(value: unknown): value is HighlightStyle {
+	return HIGHLIGHT_STYLES.some((style) => style === value);
+}
+
+function isDefaultColorSlot(value: unknown): value is DefaultColorSlot {
+	return value === 'none' || COLOR_SLOTS.some((slot) => slot === value);
+}
+
+function isRenderMode(value: unknown): value is RenderMode {
+	return value === 'plugin' || value === 'native';
+}
+
 export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 	plugin: ColorfulHighlightsPlugin;
 	icon = 'highlighter';
 
 	private mappingPersistTimer: number | null = null;
 	private appearancePersistTimer: number | null = null;
+	private stylePreviewEls = new Set<HTMLElement>();
 
 	constructor(app: App, plugin: ColorfulHighlightsPlugin) {
 		super(app, plugin);
@@ -49,278 +72,288 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 		super.hide();
 	}
 
-	display(): void {
-		const { containerEl } = this;
-		containerEl.empty();
+	getSettingDefinitions(): SettingDefinitionItem[] {
+		const styleOptions: Record<string, string> = {};
+		for (const style of HIGHLIGHT_STYLES) {
+			styleOptions[style] = t(STYLE_OPTION_KEYS[style]);
+		}
 
-		this.renderGeneralSection(containerEl);
-		this.renderDecorationSection(containerEl);
-		this.renderMenuSection(containerEl);
-		this.renderColorsSection(containerEl);
-		this.renderEmojiMappingsSection(containerEl);
-	}
-
-	private renderGeneralSection(containerEl: HTMLElement): void {
-		const group = createSettingsGroup(containerEl, t('settings.groups.general'));
-		const settings = this.plugin.settings;
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.enabled.name'))
-				.setDesc(t('settings.enabled.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.enabled).onChange(async (value) => {
-						settings.enabled = value;
-						await this.persistAndRefresh();
-					})
-				);
-		});
-
-		// Styles whose second layer or line/stroke is driven by the secondary slider.
-		const STYLES_WITH_SECONDARY: HighlightStyle[] = [
-			'double-strike',
-			'underline-with-bg',
-			'wavy-underline',
-			'underline-only',
-			'wavy-underline-only',
-			'outline',
-		];
-		let secondarySetting: Setting | null = null;
-		let stylePreviewEl: HTMLElement | null = null;
-		const syncStylePreview = () => {
-			if (!stylePreviewEl) {
-				return;
-			}
-			stylePreviewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
-			// Keep the sample in sync even when the settings view is rendered in a
-			// container that does not inherit the plugin's body-level variables.
-			stylePreviewEl.style.setProperty('--ch-highlight-opacity', `${settings.colorOpacity}%`);
-			stylePreviewEl.style.setProperty('--ch-underline-opacity', `${settings.secondaryColorOpacity}%`);
+		const defaultColorOptions: Record<string, string> = {
+			none: t('settings.defaultColor.none'),
 		};
-		const updateSecondaryVisibility = () => {
-			if (!secondarySetting) {
-				return;
-			}
-			if (STYLES_WITH_SECONDARY.includes(settings.highlightStyle)) {
-				secondarySetting.settingEl.show();
-			} else {
-				secondarySetting.settingEl.hide();
-			}
-		};
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.highlightStyle.name'))
-				.setDesc(t('settings.highlightStyle.desc'));
-
-			// Live sample to the left of the dropdown; intensity variables are
-			// scoped directly onto it so both sliders update it immediately.
-			stylePreviewEl = setting.controlEl.createSpan({
-				cls: 'ch-style-preview-sample',
-				text: t('settings.highlightStyle.preview'),
-			});
-			syncStylePreview();
-
-			setting.addDropdown((dropdown) => {
-				for (const style of HIGHLIGHT_STYLES) {
-					dropdown.addOption(style, t(STYLE_OPTION_KEYS[style]));
-				}
-				dropdown.setValue(settings.highlightStyle).onChange(async (value) => {
-					settings.highlightStyle = value as HighlightStyle;
-					syncStylePreview();
-					updateSecondaryVisibility();
-					await this.persistAndRefresh();
-				});
-			});
-		});
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.opacity.name'))
-				.setDesc(t('settings.opacity.desc'))
-				.addSlider((slider) =>
-					slider
-						.setLimits(10, 100, 5)
-						.setValue(settings.colorOpacity)
-						.setDynamicTooltip()
-						.onChange((value) => {
-							settings.colorOpacity = value;
-							syncStylePreview();
-							// Cheap visual update on every tick; disk write is debounced.
-							this.plugin.refreshAppearance();
-							this.debouncedPersistAppearance();
-						})
-				);
-		});
-
-		group.addSetting((setting) => {
-			secondarySetting = setting;
-			setting
-				.setName(t('settings.secondaryOpacity.name'))
-				.setDesc(t('settings.secondaryOpacity.desc'))
-				.addSlider((slider) =>
-					slider
-						.setLimits(10, 100, 5)
-						.setValue(settings.secondaryColorOpacity)
-						.setDynamicTooltip()
-						.onChange((value) => {
-							settings.secondaryColorOpacity = value;
-							syncStylePreview();
-							this.plugin.refreshAppearance();
-							this.debouncedPersistAppearance();
-						})
-				);
-		});
-		updateSecondaryVisibility();
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.defaultColor.name'))
-				.setDesc(t('settings.defaultColor.desc'))
-				.addDropdown((dropdown) => {
-					dropdown.addOption('none', t('settings.defaultColor.none'));
-					for (const slot of COLOR_SLOTS) {
-						dropdown.addOption(slot, t(`colors.${slot}`));
-					}
-					dropdown.setValue(settings.defaultColorSlot).onChange(async (value) => {
-						settings.defaultColorSlot = value as DefaultColorSlot;
-						await this.persistAndRefresh();
-					});
-				});
-		});
-
-	}
-
-	private renderDecorationSection(containerEl: HTMLElement): void {
-		const group = createSettingsGroup(containerEl, t('settings.groups.decoration'));
-		const settings = this.plugin.settings;
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.editorDecorator.name'))
-				.setDesc(t('settings.editorDecorator.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.editorDecorator).onChange(async (value) => {
-						settings.editorDecorator = value;
-						await this.persistAndRefresh();
-					})
-				);
-		});
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.showPrefixInSource.name'))
-				.setDesc(t('settings.showPrefixInSource.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.showPrefixInSourceMode).onChange(async (value) => {
-						settings.showPrefixInSourceMode = value;
-						await this.persistAndRefresh();
-					})
-				);
-		});
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.readingRenderer.name'))
-				.setDesc(t('settings.readingRenderer.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.readingRenderer).onChange(async (value) => {
-						settings.readingRenderer = value;
-						await this.persistAndRefresh();
-					})
-				);
-		});
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.renderMode.name'))
-				.setDesc(t('settings.renderMode.desc'))
-				.addDropdown((dropdown) => {
-					dropdown
-						.addOption('plugin', t('settings.renderMode.options.plugin'))
-						.addOption('native', t('settings.renderMode.options.native'))
-						.setValue(settings.renderMode)
-						.onChange(async (value) => {
-							settings.renderMode = value as RenderMode;
-							await this.persistAndRefreshAppearance();
-						});
-				});
-		});
-	}
-
-	private renderMenuSection(containerEl: HTMLElement): void {
-		const group = createSettingsGroup(containerEl, t('settings.groups.menu'));
-		const settings = this.plugin.settings;
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.editorMenu.name'))
-				.setDesc(t('settings.editorMenu.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.showColorMenuInEditorMenu).onChange(async (value) => {
-						settings.showColorMenuInEditorMenu = value;
-						await this.persist();
-					})
-				);
-		});
-
-		group.addSetting((setting) => {
-			setting
-				.setName(t('settings.submenu.name'))
-				.setDesc(t('settings.submenu.desc'))
-				.addToggle((toggle) =>
-					toggle.setValue(settings.useSubmenu).onChange(async (value) => {
-						settings.useSubmenu = value;
-						await this.persist();
-					})
-				);
-		});
-	}
-
-	private renderColorsSection(containerEl: HTMLElement): void {
-		const group = createSettingsGroup(containerEl, t('settings.groups.colors'));
-		const settings = this.plugin.settings;
-
 		for (const slot of COLOR_SLOTS) {
-			group.addSetting((setting) => {
-				setting
-					.setName(t(`colors.${slot}`))
-					.setDesc(t(`settings.colorSetting.${slot}`))
-					.addColorPicker((picker) =>
-						picker.setValue(settings.customColors[slot]).onChange((value) => {
-							settings.customColors[slot] = value;
-							// Cheap visual update on every tick; disk write is debounced.
-							this.plugin.refreshAppearance();
-							this.debouncedPersistAppearance();
-						})
-					);
+			defaultColorOptions[slot] = t(`colors.${slot}`);
+		}
+
+		const colorItems: SettingGroupItem[] = [];
+		for (const slot of COLOR_SLOTS) {
+			colorItems.push({
+				name: t(`colors.${slot}`),
+				desc: t(`settings.colorSetting.${slot}`),
+				searchable: true,
+				render: (setting) => {
+					setting
+						.setName(t(`colors.${slot}`))
+						.setDesc(t(`settings.colorSetting.${slot}`))
+						.addColorPicker((picker) =>
+							picker.setValue(this.plugin.settings.customColors[slot]).onChange((value) => {
+								this.plugin.settings.customColors[slot] = value;
+								// Cheap visual update on every tick; disk write is debounced.
+								this.plugin.refreshAppearance();
+								this.debouncedPersistAppearance();
+							})
+						);
+				},
 			});
+		}
+
+		const emojiMappingItems: SettingGroupItem[] = [
+			{
+				name: '',
+				desc: t('settings.emojiMappingIntro'),
+				searchable: false,
+			},
+		];
+		for (const slot of COLOR_SLOTS) {
+			emojiMappingItems.push({
+				name: t(`colors.${slot}`),
+				searchable: true,
+				render: (setting) => {
+					setting.setName(t(`colors.${slot}`));
+					this.updateMappingDesc(setting, slot);
+					setting.addText((text) =>
+						text
+							.setPlaceholder(t('settings.emojiMapping.placeholder'))
+							.setValue(this.plugin.settings.emojiMappings[slot])
+							.onChange((value) => {
+								this.plugin.settings.emojiMappings[slot] = value;
+								this.updateMappingDesc(setting, slot);
+								this.debouncedPersistMappings();
+							})
+					);
+				},
+			});
+		}
+
+		return [
+			{
+				type: 'group',
+				heading: t('settings.groups.general'),
+				items: [
+					{
+						name: t('settings.enabled.name'),
+						desc: t('settings.enabled.desc'),
+						control: { type: 'toggle', key: 'enabled' },
+					},
+					{
+						name: t('settings.highlightStyle.name'),
+						desc: t('settings.highlightStyle.desc'),
+						render: (setting) => {
+							setting
+								.setName(t('settings.highlightStyle.name'))
+								.setDesc(t('settings.highlightStyle.desc'));
+
+							const previewEl = setting.controlEl.createSpan({
+								cls: 'ch-style-preview-sample',
+								text: t('settings.highlightStyle.preview'),
+							});
+							this.stylePreviewEls.add(previewEl);
+							this.syncStylePreview();
+
+							setting.addDropdown((dropdown) => {
+								for (const style of HIGHLIGHT_STYLES) {
+									dropdown.addOption(style, styleOptions[style]);
+								}
+								dropdown.setValue(this.plugin.settings.highlightStyle).onChange((value) => {
+									void this.setControlValue('highlightStyle', value);
+								});
+							});
+
+							return () => {
+								this.stylePreviewEls.delete(previewEl);
+							};
+						},
+					},
+					{
+						name: t('settings.opacity.name'),
+						desc: t('settings.opacity.desc'),
+						control: {
+							type: 'slider',
+							key: 'colorOpacity',
+							min: 10,
+							max: 100,
+							step: 5,
+						},
+					},
+					{
+						name: t('settings.secondaryOpacity.name'),
+						desc: t('settings.secondaryOpacity.desc'),
+						visible: () => STYLES_WITH_SECONDARY.includes(this.plugin.settings.highlightStyle),
+						control: {
+							type: 'slider',
+							key: 'secondaryColorOpacity',
+							min: 10,
+							max: 100,
+							step: 5,
+						},
+					},
+					{
+						name: t('settings.defaultColor.name'),
+						desc: t('settings.defaultColor.desc'),
+						control: { type: 'dropdown', key: 'defaultColorSlot', options: defaultColorOptions },
+					},
+				],
+			},
+			{
+				type: 'group',
+				heading: t('settings.groups.decoration'),
+				items: [
+					{
+						name: t('settings.editorDecorator.name'),
+						desc: t('settings.editorDecorator.desc'),
+						control: { type: 'toggle', key: 'editorDecorator' },
+					},
+					{
+						name: t('settings.showPrefixInSource.name'),
+						desc: t('settings.showPrefixInSource.desc'),
+						control: { type: 'toggle', key: 'showPrefixInSourceMode' },
+					},
+					{
+						name: t('settings.readingRenderer.name'),
+						desc: t('settings.readingRenderer.desc'),
+						control: { type: 'toggle', key: 'readingRenderer' },
+					},
+					{
+						name: t('settings.renderMode.name'),
+						desc: t('settings.renderMode.desc'),
+						control: {
+							type: 'dropdown',
+							key: 'renderMode',
+							options: {
+								plugin: t('settings.renderMode.options.plugin'),
+								native: t('settings.renderMode.options.native'),
+							},
+						},
+					},
+				],
+			},
+			{
+				type: 'group',
+				heading: t('settings.groups.menu'),
+				items: [
+					{
+						name: t('settings.editorMenu.name'),
+						desc: t('settings.editorMenu.desc'),
+						control: { type: 'toggle', key: 'showColorMenuInEditorMenu' },
+					},
+					{
+						name: t('settings.submenu.name'),
+						desc: t('settings.submenu.desc'),
+						control: { type: 'toggle', key: 'useSubmenu' },
+					},
+				],
+			},
+			{
+				type: 'group',
+				heading: t('settings.groups.colors'),
+				items: colorItems,
+			},
+			{
+				type: 'group',
+				heading: t('settings.groups.emojiMappings'),
+				items: emojiMappingItems,
+			},
+		];
+	}
+
+	async setControlValue(key: string, value: unknown): Promise<void> {
+		const settings = this.plugin.settings;
+
+		switch (key) {
+			case 'enabled':
+				settings.enabled = Boolean(value);
+				await this.persistAndRefresh();
+				return;
+			case 'editorDecorator':
+				settings.editorDecorator = Boolean(value);
+				await this.persistAndRefresh();
+				return;
+			case 'showPrefixInSourceMode':
+				settings.showPrefixInSourceMode = Boolean(value);
+				await this.persistAndRefresh();
+				return;
+			case 'readingRenderer':
+				settings.readingRenderer = Boolean(value);
+				await this.persistAndRefresh();
+				return;
+			case 'showColorMenuInEditorMenu':
+				settings.showColorMenuInEditorMenu = Boolean(value);
+				await this.persist();
+				return;
+			case 'useSubmenu':
+				settings.useSubmenu = Boolean(value);
+				await this.persist();
+				return;
+			case 'colorOpacity':
+				settings.colorOpacity = this.readNumber(value);
+				this.syncStylePreview();
+				this.plugin.refreshAppearance();
+				this.debouncedPersistAppearance();
+				return;
+			case 'secondaryColorOpacity':
+				settings.secondaryColorOpacity = this.readNumber(value);
+				this.syncStylePreview();
+				this.plugin.refreshAppearance();
+				this.debouncedPersistAppearance();
+				return;
+			case 'highlightStyle':
+				if (!isHighlightStyle(value)) {
+					throw new Error(`Unknown highlight style: ${String(value)}`);
+				}
+				settings.highlightStyle = value;
+				this.syncStylePreview();
+				this.refreshDomState();
+				await this.persistAndRefresh();
+				return;
+			case 'defaultColorSlot':
+				if (!isDefaultColorSlot(value)) {
+					throw new Error(`Unknown default color slot: ${String(value)}`);
+				}
+				settings.defaultColorSlot = value;
+				await this.persistAndRefresh();
+				return;
+			case 'renderMode':
+				if (!isRenderMode(value)) {
+					throw new Error(`Unknown render mode: ${String(value)}`);
+				}
+				settings.renderMode = value;
+				await this.persistAndRefreshAppearance();
+				return;
+			default:
+				throw new Error(`Unknown setting key: ${key}`);
 		}
 	}
 
-	private renderEmojiMappingsSection(containerEl: HTMLElement): void {
-		const group = createSettingsGroup(containerEl, t('settings.groups.emojiMappings'));
+	private readNumber(value: unknown): number {
+		const number = typeof value === 'number' ? value : Number(value);
+		if (!Number.isFinite(number)) {
+			throw new TypeError(`Expected a finite number, got ${String(value)}`);
+		}
+		return number;
+	}
+
+	private syncStylePreview(): void {
 		const settings = this.plugin.settings;
-
-		group.addSetting((setting) => {
-			setting.setDesc(t('settings.emojiMappingIntro'));
-		});
-
-		for (const slot of COLOR_SLOTS) {
-			group.addSetting((setting) => {
-				setting.setName(t(`colors.${slot}`));
-				this.updateMappingDesc(setting, slot);
-				setting.addText((text) =>
-					text
-						.setPlaceholder(t('settings.emojiMapping.placeholder'))
-						.setValue(settings.emojiMappings[slot])
-						.onChange((value) => {
-							settings.emojiMappings[slot] = value;
-							this.updateMappingDesc(setting, slot);
-							this.debouncedPersistMappings();
-						})
-				);
-			});
+		for (const previewEl of this.stylePreviewEls) {
+			if (!previewEl.isConnected) {
+				this.stylePreviewEls.delete(previewEl);
+				continue;
+			}
+			previewEl.setAttribute('data-ch-preview-style', settings.highlightStyle);
+			// Keep the sample in sync even when the settings view is rendered in a
+			// container that does not inherit the plugin's body-level variables.
+			previewEl.style.setProperty('--ch-highlight-opacity', `${settings.colorOpacity}%`);
+			previewEl.style.setProperty('--ch-underline-opacity', `${settings.secondaryColorOpacity}%`);
 		}
 	}
 
