@@ -25,8 +25,8 @@ const zhCn: BaseMessage = {
 				underlineWithBg: '下划线',
 				rounded: '圆角填充',
 				outline: '描边',
-				wavyUnderline: '波浪下划线',
-				wavyUnderlineOnly: '仅波浪下划线',
+				wavyUnderline: '波浪线',
+				wavyUnderlineOnly: '仅波浪线',
 				gradient: '渐变填充',
 			},
 		},
@@ -37,11 +37,11 @@ const zhCn: BaseMessage = {
 		},
 		opacity: {
 			name: '颜色强度',
-			desc: '彩色高亮背景色的混合百分比（10–100%）。',
+			desc: '背景以及下划线、描边使用的主颜色强度（10–100%）。',
 		},
 		secondaryOpacity: {
 			name: '第二层颜色强度',
-			desc: '「加深填充」、「下划线」和「波浪下划线」样式中第二层的混合百分比（10–100%）。',
+			desc: '「加深填充」的第二层，以及「下划线」和「波浪线」的背景强度（10–100%）。',
 		},
 		renderMode: {
 			name: '着色方式',

@@ -12,7 +12,7 @@ This is a ==🔵theoretical description==, and ==🟢the correct way to handle i
 - **Emoji-prefixed colors** — any emoji can map to any of the 5 color slots (yellow / green / red / purple / blue), e.g. `==🍎text==` for red. The first alias per slot is the one written by color commands.
 - **Live Preview & Source mode decoration** — colored backgrounds in the editor; the emoji hides until the cursor enters the highlight (Source mode can keep it visible).
 - **Reading view rendering** — `<mark>` elements get colored and the emoji prefix is stripped from the rendered text.
-- **Highlight styles** — default, half-strike, double-strike, underline, wavy underline, underline only, wavy underline only, rounded, outline, and gradient, applied to all highlights.
+- **Highlight styles** — default, half-strike, double-strike, underline, wavy line, underline only, wavy line only, rounded, outline, and gradient, applied to all highlights.
 - **Adjustable opacity** — background color intensity from 10–100%.
 - **Default color** — plain `==text==` without an emoji can map to a color slot; switching a highlight to that color strips its prefix.
 - **Commands & context menu** — toggle highlight, highlight with each color, and remove highlight. Right-click a selection (or an existing highlight) for the color actions.
@@ -31,9 +31,10 @@ This is a ==🔵theoretical description==, and ==🟢the correct way to handle i
 | Setting | Description |
 | ------- | ----------- |
 | Enable colorful highlights | Master switch for parsing and decoration. |
-| Highlight style | Default / half-strike / double-strike / underline / wavy underline / underline only / wavy underline only / rounded / outline / gradient. |
+| Highlight style | Default / half-strike / double-strike / underline / wavy line / underline only / wavy line only / rounded / outline / gradient. |
 | Default highlight color | Color for plain `==text==`; switching to it removes the emoji prefix. |
-| Color intensity | Background mix percentage (10–100%). |
+| Color intensity | Primary intensity for backgrounds and underline/outline strokes (10–100%). |
+| Secondary color intensity | Second layer of double-strike, or background intensity for underline / wavy line (10–100%). |
 | Color rendering | Plugin styles paint the background directly; theme native only overrides `--text-highlight-bg` and lets your theme paint highlights. |
 | Decorate in editor / Reading view | Toggle each surface independently. |
 | Colors | Hex color per slot. |

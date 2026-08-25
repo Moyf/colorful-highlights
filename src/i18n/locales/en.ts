@@ -25,8 +25,8 @@ const en: BaseMessage = {
 				underlineWithBg: 'Underline',
 				rounded: 'Rounded',
 				outline: 'Outline',
-				wavyUnderline: 'Wavy underline',
-				wavyUnderlineOnly: 'Wavy underline only',
+				wavyUnderline: 'Wavy line',
+				wavyUnderlineOnly: 'Wavy line only',
 				gradient: 'Gradient',
 			},
 		},
@@ -37,11 +37,11 @@ const en: BaseMessage = {
 		},
 		opacity: {
 			name: 'Color intensity',
-			desc: 'Background color mix percentage for colored highlights (10–100%).',
+			desc: 'Primary color intensity for backgrounds and underline/outline strokes (10–100%).',
 		},
 		secondaryOpacity: {
 			name: 'Secondary color intensity',
-			desc: 'Intensity of the second layer in the double-strike, underline, and wavy underline styles (10–100%).',
+			desc: 'Intensity of the second layer in double-strike, or the background of underline and wavy line styles (10–100%).',
 		},
 		renderMode: {
 			name: 'Color rendering',

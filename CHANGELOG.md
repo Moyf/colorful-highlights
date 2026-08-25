@@ -8,8 +8,8 @@ Initial release.
 
 - **Emoji-prefixed highlights**: write `==🔴text==` to color highlights in live preview, source mode, and reading view; the emoji picks the color and stays hidden until you edit the text.
 - **Five color slots**: yellow, green, red, purple, and blue, each with a customizable hex color and comma-separated emoji aliases (first alias is used when writing color into the note).
-- **Ten highlight styles**: default, half-strike, double-strike, underline, wavy underline, underline only, wavy underline only, rounded, outline, and gradient — with a live preview in settings.
-- **Dual intensity sliders**: primary color intensity (10–100%), plus a secondary slider shown for two-layer styles (double-strike, underline, and wavy underline).
+- **Ten highlight styles**: default, half-strike, double-strike, underline, wavy line, underline only, wavy line only, rounded, outline, and gradient — with a live preview in settings.
+- **Dual intensity sliders**: primary intensity controls backgrounds and underline/outline strokes (10–100%); the secondary slider controls double-strike's second layer and underline/wavy line backgrounds.
 - **Theme-native render mode**: optionally paint highlights by overriding `--text-highlight-bg` per element so theme-derived styles follow the slot color.
 - **Default color slot**: plain `==text==` can map to a slot; switching a highlight to that color strips its emoji prefix.
 - **Editor commands and context menu**: toggle highlight, highlight with each color, and remove highlight; right-click color actions with per-color circle icons and an optional submenu. Coloring a selection that overlaps existing highlights absorbs them (union expand, single undo step).
@@ -23,8 +23,8 @@ Initial release.
 
 - **Emoji 前缀高亮**：写 `==🔴文本==` 即可在实时预览、源码模式和阅读视图中着色；emoji 决定颜色，编辑时才显示。
 - **五个颜色槽位**：黄、绿、红、紫、蓝，每个槽位支持自定义十六进制颜色和逗号分隔的 emoji 别名（第一个别名用于回写）。
-- **十种高亮样式**：默认、半填充、加深填充、下划线、波浪下划线、仅下划线、仅波浪下划线、圆角填充、描边、渐变填充——设置页内有实时预览。
-- **双强度滑块**：主颜色强度（10–100%），以及仅在双层样式（加深填充、下划线、波浪下划线）下显示的第二层强度滑块。
+- **十种高亮样式**：默认、半填充、加深填充、下划线、波浪线、仅下划线、仅波浪线、圆角填充、描边、渐变填充——设置页内有实时预览。
+- **双强度滑块**：主强度控制背景及下划线、描边的线条浓度（10–100%）；第二层强度控制加深填充的第二层，以及下划线、波浪线的背景。
 - **主题原生渲染模式**：可选仅通过覆盖 `--text-highlight-bg` 变量上色，让主题派生样式跟随槽位颜色。
 - **默认颜色槽位**：普通 `==文本==` 可映射到某个槽位；切换为该颜色时移除 emoji 前缀。
 - **编辑器命令与右键菜单**：切换高亮、按颜色高亮、移除高亮；右键颜色操作带彩色圆点图标，可选收纳为二级菜单。对包含已有高亮的选区着色时会吸收合并（并集拓展，单次撤销）。

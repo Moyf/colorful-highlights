@@ -56,7 +56,7 @@ export interface ColorfulHighlightsSettings {
 	showColorMenuInEditorMenu: boolean;
 	/** Group the color actions under a single submenu item in the editor menu. */
 	useSubmenu: boolean;
-	/** Background color mix percentage (10–100). */
+	/** Primary color/stroke mix percentage (10–100). */
 	colorOpacity: number;
 	/** Second-layer mix percentage (10–100) for double-strike and underlines with backgrounds. */
 	secondaryColorOpacity: number;

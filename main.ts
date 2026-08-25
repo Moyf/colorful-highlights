@@ -95,18 +95,18 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 
 	/** Re-apply every surface after a settings change. */
 	refresh() {
-		this.rebuildEditorExtensions();
 		this.applyAppearance();
+		this.rebuildEditorExtensions();
 		this.renderer.refreshAll();
 	}
 
 	/**
-	 * Lighter refresh for appearance-only changes (colors, opacity, render
-	 * mode, highlight style) — no CM6 reconfiguration needed since those
-	 * values flow through CSS variables and body attributes.
+	 * Refresh appearance-only changes (colors, opacity, render mode, highlight
+	 * style) and force Live Preview to recalculate CSS-variable-driven marks.
 	 */
 	refreshAppearance() {
 		this.applyAppearance();
+		this.app.workspace.updateOptions();
 		this.renderer.refreshAll();
 	}
 
