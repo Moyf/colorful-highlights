@@ -16,6 +16,7 @@ import {
 } from './src/highlight-actions';
 import { ColorfulHighlightsSettingTab } from './src/settings-tab';
 import { initI18n, t } from './src/i18n';
+import { getAppDocuments } from './src/utils/documents';
 
 const STYLE_ATTR = 'data-ch-highlight-style';
 const COLOR_MODE_ATTR = 'data-ch-color-mode';
@@ -41,8 +42,14 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	async onload() {
 		initI18n();
 		await this.loadSettings();
-		this.renderer = new ReadingHighlightRenderer(() => this.settings);
+		this.renderer = new ReadingHighlightRenderer(() => this.settings, this.app);
 		this.registerColorIcons();
+		this.registerEvent(
+			this.app.workspace.on('window-open', () => {
+				this.applyAppearance();
+				this.renderer.refreshAll();
+			})
+		);
 
 		this.rebuildEditorExtensions();
 		this.registerEditorExtension(this.editorExtensions);
@@ -69,13 +76,15 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 
 	onunload() {
 		this.renderer.clearAll();
-		const body = activeDocument.body;
-		body.removeAttribute(STYLE_ATTR);
-		body.removeAttribute(COLOR_MODE_ATTR);
-		body.style.removeProperty(OPACITY_VAR);
-		body.style.removeProperty(SECONDARY_OPACITY_VAR);
-		for (const slot of COLOR_SLOTS) {
-			body.style.removeProperty(`${SLOT_VAR_PREFIX}${slot}`);
+		for (const targetDocument of getAppDocuments(this.app)) {
+			const body = targetDocument.body;
+			body.removeAttribute(STYLE_ATTR);
+			body.removeAttribute(COLOR_MODE_ATTR);
+			body.style.removeProperty(OPACITY_VAR);
+			body.style.removeProperty(SECONDARY_OPACITY_VAR);
+			for (const slot of COLOR_SLOTS) {
+				body.style.removeProperty(`${SLOT_VAR_PREFIX}${slot}`);
+			}
 		}
 	}
 
@@ -130,21 +139,23 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 
 	/** Push colors, opacity, render mode, and the style variant onto CSS (body-scoped). */
 	private applyAppearance() {
-		const body = activeDocument.body;
-		for (const slot of COLOR_SLOTS) {
-			body.style.setProperty(`${SLOT_VAR_PREFIX}${slot}`, this.settings.customColors[slot]);
-		}
-		body.style.setProperty(OPACITY_VAR, `${this.settings.colorOpacity}%`);
-		body.style.setProperty(SECONDARY_OPACITY_VAR, `${this.settings.secondaryColorOpacity}%`);
-		if (this.settings.highlightStyle === 'default') {
-			body.removeAttribute(STYLE_ATTR);
-		} else {
-			body.setAttribute(STYLE_ATTR, this.settings.highlightStyle);
-		}
-		if (this.settings.renderMode === 'native') {
-			body.setAttribute(COLOR_MODE_ATTR, 'native');
-		} else {
-			body.removeAttribute(COLOR_MODE_ATTR);
+		for (const targetDocument of getAppDocuments(this.app)) {
+			const body = targetDocument.body;
+			for (const slot of COLOR_SLOTS) {
+				body.style.setProperty(`${SLOT_VAR_PREFIX}${slot}`, this.settings.customColors[slot]);
+			}
+			body.style.setProperty(OPACITY_VAR, `${this.settings.colorOpacity}%`);
+			body.style.setProperty(SECONDARY_OPACITY_VAR, `${this.settings.secondaryColorOpacity}%`);
+			if (this.settings.highlightStyle === 'default') {
+				body.removeAttribute(STYLE_ATTR);
+			} else {
+				body.setAttribute(STYLE_ATTR, this.settings.highlightStyle);
+			}
+			if (this.settings.renderMode === 'native') {
+				body.setAttribute(COLOR_MODE_ATTR, 'native');
+			} else {
+				body.removeAttribute(COLOR_MODE_ATTR);
+			}
 		}
 	}
 

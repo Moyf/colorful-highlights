@@ -18,6 +18,8 @@
 
 import { COLOR_SLOTS, type ColorfulHighlightsSettings } from './settings';
 import { buildEmojiToColorSlotMap, detectEmojiPrefix } from './utils/emoji-utils';
+import { getAppDocuments } from './utils/documents';
+import type { App } from 'obsidian';
 
 const SLOT_CLASS_PREFIX = 'ch-reading-highlight-';
 
@@ -28,7 +30,10 @@ function firstTextNode(el: HTMLElement): Text | null {
 }
 
 export class ReadingHighlightRenderer {
-	constructor(private readonly getSettings: () => ColorfulHighlightsSettings) {}
+	constructor(
+		private readonly getSettings: () => ColorfulHighlightsSettings,
+		private readonly app?: App,
+	) {}
 
 	apply(rootEl: HTMLElement): void {
 		if (!rootEl) {
@@ -107,38 +112,42 @@ export class ReadingHighlightRenderer {
 
 	/** Re-apply decorations to every open Reading view (e.g. after settings change). */
 	refreshAll(): void {
-		const previewRoots = activeDocument.querySelectorAll('.markdown-preview-view');
-		previewRoots.forEach((root) => {
-			this.apply(root as HTMLElement);
-		});
+		for (const targetDocument of getAppDocuments(this.app)) {
+			const previewRoots = targetDocument.querySelectorAll('.markdown-preview-view');
+			previewRoots.forEach((root) => {
+				this.apply(root as HTMLElement);
+			});
+		}
 	}
 
 	/** Remove all classes and restore mutated text. Called from onunload. */
 	clearAll(): void {
-		const previewRoots = activeDocument.querySelectorAll('.markdown-preview-view');
-		previewRoots.forEach((root) => {
-			const marks = (root as HTMLElement).querySelectorAll('mark');
-			marks.forEach((mark) => {
-				const markEl = mark as HTMLElement;
+		for (const targetDocument of getAppDocuments(this.app)) {
+			const previewRoots = targetDocument.querySelectorAll('.markdown-preview-view');
+			previewRoots.forEach((root) => {
+				const marks = (root as HTMLElement).querySelectorAll('mark');
+				marks.forEach((mark) => {
+					const markEl = mark as HTMLElement;
 
-				for (const slot of COLOR_SLOTS) {
-					markEl.classList.remove(`${SLOT_CLASS_PREFIX}${slot}`);
-				}
+					for (const slot of COLOR_SLOTS) {
+						markEl.classList.remove(`${SLOT_CLASS_PREFIX}${slot}`);
+					}
 
-				if (markEl.dataset.chTextMutated === '1') {
-					const storedNodeValue = markEl.dataset.chOriginalFirstNode;
-					if (storedNodeValue !== undefined) {
-						const textNode = firstTextNode(markEl);
-						if (textNode) {
-							textNode.nodeValue = storedNodeValue;
+					if (markEl.dataset.chTextMutated === '1') {
+						const storedNodeValue = markEl.dataset.chOriginalFirstNode;
+						if (storedNodeValue !== undefined) {
+							const textNode = firstTextNode(markEl);
+							if (textNode) {
+								textNode.nodeValue = storedNodeValue;
+							}
 						}
 					}
-				}
 
-				delete markEl.dataset.chOriginalText;
-				delete markEl.dataset.chOriginalFirstNode;
-				delete markEl.dataset.chTextMutated;
+					delete markEl.dataset.chOriginalText;
+					delete markEl.dataset.chOriginalFirstNode;
+					delete markEl.dataset.chTextMutated;
+				});
 			});
-		});
+		}
 	}
 }

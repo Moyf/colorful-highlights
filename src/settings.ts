@@ -56,9 +56,9 @@ export interface ColorfulHighlightsSettings {
 	showColorMenuInEditorMenu: boolean;
 	/** Group the color actions under a single submenu item in the editor menu. */
 	useSubmenu: boolean;
-	/** Primary color/stroke mix percentage (10–100). */
+	/** Background color mix percentage (10–100). */
 	colorOpacity: number;
-	/** Second-layer mix percentage (10–100) for double-strike and underlines with backgrounds. */
+	/** Secondary mix percentage (10–100) for double-strike and line colors. */
 	secondaryColorOpacity: number;
 	/** Who paints the colored background: plugin CSS or the theme via --text-highlight-bg. */
 	renderMode: RenderMode;

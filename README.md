@@ -2,10 +2,18 @@
 
 Colorize Obsidian `==highlights==` with emoji prefixes. Write `==🔴important==` and it renders as a red highlight — the emoji stays hidden while reading and reappears when you edit the text.
 
+![](assets/preview.webp)
+
+
+-# Source text
 ```md
 This is some ==🔴important text==.
-This is a ==🔵theoretical description==, and ==🟢the correct way to handle it==.
+This is a ==🔵theoretical description==, and ==🟢the recommended method==.
 ```
+
+-# Render effect
+This is some ==🔴important text==.
+This is a ==🔵theoretical description==, and ==🟢the recommended method==.
 
 ## Features
 
@@ -33,8 +41,8 @@ This is a ==🔵theoretical description==, and ==🟢the correct way to handle i
 | Enable colorful highlights | Master switch for parsing and decoration. |
 | Highlight style | Default / half-strike / double-strike / underline / wavy line / underline only / wavy line only / rounded / outline / gradient. |
 | Default highlight color | Color for plain `==text==`; switching to it removes the emoji prefix. |
-| Color intensity | Primary intensity for backgrounds and underline/outline strokes (10–100%). |
-| Secondary color intensity | Second layer of double-strike, or background intensity for underline / wavy line (10–100%). |
+| Color intensity | Background color mix percentage (10–100%). |
+| Secondary color intensity | Second layer of double-strike and line colors (10–100%). |
 | Color rendering | Plugin styles paint the background directly; theme native only overrides `--text-highlight-bg` and lets your theme paint highlights. |
 | Decorate in editor / Reading view | Toggle each surface independently. |
 | Colors | Hex color per slot. |
@@ -49,6 +57,7 @@ This is a ==🔵theoretical description==, and ==🟢the correct way to handle i
 ## Credits
 
 The emoji-highlight mechanism was originally built as [PR #114](https://github.com/trevware/obsidian-sidebar-highlights/pull/114) for [Sidebar Highlights](https://github.com/trevware/obsidian-sidebar-highlights). This plugin extracts that feature into a standalone package. If you also use Sidebar Highlights, the two plugins coexist: this one renders colors in the editor and Reading view, while the sidebar plugin manages highlights and comments.
+
 
 ## License
 

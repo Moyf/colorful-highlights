@@ -76,11 +76,14 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				);
 		});
 
-		// Styles with a second layer driven by the secondary intensity slider.
+		// Styles whose second layer or line/stroke is driven by the secondary slider.
 		const STYLES_WITH_SECONDARY: HighlightStyle[] = [
 			'double-strike',
 			'underline-with-bg',
 			'wavy-underline',
+			'underline-only',
+			'wavy-underline-only',
+			'outline',
 		];
 		let secondarySetting: Setting | null = null;
 		let stylePreviewEl: HTMLElement | null = null;

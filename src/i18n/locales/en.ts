@@ -37,11 +37,11 @@ const en: BaseMessage = {
 		},
 		opacity: {
 			name: 'Color intensity',
-			desc: 'Primary color intensity for backgrounds and underline/outline strokes (10–100%).',
+			desc: 'Background color intensity for colored highlights (10–100%).',
 		},
 		secondaryOpacity: {
 			name: 'Secondary color intensity',
-			desc: 'Intensity of the second layer in double-strike, or the background of underline and wavy line styles (10–100%).',
+			desc: 'Secondary intensity for the double-strike second layer and line colors (10–100%).',
 		},
 		renderMode: {
 			name: 'Color rendering',
