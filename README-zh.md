@@ -1,18 +1,14 @@
 # Colorful Highlights（多彩高亮）
 
+[![发布版本](https://img.shields.io/github/v/release/Moyf/colorful-highlights?style=flat-square)](https://github.com/Moyf/colorful-highlights/releases) [![下载量](https://img.shields.io/github/downloads/Moyf/colorful-highlights/total?style=flat-square)](https://github.com/Moyf/colorful-highlights/releases) [![Stars](https://img.shields.io/github/stars/Moyf/colorful-highlights?style=flat-square)](https://github.com/Moyf/colorful-highlights/stargazers) [![许可证](https://img.shields.io/github/license/Moyf/colorful-highlights?style=flat-square)](https://github.com/Moyf/colorful-highlights/blob/main/LICENSE) [![Obsidian](https://img.shields.io/badge/Obsidian-Community%20Plugin-7C3AED?style=flat-square)](https://obsidian.md/plugins?id=colorful-highlights)
+
+[English README](README.md)
+
 想要在 Obsidian 内实现带有颜色的高亮划线吗？现在就能实现！
 用 emoji 前缀即可为 Obsidian 的 `==高亮==` 着色。
 像这样的文本： `==🔴重要内容==`，会自动渲染为红色高亮——emoji 默认隐藏，编辑时显现。
 
 ![](assets/preview-zh.webp)
-
-```md
-这是一些 ==🔴重要的文字==。
-这是一个 ==🔵理论描述==，以及 ==🟢正确的处理方式==。
-```
-
-这是一些 ==🔴重要的文字==。
-这是一个 ==🔵理论描述==，以及 ==🟢正确的处理方式==。
 
 
 ## 功能
@@ -23,7 +19,7 @@
 - **默认高亮颜色** —— 无 emoji 的普通 `==文本==` 可映射到某个颜色槽位；切换为该颜色时不自动添加 emoji 前缀。
 - **命令与右键菜单** —— 切换高亮、按颜色高亮、移除高亮。选中文字（或已有高亮）后右键即可看到颜色操作。
 
-
+![menu](assets/menu.webp)
 
 ## 使用方法
 
@@ -31,6 +27,20 @@
 2. 再次执行其他颜色命令即可切换颜色；执行 **切换高亮** 取消高亮。
 3. 也可以在选中文字后右键，在编辑器菜单的颜色操作中切换。
 4. 或者直接手动输入语法：`==🔵任意 emoji 前缀都可以==`。
+
+测试文本：
+```md
+这是一些 ==🔴重要的文字==。
+这是一个 ==🔵理论描述==，以及 ==🟢正确的处理方式==。
+```
+
+## 样式
+在设置中，可以选择不同的高亮样式
+![style-setting](assets/style-setting.webp)
+
+效果如图：
+![styles](assets/styles.webp)
+
 
 ## 设置
 
@@ -60,7 +70,11 @@
 emoji 高亮机制最初作为给 [Sidebar Highlights](https://github.com/trevware/obsidian-sidebar-highlights) 的 [PR #114](https://github.com/trevware/obsidian-sidebar-highlights/pull/114) 开发。现在将该功能抽取为独立插件。
 两款插件可以共存：本插件负责编辑器与阅读视图的颜色渲染，Sidebar Highlights 负责高亮与评论的管理。
 
-另外，`==🔴红色==` 的语法灵感来自 [Octarine](https://github.com/schlegelp/octarine) 项目，非常感谢！
+另外，`==🔴红色==` 的语法灵感来自 [Octarine](https://octarine.app/) 项目，非常感谢！
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Moyf/colorful-highlights&type=Date)](https://www.star-history.com/#Moyf/colorful-highlights&Date)
 
 ## 许可证
 

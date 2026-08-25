@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.1.0](https://github.com/Moyf/colorful-highlights/compare/1.0.0...1.1.0) - 2026-08-25
+
+### 🚀 Added
+
+- **Wavy line styles**: add Wavy line and Wavy line only, with a transparent background for the only-line variant.
+- **Circle emoji defaults**: use circular emojis as the default write-back emoji for all five color slots while preserving square aliases.
+- **Style preview controls**: show the secondary intensity control for double-strike, line-with-background, line-only, and outline styles.
+
+### ⚡ Changed
+
+- **Intensity semantics**: primary intensity controls highlight backgrounds; secondary intensity controls the second double-strike layer and line colors.
+- **Style naming**: rename Wavy underline to Wavy line across the settings UI and documentation.
+
+### 🐛 Fixed
+
+- **Multi-window refresh**: synchronize CSS variables and Reading view decorations across the main window, detached Settings window, and workspace popouts so style and intensity changes apply without restarting Obsidian.
+
+<details>
+<summary>中文说明（点击展开）</summary>
+
+### 🚀 新增
+
+- **波浪线样式**：新增「波浪线」和「仅波浪线」样式，其中仅线条样式使用透明背景。
+- **圆形默认 Emoji**：五个颜色槽位默认写入圆形 Emoji，同时保留方形 Emoji 别名。
+- **样式预览控制**：为加深填充、带背景的线条、仅线条和描边样式显示第二层强度控制。
+
+### ⚡ 变更
+
+- **强度语义**：主强度控制高亮背景；第二层强度控制加深填充的第二层和各种线条的颜色。
+- **样式命名**：设置界面和文档统一将「波浪下划线」改名为「波浪线」。
+
+### 🐛 修复
+
+- **多窗口刷新**：同步主窗口、独立 Settings 窗口和工作区弹出窗口中的 CSS 变量及阅读视图装饰，切换样式和强度时无需重启 Obsidian。
+
+</details>
+
+---
+
 ## [1.0.0] - 2026-08-04
 
 Initial release.
