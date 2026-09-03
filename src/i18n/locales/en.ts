@@ -74,7 +74,7 @@ const en: BaseMessage = {
 		},
 		extendedColors: {
 			name: 'Extended colors',
-			desc: 'Enable five extra color slots — gray, orange, cyan, magenta, and white — adding commands, menu actions, and settings entries for them.',
+			desc: 'Enable five extra color slots — orange, cyan, magenta, gray, and black (spoiler). There are ten colors in total.',
 		},
 		colorSetting: {
 			yellow: 'Choose a custom color for yellow highlights.',
@@ -86,7 +86,11 @@ const en: BaseMessage = {
 			orange: 'Choose a custom color for orange highlights.',
 			cyan: 'Choose a custom color for cyan highlights.',
 			magenta: 'Choose a custom color for magenta highlights.',
-			white: 'Choose a custom color for white highlights.',
+			black: 'Special highlight style for obscuring specific text; hover to reveal it.',
+			toggle: {
+				enable: 'Enable highlights for this color.',
+				disable: 'Disable highlights for this color.',
+			},
 		},
 		emojiMappingIntro:
 			'Comma-separated emoji aliases per color. Every listed emoji is parsed as that color, but the first emoji is the one written into the note when applying a color.',
@@ -105,7 +109,7 @@ const en: BaseMessage = {
 		orange: 'Orange',
 		cyan: 'Cyan',
 		magenta: 'Magenta',
-		white: 'White',
+		black: 'Black (spoiler)',
 	},
 	commands: {
 		toggle: 'Toggle highlight',

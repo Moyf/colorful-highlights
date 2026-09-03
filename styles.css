@@ -90,10 +90,10 @@
 	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
-.markdown-rendered mark.ch-reading-highlight-white,
-.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-white) {
-	--ch-active-color: var(--ch-highlight-white, #f8f9fa);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+.markdown-rendered mark.ch-reading-highlight-black,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-black) {
+	--ch-active-color: var(--text-normal);
+	--text-highlight-bg: var(--text-normal);
 }
 
 /* Fallback color for plain highlights (used by style variants). */
@@ -143,7 +143,7 @@ body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not(:
 
 body[data-ch-highlight-style="underline-only"] .markdown-rendered mark,
 body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight {
-	background: transparent;
+	background: transparent !important;
 	text-decoration: underline;
 	text-decoration-thickness: 3px;
 	text-decoration-skip-ink: none;
@@ -249,7 +249,7 @@ body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight:not(
 
 body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark,
 body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight {
-	background-color: transparent;
+	background: transparent !important;
 	text-decoration-line: underline;
 	text-decoration-style: wavy;
 	text-decoration-thickness: 2px;
@@ -378,4 +378,44 @@ body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark::sel
 		color-mix(in srgb, var(--ch-active-color) calc(var(--ch-highlight-opacity, 60%) * 0.45), transparent),
 		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent)
 	);
+}
+
+/* ── Special slot: Black (Spoiler) ──
+ * This slot deliberately ignores the selected highlight style. The opaque
+ * text-color bar hides both normal text and nested emphasis such as <strong>.
+ * Hovering the mark lowers the bar opacity and restores the text color.
+ */
+
+body .markdown-rendered mark.ch-reading-highlight-black,
+body .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-black) {
+	--ch-active-color: var(--text-normal);
+	--text-highlight-bg: var(--text-normal);
+	background: var(--text-normal) !important;
+	background-image: none !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	color: transparent !important;
+	padding: 0 !important;
+	text-decoration: none !important;
+	-webkit-text-fill-color: transparent !important;
+}
+
+body .markdown-rendered mark.ch-reading-highlight-black *,
+body .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-black) * {
+	color: transparent !important;
+	-webkit-text-fill-color: transparent !important;
+}
+
+body .markdown-rendered mark.ch-reading-highlight-black:hover,
+body .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-black):hover {
+	--text-highlight-bg: color-mix(in srgb, var(--text-normal) 15%, transparent);
+	background: color-mix(in srgb, var(--text-normal) 15%, transparent) !important;
+	color: var(--text-normal) !important;
+	-webkit-text-fill-color: var(--text-normal) !important;
+}
+
+body .markdown-rendered mark.ch-reading-highlight-black:hover *,
+body .cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-black):hover * {
+	color: inherit !important;
+	-webkit-text-fill-color: inherit !important;
 }

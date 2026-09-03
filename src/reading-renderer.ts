@@ -51,18 +51,17 @@ export class ReadingHighlightRenderer {
 
 		const settings = this.getSettings();
 		const shouldApply = settings.enabled && settings.readingRenderer;
-		// Only active slots are detected — disabled extended colors render as
+		// Only active slots are detected — disabled colors render as
 		// plain highlights. Class cleanup below covers every slot so stale
 		// classes never survive a toggle.
+		const activeSlots = getActiveColorSlots(settings.extendedColors, settings.enabledColors);
 		const emojiMap = shouldApply
-			? buildEmojiToColorSlotMap(
-					settings.emojiMappings,
-					getActiveColorSlots(settings.extendedColors)
-				)
+			? buildEmojiToColorSlotMap(settings.emojiMappings, activeSlots)
 			: null;
-		const defaultSlot = settings.defaultColorSlot !== 'none'
-			? settings.defaultColorSlot
-			: undefined;
+		const defaultSlot =
+			settings.defaultColorSlot !== 'none' && activeSlots.includes(settings.defaultColorSlot)
+				? settings.defaultColorSlot
+				: undefined;
 
 		marks.forEach((mark) => {
 			const markEl = mark;

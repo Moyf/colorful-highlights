@@ -8,11 +8,11 @@ export type ColorSlotKey =
 	| 'red'
 	| 'purple'
 	| 'blue'
-	| 'gray'
 	| 'orange'
 	| 'cyan'
 	| 'magenta'
-	| 'white';
+	| 'gray'
+	| 'black';
 
 export type DefaultColorSlot = 'none' | ColorSlotKey;
 
@@ -42,7 +42,7 @@ export type RenderMode = 'plugin' | 'native';
 export const BASE_COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'green', 'red', 'purple', 'blue'];
 
 /** Five extra slots revealed by the extended-colors toggle. */
-export const EXTENDED_COLOR_SLOTS: ColorSlotKey[] = ['gray', 'orange', 'cyan', 'magenta', 'white'];
+export const EXTENDED_COLOR_SLOTS: ColorSlotKey[] = ['orange', 'cyan', 'magenta', 'gray', 'black'];
 
 /**
  * Every slot. Iterated for CSS variables, menu icons, and DOM class cleanup —
@@ -50,9 +50,17 @@ export const EXTENDED_COLOR_SLOTS: ColorSlotKey[] = ['gray', 'orange', 'cyan', '
  */
 export const COLOR_SLOTS: ColorSlotKey[] = [...BASE_COLOR_SLOTS, ...EXTENDED_COLOR_SLOTS];
 
-/** Slots exposed to the user (commands, menus, settings) for the given toggle state. */
-export function getActiveColorSlots(extendedColors: boolean): ColorSlotKey[] {
+/** Slots available in the Colors section for the given extended-colors state. */
+export function getAvailableColorSlots(extendedColors: boolean): ColorSlotKey[] {
 	return extendedColors ? COLOR_SLOTS : BASE_COLOR_SLOTS;
+}
+
+/** Slots exposed to mappings, commands, menus, and rendering after visibility filtering. */
+export function getActiveColorSlots(
+	extendedColors: boolean,
+	enabledColors?: Partial<Record<ColorSlotKey, boolean>>
+): ColorSlotKey[] {
+	return getAvailableColorSlots(extendedColors).filter(slot => enabledColors?.[slot] !== false);
 }
 
 export const HIGHLIGHT_STYLES: HighlightStyle[] = [
@@ -91,8 +99,10 @@ export interface ColorfulHighlightsSettings {
 	highlightStyle: HighlightStyle;
 	/** Slot used for plain ==text== without emoji; switching to it strips the prefix. */
 	defaultColorSlot: DefaultColorSlot;
-	/** Reveal the five extended color slots (gray/orange/cyan/magenta/white). */
+	/** Reveal the five extended color slots (orange/cyan/magenta/black/gray). */
 	extendedColors: boolean;
+	/** Whether each color slot is available in mappings, commands, menus, and rendering. */
+	enabledColors: Record<ColorSlotKey, boolean>;
 	/** Comma-separated emoji aliases per color slot (first alias is used for write-back). */
 	emojiMappings: Record<ColorSlotKey, string>;
 	/** Hex color per slot. */
@@ -112,17 +122,29 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	highlightStyle: 'default',
 	defaultColorSlot: 'yellow',
 	extendedColors: false,
+	enabledColors: {
+		yellow: true,
+		green: true,
+		red: true,
+		purple: true,
+		blue: true,
+		orange: true,
+		cyan: true,
+		magenta: true,
+		gray: true,
+		black: true,
+	},
 	emojiMappings: {
 		yellow: '🟡,🟨,💛,⭐,🍌',
 		green: '🟢,🟩,💚,🍀,🍏',
 		red: '🔴,🟥,❤️,🍓,🍎',
 		purple: '🟣,🟪,💜,🍇,😈',
 		blue: '🔵,🟦,💙,💧,📘',
-		gray: '🩶,🪨,🌫️,🗿',
-		orange: '🟠,🟧,🧡,🍊',
-		cyan: '🩵,🧊,🐬,🫧',
-		magenta: '🩷,🌸,🌺,🎀',
-		white: '⚪,🤍,⬜,☁️',
+		orange: '🟠,🟧,🧡,🍊,🦊',
+		cyan: '🩵,🧊,❄️,🐬',
+		magenta: '🩷,🌸,👛,🐙',
+		gray: '🩶,🌫️,🗿,🐨',
+		black: '🕶️,⬛,🖤,🐈‍⬛',
 	},
 	customColors: {
 		yellow: '#ffd700',
@@ -130,10 +152,10 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 		red: '#ff6b6b',
 		purple: '#a78bfa',
 		blue: '#45b7d1',
-		gray: '#adb5bd',
 		orange: '#ffa94d',
 		cyan: '#2dd4bf',
 		magenta: '#f472b6',
-		white: '#f8f9fa',
+		gray: '#adb5bd',
+		black: '#000000',
 	},
 };

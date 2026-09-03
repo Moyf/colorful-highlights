@@ -55,7 +55,11 @@ export interface BaseMessage {
 			orange: string;
 			cyan: string;
 			magenta: string;
-			white: string;
+			black: string;
+			toggle: {
+				enable: string;
+				disable: string;
+			};
 		};
 		emojiMappingIntro: string;
 		/** "Write-back emoji: {{emoji}} (first alias)" */
@@ -71,7 +75,7 @@ export interface BaseMessage {
 		orange: string;
 		cyan: string;
 		magenta: string;
-		white: string;
+		black: string;
 	};
 	commands: {
 		toggle: string;

@@ -1,10 +1,8 @@
 import { addIcon, Editor, Menu, MenuItem, Plugin } from 'obsidian';
 import type { Extension } from '@codemirror/state';
 import {
-	BASE_COLOR_SLOTS,
 	COLOR_SLOTS,
 	DEFAULT_SETTINGS,
-	EXTENDED_COLOR_SLOTS,
 	getActiveColorSlots,
 	type ColorSlotKey,
 	type ColorfulHighlightsSettings,
@@ -27,6 +25,15 @@ const OPACITY_VAR = '--ch-highlight-opacity';
 const SECONDARY_OPACITY_VAR = '--ch-underline-opacity';
 const SLOT_VAR_PREFIX = '--ch-highlight-';
 
+type LoadedSettings = Omit<
+	Partial<ColorfulHighlightsSettings>,
+	'emojiMappings' | 'customColors' | 'defaultColorSlot'
+> & {
+	emojiMappings?: Partial<Record<ColorSlotKey | 'white', string>>;
+	customColors?: Partial<Record<ColorSlotKey | 'white', string>>;
+	defaultColorSlot?: ColorfulHighlightsSettings['defaultColorSlot'] | 'white';
+};
+
 /**
  * `MenuItem.setSubmenu()` ships in Obsidian 1.6+ but is missing from the
  * public type definitions. Guard it at runtime and fall back to flat menu
@@ -41,7 +48,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	settings: ColorfulHighlightsSettings = DEFAULT_SETTINGS;
 	private editorExtensions: Extension[] = [];
 	private renderer!: ReadingHighlightRenderer;
-	private extendedCommandsRegistered = false;
+	private registeredColorCommands = new Set<ColorSlotKey>();
 
 	async onload() {
 		initI18n();
@@ -93,13 +100,41 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		const loaded = (await this.loadData()) as Partial<ColorfulHighlightsSettings> | null;
+		const loaded = (await this.loadData()) as LoadedSettings | null;
+		const emojiMappings = {
+			...DEFAULT_SETTINGS.emojiMappings,
+			...(loaded?.emojiMappings ?? {}),
+		};
+		const customColors = {
+			...DEFAULT_SETTINGS.customColors,
+			...(loaded?.customColors ?? {}),
+		};
+		// `white` was the old name of the final extended slot. Keep existing
+		// vault settings working when the slot becomes Black (Spoiler).
+		if (loaded?.emojiMappings?.black === undefined && loaded?.emojiMappings?.white !== undefined) {
+			emojiMappings.black = loaded.emojiMappings.white;
+		}
+		if (loaded?.customColors?.black === undefined && loaded?.customColors?.white !== undefined) {
+			customColors.black = loaded.customColors.white;
+		}
+		delete (emojiMappings as Partial<Record<ColorSlotKey | 'white', string>>).white;
+		delete (customColors as Partial<Record<ColorSlotKey | 'white', string>>).white;
+		const loadedDefaultColorSlot = loaded?.defaultColorSlot;
 		this.settings = {
 			...DEFAULT_SETTINGS,
 			...(loaded ?? {}),
-			emojiMappings: { ...DEFAULT_SETTINGS.emojiMappings, ...(loaded?.emojiMappings ?? {}) },
-			customColors: { ...DEFAULT_SETTINGS.customColors, ...(loaded?.customColors ?? {}) },
+			defaultColorSlot:
+				loadedDefaultColorSlot === 'white'
+					? 'black'
+					: loadedDefaultColorSlot ?? DEFAULT_SETTINGS.defaultColorSlot,
+			enabledColors: { ...DEFAULT_SETTINGS.enabledColors, ...(loaded?.enabledColors ?? {}) },
+			emojiMappings,
+			customColors,
 		};
+		const activeSlots = getActiveColorSlots(this.settings.extendedColors, this.settings.enabledColors);
+		if (this.settings.defaultColorSlot !== 'none' && !activeSlots.includes(this.settings.defaultColorSlot)) {
+			this.settings.defaultColorSlot = 'none';
+		}
 	}
 
 	async saveSettings() {
@@ -133,7 +168,10 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			this.editorExtensions.push(
 				createColorHighlightExtension({
 					emojiMappings: { ...this.settings.emojiMappings },
-					activeSlots: getActiveColorSlots(this.settings.extendedColors),
+					activeSlots: getActiveColorSlots(
+						this.settings.extendedColors,
+						this.settings.enabledColors
+					),
 					defaultColorSlot: this.settings.defaultColorSlot,
 					showPrefixInSourceMode: this.settings.showPrefixInSourceMode,
 				})
@@ -173,10 +211,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			},
 		});
 
-		for (const slot of BASE_COLOR_SLOTS) {
-			this.addColorCommand(slot);
-		}
-		this.syncExtendedCommands();
+		this.syncColorCommands();
 
 		this.addCommand({
 			id: 'remove-highlight',
@@ -198,19 +233,20 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	}
 
 	/**
-	 * Register or unregister the extended-slot commands so the command
-	 * palette matches the extended-colors toggle.
+	 * Register or unregister color commands so the command palette matches the
+	 * extended-colors toggle and each per-color visibility toggle.
 	 */
-	syncExtendedCommands(): void {
-		if (this.settings.extendedColors && !this.extendedCommandsRegistered) {
-			this.extendedCommandsRegistered = true;
-			for (const slot of EXTENDED_COLOR_SLOTS) {
+	syncColorCommands(): void {
+		const activeSlots = new Set(
+			getActiveColorSlots(this.settings.extendedColors, this.settings.enabledColors)
+		);
+		for (const slot of COLOR_SLOTS) {
+			if (activeSlots.has(slot) && !this.registeredColorCommands.has(slot)) {
 				this.addColorCommand(slot);
-			}
-		} else if (!this.settings.extendedColors && this.extendedCommandsRegistered) {
-			this.extendedCommandsRegistered = false;
-			for (const slot of EXTENDED_COLOR_SLOTS) {
+				this.registeredColorCommands.add(slot);
+			} else if (!activeSlots.has(slot) && this.registeredColorCommands.has(slot)) {
 				this.removeCommand(`highlight-${slot}`);
+				this.registeredColorCommands.delete(slot);
 			}
 		}
 	}
@@ -243,7 +279,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	}
 
 	private populateColorMenu(menu: Menu, editor: Editor) {
-		for (const slot of getActiveColorSlots(this.settings.extendedColors)) {
+		for (const slot of getActiveColorSlots(this.settings.extendedColors, this.settings.enabledColors)) {
 			menu.addItem((item) => {
 				item
 					.setTitle(t(`colors.${slot}`))
@@ -275,20 +311,29 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		for (const slot of COLOR_SLOTS) {
 			// addIcon normalizes custom icons into a 100×100 viewBox wrapper —
 			// author the SVG at that size or it renders scaled down.
+			const fallbackColor = slot === 'black' ? '#000000' : DEFAULT_SETTINGS.customColors[slot];
+			const liveColor = slot === 'black'
+				? 'var(--text-normal)'
+				: `var(--ch-highlight-${slot}, ${fallbackColor})`;
 			addIcon(
 				`ch-dot-${slot}`,
-				`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="33" fill="${DEFAULT_SETTINGS.customColors[slot]}" style="fill: var(--ch-highlight-${slot}, ${DEFAULT_SETTINGS.customColors[slot]})" stroke="var(--background-modifier-border)" stroke-width="4"/></svg>`
+				`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="33" fill="${fallbackColor}" style="fill: ${liveColor}" stroke="var(--background-modifier-border)" stroke-width="4"/></svg>`
 			);
 		}
 	}
 
 	private getActionContext(): HighlightActionContext {
+		const activeSlots = getActiveColorSlots(this.settings.extendedColors, this.settings.enabledColors);
+		const defaultColorSlot =
+			this.settings.defaultColorSlot !== 'none' && activeSlots.includes(this.settings.defaultColorSlot)
+				? this.settings.defaultColorSlot
+				: 'none';
 		return {
 			emojiMap: buildEmojiToColorSlotMap(
 				this.settings.emojiMappings,
-				getActiveColorSlots(this.settings.extendedColors)
+				activeSlots
 			),
-			defaultColorSlot: this.settings.defaultColorSlot,
+			defaultColorSlot,
 			firstAliasForSlot: (slot: ColorSlotKey) =>
 				parseEmojiAliases(this.settings.emojiMappings[slot])[0],
 		};

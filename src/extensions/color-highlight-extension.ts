@@ -55,7 +55,7 @@ const colorMarkDecos: Record<ColorSlotKey, Decoration> = {
 	orange: Decoration.mark({ class: 'ch-editor-highlight-orange' }),
 	cyan: Decoration.mark({ class: 'ch-editor-highlight-cyan' }),
 	magenta: Decoration.mark({ class: 'ch-editor-highlight-magenta' }),
-	white: Decoration.mark({ class: 'ch-editor-highlight-white' }),
+	black: Decoration.mark({ class: 'ch-editor-highlight-black' }),
 };
 
 /** Replaces a range with nothing — used to visually hide the emoji character. */
@@ -146,7 +146,7 @@ function buildDecorations(
 	const selRanges = view.state.selection.ranges;
 
 	// Resolve the default-slot decoration (for plain ==text== without emoji)
-	const defaultDeco = config.defaultColorSlot !== 'none'
+	const defaultDeco = config.defaultColorSlot !== 'none' && config.activeSlots.includes(config.defaultColorSlot)
 		? colorMarkDecos[config.defaultColorSlot]
 		: null;
 
@@ -209,8 +209,8 @@ function buildDecorations(
 
 function createViewPlugin(config: ColorHighlightConfig) {
 	// The config is immutable for this extension's lifetime — build once.
-	// Only active slots are mapped, so a disabled extended color's emoji is
-	// treated as ordinary text.
+	// Only active slots are mapped, so a disabled color's emoji is treated as
+	// ordinary text.
 	const emojiMap = buildEmojiToColorSlotMap(config.emojiMappings, config.activeSlots);
 
 	return ViewPlugin.fromClass(

@@ -74,7 +74,7 @@ const zhCn: BaseMessage = {
 		},
 		extendedColors: {
 			name: '拓展颜色',
-			desc: '启用额外的 5 个颜色槽位（灰色、橙色、青色、紫红色、白色），并为它们注册命令、菜单操作和设置项。',
+			desc: '启用额外的 5 个颜色槽位（橙色、青色、紫红色、灰色、黑色（剧透）），共十种颜色。',
 		},
 		colorSetting: {
 			yellow: '为黄色高亮选择自定义颜色。',
@@ -86,7 +86,11 @@ const zhCn: BaseMessage = {
 			orange: '为橙色高亮选择自定义颜色。',
 			cyan: '为青色高亮选择自定义颜色。',
 			magenta: '为紫红色高亮选择自定义颜色。',
-			white: '为白色高亮选择自定义颜色。',
+			black: '特殊高亮样式，用来遮挡特定文字的显示，鼠标悬浮后显现文本。',
+			toggle: {
+				enable: '启用该颜色高亮。',
+				disable: '禁用该颜色高亮。',
+			},
 		},
 		emojiMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。所有填写的 emoji 都会被解析成对应颜色，但应用颜色时只会写入第一个 emoji。',
 		emojiMapping: {
@@ -104,7 +108,7 @@ const zhCn: BaseMessage = {
 		orange: '橙色',
 		cyan: '青色',
 		magenta: '紫红色',
-		white: '白色',
+		black: '黑色（剧透）',
 	},
 	commands: {
 		toggle: '切换高亮',

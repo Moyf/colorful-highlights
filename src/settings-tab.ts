@@ -4,6 +4,7 @@ import type ColorfulHighlightsPlugin from '../main';
 import {
 	COLOR_SLOTS,
 	HIGHLIGHT_STYLES,
+	getAvailableColorSlots,
 	getActiveColorSlots,
 	type ColorSlotKey,
 	type DefaultColorSlot,
@@ -36,12 +37,23 @@ const STYLES_WITH_SECONDARY: HighlightStyle[] = [
 	'outline',
 ];
 
+const STYLES_WITHOUT_BACKGROUND: HighlightStyle[] = [
+	'underline-only',
+	'wavy-underline-only',
+];
+
+const ENABLED_COLOR_KEY_PREFIX = 'enabledColors.';
+
 function isHighlightStyle(value: unknown): value is HighlightStyle {
 	return HIGHLIGHT_STYLES.some((style) => style === value);
 }
 
 function isDefaultColorSlot(value: unknown): value is DefaultColorSlot {
 	return value === 'none' || COLOR_SLOTS.some((slot) => slot === value);
+}
+
+function isColorSlotKey(value: string): value is ColorSlotKey {
+	return COLOR_SLOTS.some((slot) => slot === value);
 }
 
 function isRenderMode(value: unknown): value is RenderMode {
@@ -80,8 +92,12 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 		}
 
 		// Definitions are cached by the settings framework — rebuild via
-		// update() when the extended-colors toggle changes this set.
-		const activeSlots = getActiveColorSlots(this.plugin.settings.extendedColors);
+		// update() when the extended-colors or per-color toggle changes this set.
+		const availableSlots = getAvailableColorSlots(this.plugin.settings.extendedColors);
+		const activeSlots = getActiveColorSlots(
+			this.plugin.settings.extendedColors,
+			this.plugin.settings.enabledColors
+		);
 
 		const defaultColorOptions: Record<string, string> = {
 			none: t('settings.defaultColor.none'),
@@ -91,7 +107,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 		}
 
 		const colorItems: SettingGroupItem[] = [];
-		for (const slot of activeSlots) {
+		for (const slot of availableSlots) {
 			colorItems.push({
 				name: t(`colors.${slot}`),
 				desc: t(`settings.colorSetting.${slot}`),
@@ -99,8 +115,9 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				render: (setting) => {
 					setting
 						.setName(t(`colors.${slot}`))
-						.setDesc(t(`settings.colorSetting.${slot}`))
-						.addColorPicker((picker) =>
+						.setDesc(t(`settings.colorSetting.${slot}`));
+					if (slot !== 'black') {
+						setting.addColorPicker((picker) =>
 							picker.setValue(this.plugin.settings.customColors[slot]).onChange((value) => {
 								this.plugin.settings.customColors[slot] = value;
 								// Cheap visual update on every tick; disk write is debounced.
@@ -108,6 +125,25 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 								this.debouncedPersistAppearance();
 							})
 						);
+					}
+					const colorEnabled = this.plugin.settings.enabledColors[slot] !== false;
+					setting.addToggle((toggle) =>
+						toggle
+							.setValue(colorEnabled)
+							.setTooltip(
+								colorEnabled
+									? t('settings.colorSetting.toggle.disable')
+									: t('settings.colorSetting.toggle.enable')
+							)
+							.onChange((value) => {
+								toggle.setTooltip(
+									value
+										? t('settings.colorSetting.toggle.disable')
+										: t('settings.colorSetting.toggle.enable')
+								);
+								void this.setControlValue(`${ENABLED_COLOR_KEY_PREFIX}${slot}`, value);
+							})
+					);
 				},
 			});
 		}
@@ -182,6 +218,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 					{
 						name: t('settings.opacity.name'),
 						desc: t('settings.opacity.desc'),
+						visible: () => !STYLES_WITHOUT_BACKGROUND.includes(this.plugin.settings.highlightStyle),
 						control: {
 							type: 'slider',
 							key: 'colorOpacity',
@@ -281,6 +318,23 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 	async setControlValue(key: string, value: unknown): Promise<void> {
 		const settings = this.plugin.settings;
 
+		if (key.startsWith(ENABLED_COLOR_KEY_PREFIX)) {
+			const slot = key.slice(ENABLED_COLOR_KEY_PREFIX.length);
+			if (!isColorSlotKey(slot)) {
+				throw new Error(`Unknown color slot: ${slot}`);
+			}
+			settings.enabledColors[slot] = Boolean(value);
+			if (!settings.enabledColors[slot] && settings.defaultColorSlot === slot) {
+				settings.defaultColorSlot = 'none';
+			}
+			this.plugin.syncColorCommands();
+			// Re-create mappings and the default-color dropdown so disabled colors
+			// disappear from every settings surface immediately.
+			await this.persistAndRefresh();
+			this.update();
+			return;
+		}
+
 		switch (key) {
 			case 'enabled':
 				settings.enabled = Boolean(value);
@@ -336,14 +390,20 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				return;
 			case 'extendedColors':
 				settings.extendedColors = Boolean(value);
-				// Palette commands + reading view + editor decorations follow
-				// the new slot set.
-				this.plugin.syncExtendedCommands();
-				// Re-creates the definitions: color pickers, emoji mappings,
-				// and the default-color dropdown gain/lose the extended slots.
-				this.update();
-				await this.persistAndRefresh();
-				return;
+				if (
+					settings.defaultColorSlot !== 'none' &&
+					!getActiveColorSlots(settings.extendedColors, settings.enabledColors).includes(settings.defaultColorSlot)
+				) {
+					settings.defaultColorSlot = 'none';
+				}
+			// Palette commands + reading view + editor decorations follow
+			// the new slot set.
+			this.plugin.syncColorCommands();
+			// Re-creates the definitions: color pickers, emoji mappings,
+			// and the default-color dropdown gain/lose the extended slots.
+			await this.persistAndRefresh();
+			this.update();
+			return;
 			case 'renderMode':
 				if (!isRenderMode(value)) {
 					throw new Error(`Unknown render mode: ${String(value)}`);
