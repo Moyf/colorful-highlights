@@ -2,7 +2,17 @@
  * Shared settings model for Colorful Highlights.
  */
 
-export type ColorSlotKey = 'yellow' | 'green' | 'red' | 'purple' | 'blue';
+export type ColorSlotKey =
+	| 'yellow'
+	| 'green'
+	| 'red'
+	| 'purple'
+	| 'blue'
+	| 'gray'
+	| 'orange'
+	| 'cyan'
+	| 'magenta'
+	| 'white';
 
 export type DefaultColorSlot = 'none' | ColorSlotKey;
 
@@ -28,7 +38,22 @@ export type HighlightStyle =
  */
 export type RenderMode = 'plugin' | 'native';
 
-export const COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'green', 'red', 'purple', 'blue'];
+/** The five base slots, always available. */
+export const BASE_COLOR_SLOTS: ColorSlotKey[] = ['yellow', 'green', 'red', 'purple', 'blue'];
+
+/** Five extra slots revealed by the extended-colors toggle. */
+export const EXTENDED_COLOR_SLOTS: ColorSlotKey[] = ['gray', 'orange', 'cyan', 'magenta', 'white'];
+
+/**
+ * Every slot. Iterated for CSS variables, menu icons, and DOM class cleanup —
+ * these must cover all slots regardless of the extended-colors toggle.
+ */
+export const COLOR_SLOTS: ColorSlotKey[] = [...BASE_COLOR_SLOTS, ...EXTENDED_COLOR_SLOTS];
+
+/** Slots exposed to the user (commands, menus, settings) for the given toggle state. */
+export function getActiveColorSlots(extendedColors: boolean): ColorSlotKey[] {
+	return extendedColors ? COLOR_SLOTS : BASE_COLOR_SLOTS;
+}
 
 export const HIGHLIGHT_STYLES: HighlightStyle[] = [
 	'default',
@@ -66,6 +91,8 @@ export interface ColorfulHighlightsSettings {
 	highlightStyle: HighlightStyle;
 	/** Slot used for plain ==text== without emoji; switching to it strips the prefix. */
 	defaultColorSlot: DefaultColorSlot;
+	/** Reveal the five extended color slots (gray/orange/cyan/magenta/white). */
+	extendedColors: boolean;
 	/** Comma-separated emoji aliases per color slot (first alias is used for write-back). */
 	emojiMappings: Record<ColorSlotKey, string>;
 	/** Hex color per slot. */
@@ -84,12 +111,18 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	renderMode: 'plugin',
 	highlightStyle: 'default',
 	defaultColorSlot: 'yellow',
+	extendedColors: false,
 	emojiMappings: {
 		yellow: '🟡,🟨,💛,⭐,🍌',
 		green: '🟢,🟩,💚,🍀,🍏',
 		red: '🔴,🟥,❤️,🍓,🍎',
 		purple: '🟣,🟪,💜,🍇,😈',
 		blue: '🔵,🟦,💙,💧,📘',
+		gray: '🩶,🪨,🌫️,🗿',
+		orange: '🟠,🟧,🧡,🍊',
+		cyan: '🩵,🧊,🐬,🫧',
+		magenta: '🩷,🌸,🌺,🎀',
+		white: '⚪,🤍,⬜,☁️',
 	},
 	customColors: {
 		yellow: '#ffd700',
@@ -97,5 +130,10 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 		red: '#ff6b6b',
 		purple: '#a78bfa',
 		blue: '#45b7d1',
+		gray: '#adb5bd',
+		orange: '#ffa94d',
+		cyan: '#2dd4bf',
+		magenta: '#f472b6',
+		white: '#f8f9fa',
 	},
 };

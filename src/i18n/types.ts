@@ -43,6 +43,7 @@ export interface BaseMessage {
 		editorDecorator: { name: string; desc: string };
 		showPrefixInSource: { name: string; desc: string };
 		readingRenderer: { name: string; desc: string };
+		extendedColors: { name: string; desc: string };
 		/** Per-slot custom color description shown under each color picker. */
 		colorSetting: {
 			yellow: string;
@@ -50,6 +51,11 @@ export interface BaseMessage {
 			red: string;
 			purple: string;
 			blue: string;
+			gray: string;
+			orange: string;
+			cyan: string;
+			magenta: string;
+			white: string;
 		};
 		emojiMappingIntro: string;
 		/** "Write-back emoji: {{emoji}} (first alias)" */
@@ -61,6 +67,11 @@ export interface BaseMessage {
 		red: string;
 		purple: string;
 		blue: string;
+		gray: string;
+		orange: string;
+		cyan: string;
+		magenta: string;
+		white: string;
 	};
 	commands: {
 		toggle: string;

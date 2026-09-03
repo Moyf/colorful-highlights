@@ -1,8 +1,11 @@
 import { addIcon, Editor, Menu, MenuItem, Plugin } from 'obsidian';
 import type { Extension } from '@codemirror/state';
 import {
+	BASE_COLOR_SLOTS,
 	COLOR_SLOTS,
 	DEFAULT_SETTINGS,
+	EXTENDED_COLOR_SLOTS,
+	getActiveColorSlots,
 	type ColorSlotKey,
 	type ColorfulHighlightsSettings,
 } from './src/settings';
@@ -38,6 +41,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	settings: ColorfulHighlightsSettings = DEFAULT_SETTINGS;
 	private editorExtensions: Extension[] = [];
 	private renderer!: ReadingHighlightRenderer;
+	private extendedCommandsRegistered = false;
 
 	async onload() {
 		initI18n();
@@ -129,6 +133,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			this.editorExtensions.push(
 				createColorHighlightExtension({
 					emojiMappings: { ...this.settings.emojiMappings },
+					activeSlots: getActiveColorSlots(this.settings.extendedColors),
 					defaultColorSlot: this.settings.defaultColorSlot,
 					showPrefixInSourceMode: this.settings.showPrefixInSourceMode,
 				})
@@ -168,15 +173,10 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			},
 		});
 
-		for (const slot of COLOR_SLOTS) {
-			this.addCommand({
-				id: `highlight-${slot}`,
-				name: t('commands.setColor', { color: t(`colors.${slot}`) }),
-				editorCallback: (editor) => {
-					applyHighlightAction(editor, { type: 'color', slot }, this.getActionContext());
-				},
-			});
+		for (const slot of BASE_COLOR_SLOTS) {
+			this.addColorCommand(slot);
 		}
+		this.syncExtendedCommands();
 
 		this.addCommand({
 			id: 'remove-highlight',
@@ -185,6 +185,34 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 				applyHighlightAction(editor, { type: 'remove' }, this.getActionContext());
 			},
 		});
+	}
+
+	private addColorCommand(slot: ColorSlotKey): void {
+		this.addCommand({
+			id: `highlight-${slot}`,
+			name: t('commands.setColor', { color: t(`colors.${slot}`) }),
+			editorCallback: (editor) => {
+				applyHighlightAction(editor, { type: 'color', slot }, this.getActionContext());
+			},
+		});
+	}
+
+	/**
+	 * Register or unregister the extended-slot commands so the command
+	 * palette matches the extended-colors toggle.
+	 */
+	syncExtendedCommands(): void {
+		if (this.settings.extendedColors && !this.extendedCommandsRegistered) {
+			this.extendedCommandsRegistered = true;
+			for (const slot of EXTENDED_COLOR_SLOTS) {
+				this.addColorCommand(slot);
+			}
+		} else if (!this.settings.extendedColors && this.extendedCommandsRegistered) {
+			this.extendedCommandsRegistered = false;
+			for (const slot of EXTENDED_COLOR_SLOTS) {
+				this.removeCommand(`highlight-${slot}`);
+			}
+		}
 	}
 
 	private buildEditorMenu(menu: Menu, editor: Editor) {
@@ -215,7 +243,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	}
 
 	private populateColorMenu(menu: Menu, editor: Editor) {
-		for (const slot of COLOR_SLOTS) {
+		for (const slot of getActiveColorSlots(this.settings.extendedColors)) {
 			menu.addItem((item) => {
 				item
 					.setTitle(t(`colors.${slot}`))
@@ -256,7 +284,10 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 
 	private getActionContext(): HighlightActionContext {
 		return {
-			emojiMap: buildEmojiToColorSlotMap(this.settings.emojiMappings),
+			emojiMap: buildEmojiToColorSlotMap(
+				this.settings.emojiMappings,
+				getActiveColorSlots(this.settings.extendedColors)
+			),
 			defaultColorSlot: this.settings.defaultColorSlot,
 			firstAliasForSlot: (slot: ColorSlotKey) =>
 				parseEmojiAliases(this.settings.emojiMappings[slot])[0],

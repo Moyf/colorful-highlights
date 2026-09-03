@@ -6,7 +6,7 @@
  * duplicates parsing code.
  */
 
-import { COLOR_SLOTS, type ColorSlotKey } from '../settings';
+import type { ColorSlotKey } from '../settings';
 
 /**
  * Matches ==...== highlights. Single `=` characters are allowed inside as
@@ -38,15 +38,18 @@ export function parseEmojiAliases(value: string): string[] {
 }
 
 /**
- * Build a mapping from each emoji alias to its color slot.
- * Entries are sorted longest-emoji-first to support multi-codepoint aliases (e.g. ❤️).
+ * Build a mapping from each emoji alias to its color slot. Only the given
+ * slots are included — callers pass the active slots so disabled extended
+ * colors are not parsed. Entries are sorted longest-emoji-first to support
+ * multi-codepoint aliases (e.g. ❤️).
  */
 export function buildEmojiToColorSlotMap(
-	mappings: Record<ColorSlotKey, string>
+	mappings: Record<ColorSlotKey, string>,
+	slots: readonly ColorSlotKey[]
 ): Map<string, ColorSlotKey> {
 	const entries: Array<[string, ColorSlotKey]> = [];
 
-	for (const slot of COLOR_SLOTS) {
+	for (const slot of slots) {
 		const aliases = parseEmojiAliases(mappings[slot]);
 		for (const emoji of aliases) {
 			entries.push([emoji, slot]);

@@ -16,7 +16,11 @@
  * idempotent and onunload can restore the DOM exactly.
  */
 
-import { COLOR_SLOTS, type ColorfulHighlightsSettings } from './settings';
+import {
+	COLOR_SLOTS,
+	getActiveColorSlots,
+	type ColorfulHighlightsSettings,
+} from './settings';
 import { buildEmojiToColorSlotMap, detectEmojiPrefix } from './utils/emoji-utils';
 import { getAppDocuments } from './utils/documents';
 import type { App } from 'obsidian';
@@ -47,7 +51,15 @@ export class ReadingHighlightRenderer {
 
 		const settings = this.getSettings();
 		const shouldApply = settings.enabled && settings.readingRenderer;
-		const emojiMap = shouldApply ? buildEmojiToColorSlotMap(settings.emojiMappings) : null;
+		// Only active slots are detected — disabled extended colors render as
+		// plain highlights. Class cleanup below covers every slot so stale
+		// classes never survive a toggle.
+		const emojiMap = shouldApply
+			? buildEmojiToColorSlotMap(
+					settings.emojiMappings,
+					getActiveColorSlots(settings.extendedColors)
+				)
+			: null;
 		const defaultSlot = settings.defaultColorSlot !== 'none'
 			? settings.defaultColorSlot
 			: undefined;

@@ -72,12 +72,21 @@ const zhCn: BaseMessage = {
 			name: '阅读视图中着色',
 			desc: '在阅读视图中为高亮着色，并从渲染文本中隐藏匹配的 emoji 前缀。',
 		},
+		extendedColors: {
+			name: '拓展颜色',
+			desc: '启用额外的 5 个颜色槽位（灰色、橙色、青色、紫红色、白色），并为它们注册命令、菜单操作和设置项。',
+		},
 		colorSetting: {
 			yellow: '为黄色高亮选择自定义颜色。',
 			green: '为绿色高亮选择自定义颜色。',
 			red: '为红色高亮选择自定义颜色。',
 			purple: '为紫色高亮选择自定义颜色。',
 			blue: '为蓝色高亮选择自定义颜色。',
+			gray: '为灰色高亮选择自定义颜色。',
+			orange: '为橙色高亮选择自定义颜色。',
+			cyan: '为青色高亮选择自定义颜色。',
+			magenta: '为紫红色高亮选择自定义颜色。',
+			white: '为白色高亮选择自定义颜色。',
 		},
 		emojiMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。所有填写的 emoji 都会被解析成对应颜色，但应用颜色时只会写入第一个 emoji。',
 		emojiMapping: {
@@ -91,6 +100,11 @@ const zhCn: BaseMessage = {
 		red: '红色',
 		purple: '紫色',
 		blue: '蓝色',
+		gray: '灰色',
+		orange: '橙色',
+		cyan: '青色',
+		magenta: '紫红色',
+		white: '白色',
 	},
 	commands: {
 		toggle: '切换高亮',

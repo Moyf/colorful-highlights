@@ -4,6 +4,7 @@ import type ColorfulHighlightsPlugin from '../main';
 import {
 	COLOR_SLOTS,
 	HIGHLIGHT_STYLES,
+	getActiveColorSlots,
 	type ColorSlotKey,
 	type DefaultColorSlot,
 	type HighlightStyle,
@@ -78,15 +79,19 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 			styleOptions[style] = t(STYLE_OPTION_KEYS[style]);
 		}
 
+		// Definitions are cached by the settings framework — rebuild via
+		// update() when the extended-colors toggle changes this set.
+		const activeSlots = getActiveColorSlots(this.plugin.settings.extendedColors);
+
 		const defaultColorOptions: Record<string, string> = {
 			none: t('settings.defaultColor.none'),
 		};
-		for (const slot of COLOR_SLOTS) {
+		for (const slot of activeSlots) {
 			defaultColorOptions[slot] = t(`colors.${slot}`);
 		}
 
 		const colorItems: SettingGroupItem[] = [];
-		for (const slot of COLOR_SLOTS) {
+		for (const slot of activeSlots) {
 			colorItems.push({
 				name: t(`colors.${slot}`),
 				desc: t(`settings.colorSetting.${slot}`),
@@ -114,7 +119,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				searchable: false,
 			},
 		];
-		for (const slot of COLOR_SLOTS) {
+		for (const slot of activeSlots) {
 			emojiMappingItems.push({
 				name: t(`colors.${slot}`),
 				searchable: true,
@@ -256,7 +261,14 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 			{
 				type: 'group',
 				heading: t('settings.groups.colors'),
-				items: colorItems,
+				items: [
+					{
+						name: t('settings.extendedColors.name'),
+						desc: t('settings.extendedColors.desc'),
+						control: { type: 'toggle', key: 'extendedColors' },
+					},
+					...colorItems,
+				],
 			},
 			{
 				type: 'group',
@@ -320,6 +332,16 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 					throw new Error(`Unknown default color slot: ${String(value)}`);
 				}
 				settings.defaultColorSlot = value;
+				await this.persistAndRefresh();
+				return;
+			case 'extendedColors':
+				settings.extendedColors = Boolean(value);
+				// Palette commands + reading view + editor decorations follow
+				// the new slot set.
+				this.plugin.syncExtendedCommands();
+				// Re-creates the definitions: color pickers, emoji mappings,
+				// and the default-color dropdown gain/lose the extended slots.
+				this.update();
 				await this.persistAndRefresh();
 				return;
 			case 'renderMode':

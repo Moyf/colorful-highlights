@@ -35,6 +35,8 @@ import {
 
 export interface ColorHighlightConfig {
 	emojiMappings: Record<ColorSlotKey, string>;
+	/** slots currently exposed — disabled extended slots are not parsed */
+	activeSlots: readonly ColorSlotKey[];
 	/** slot whose color is "default" — plain ==text== without emoji gets this color */
 	defaultColorSlot: DefaultColorSlot;
 	/** when true, source-mode editor text keeps the emoji prefix visible */
@@ -49,6 +51,11 @@ const colorMarkDecos: Record<ColorSlotKey, Decoration> = {
 	red: Decoration.mark({ class: 'ch-editor-highlight-red' }),
 	purple: Decoration.mark({ class: 'ch-editor-highlight-purple' }),
 	blue: Decoration.mark({ class: 'ch-editor-highlight-blue' }),
+	gray: Decoration.mark({ class: 'ch-editor-highlight-gray' }),
+	orange: Decoration.mark({ class: 'ch-editor-highlight-orange' }),
+	cyan: Decoration.mark({ class: 'ch-editor-highlight-cyan' }),
+	magenta: Decoration.mark({ class: 'ch-editor-highlight-magenta' }),
+	white: Decoration.mark({ class: 'ch-editor-highlight-white' }),
 };
 
 /** Replaces a range with nothing — used to visually hide the emoji character. */
@@ -202,7 +209,9 @@ function buildDecorations(
 
 function createViewPlugin(config: ColorHighlightConfig) {
 	// The config is immutable for this extension's lifetime — build once.
-	const emojiMap = buildEmojiToColorSlotMap(config.emojiMappings);
+	// Only active slots are mapped, so a disabled extended color's emoji is
+	// treated as ordinary text.
+	const emojiMap = buildEmojiToColorSlotMap(config.emojiMappings, config.activeSlots);
 
 	return ViewPlugin.fromClass(
 		class {

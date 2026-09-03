@@ -64,6 +64,38 @@
 	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
+/* Extended slots — only applied when the extended-colors toggle is on. */
+
+.markdown-rendered mark.ch-reading-highlight-gray,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-gray) {
+	--ch-active-color: var(--ch-highlight-gray, #adb5bd);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+}
+
+.markdown-rendered mark.ch-reading-highlight-orange,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-orange) {
+	--ch-active-color: var(--ch-highlight-orange, #ffa94d);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+}
+
+.markdown-rendered mark.ch-reading-highlight-cyan,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-cyan) {
+	--ch-active-color: var(--ch-highlight-cyan, #2dd4bf);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+}
+
+.markdown-rendered mark.ch-reading-highlight-magenta,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-magenta) {
+	--ch-active-color: var(--ch-highlight-magenta, #f472b6);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+}
+
+.markdown-rendered mark.ch-reading-highlight-white,
+.cm-s-obsidian .cm-highlight:has(.ch-editor-highlight-white) {
+	--ch-active-color: var(--ch-highlight-white, #f8f9fa);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+}
+
 /* Fallback color for plain highlights (used by style variants). */
 .markdown-rendered mark,
 .cm-s-obsidian .cm-highlight {
