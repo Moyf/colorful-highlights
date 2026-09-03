@@ -1,0 +1,10 @@
+{
+  "worktree": {
+    "setup": "pnpm i"
+  },
+  "scripts": {
+    "build:local": {
+      "command": "pnpm run build:local"
+    }
+  }
+}
