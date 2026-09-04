@@ -1,6 +1,6 @@
 {
 	"name": "colorful-highlights",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "Colorize ==highlights== with emoji prefixes in Obsidian.",
 	"main": "main.js",
 	"scripts": {

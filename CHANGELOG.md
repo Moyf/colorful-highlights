@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.1](https://github.com/Moyf/colorful-highlights/compare/1.2.0...1.2.1) - 2026-09-04
+
+### 🐛 Fixed
+
+- **Reading mode compatibility**: support Obsidian 1.14+'s native `data-highlight` markers so emoji-prefixed colors keep their configured Colorful Highlights styling after Obsidian consumes the emoji prefix; add a safe fallback for themes without `--text-highlight-bg`.
+
+<details>
+<summary>中文说明（点击展开）</summary>
+
+### 🐛 修复
+
+- **阅读模式兼容性**：兼容 Obsidian 1.14+ 原生的 `data-highlight` 标记，使红、绿等原生颜色在 Obsidian 消费 emoji 前缀后仍能正确使用插件配置的颜色和装饰样式；同时为未定义 `--text-highlight-bg` 的主题增加安全 fallback。
+
+</details>
+
+---
+
 ## [1.2.0](https://github.com/Moyf/colorful-highlights/compare/1.1.1...1.2.0) - 2026-09-04
 
 ### 🚀 Added

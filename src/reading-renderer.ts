@@ -19,6 +19,7 @@
 import {
 	COLOR_SLOTS,
 	getActiveColorSlots,
+	type ColorSlotKey,
 	type ColorfulHighlightsSettings,
 } from './settings';
 import { buildEmojiToColorSlotMap, detectEmojiPrefix } from './utils/emoji-utils';
@@ -31,6 +32,18 @@ const SLOT_CLASS_PREFIX = 'ch-reading-highlight-';
 function firstTextNode(el: HTMLElement): Text | null {
 	const walker = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT);
 	return walker.nextNode() as Text | null;
+}
+
+/**
+ * Obsidian can assign a native color to a reading-view mark before the
+ * plugin's markdown post-processor runs. Treat that attribute as another
+ * color source, but still respect the plugin's active-slot settings.
+ */
+function nativeColorSlot(markEl: HTMLElement, activeSlots: ColorSlotKey[]): ColorSlotKey | undefined {
+	const nativeSlot = markEl.dataset.highlight?.trim().toLowerCase();
+	return nativeSlot && activeSlots.includes(nativeSlot as ColorSlotKey)
+		? (nativeSlot as ColorSlotKey)
+		: undefined;
 }
 
 export class ReadingHighlightRenderer {
@@ -96,7 +109,10 @@ export class ReadingHighlightRenderer {
 			}
 
 			const { slot, emojiLength } = detectEmojiPrefix(originalText, emojiMap);
-			const effectiveSlot = slot ?? defaultSlot;
+			// Obsidian 1.14+ may consume the base-color emoji and expose the
+			// result as data-highlight instead. Prefer that native signal when
+			// available, then fall back to the plugin's own emoji detection.
+			const effectiveSlot = nativeColorSlot(markEl, activeSlots) ?? slot ?? defaultSlot;
 			if (effectiveSlot) {
 				markEl.classList.add(`${SLOT_CLASS_PREFIX}${effectiveSlot}`);
 			}

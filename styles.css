@@ -99,7 +99,8 @@
 /* Fallback color for plain highlights (used by style variants). */
 .markdown-rendered mark,
 .cm-s-obsidian .cm-highlight {
-	--ch-plain-color: var(--text-highlight-bg, rgba(var(--text-highlight-bg-rgb), 0.4));
+	/* --text-highlight-bg is not defined by every Obsidian theme/version. */
+	--ch-plain-color: var(--text-highlight-bg, var(--highlight-background, rgba(255, 215, 0, 0.4)));
 }
 
 /* ── Base colored background ──
