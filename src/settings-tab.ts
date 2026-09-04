@@ -67,6 +67,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 	private mappingPersistTimer: number | null = null;
 	private appearancePersistTimer: number | null = null;
 	private stylePreviewEls = new Set<HTMLElement>();
+	private colorLabelSettings = new Map<ColorSlotKey, Set<Setting>>();
 
 	constructor(app: App, plugin: ColorfulHighlightsPlugin) {
 		super(app, plugin);
@@ -103,19 +104,20 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 			none: t('settings.defaultColor.none'),
 		};
 		for (const slot of activeSlots) {
-			defaultColorOptions[slot] = t(`colors.${slot}`);
+			defaultColorOptions[slot] = this.plugin.getColorDisplayLabel(slot);
 		}
 
 		const colorItems: SettingGroupItem[] = [];
 		for (const slot of availableSlots) {
 			colorItems.push({
-				name: t(`colors.${slot}`),
+				name: this.plugin.getColorDisplayLabel(slot),
 				desc: t(`settings.colorSetting.${slot}`),
 				searchable: true,
 				render: (setting) => {
 					setting
-						.setName(t(`colors.${slot}`))
+						.setName(this.plugin.getColorDisplayLabel(slot))
 						.setDesc(t(`settings.colorSetting.${slot}`));
+					const unregister = this.trackColorLabelSetting(slot, setting);
 					if (slot !== 'black') {
 						setting.addColorPicker((picker) =>
 							picker.setValue(this.plugin.settings.customColors[slot]).onChange((value) => {
@@ -143,28 +145,30 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 								);
 								void this.setControlValue(`${ENABLED_COLOR_KEY_PREFIX}${slot}`, value);
 							})
-					);
+						);
+					return unregister;
 				},
 			});
 		}
 
-		const emojiMappingItems: SettingGroupItem[] = [
+		const colorMappingItems: SettingGroupItem[] = [
 			{
 				name: '',
-				desc: t('settings.emojiMappingIntro'),
+				desc: t('settings.colorMappingIntro'),
 				searchable: false,
 			},
 		];
 		for (const slot of activeSlots) {
-			emojiMappingItems.push({
-				name: t(`colors.${slot}`),
+			colorMappingItems.push({
+				name: this.plugin.getColorDisplayLabel(slot),
 				searchable: true,
 				render: (setting) => {
-					setting.setName(t(`colors.${slot}`));
+					setting.setName(this.plugin.getColorDisplayLabel(slot));
+					const unregister = this.trackColorLabelSetting(slot, setting);
 					this.updateMappingDesc(setting, slot);
 					setting.addText((text) =>
 						text
-							.setPlaceholder(t('settings.emojiMapping.placeholder'))
+							.setPlaceholder(t('settings.colorMapping.emojiPlaceholder'))
 							.setValue(this.plugin.settings.emojiMappings[slot])
 							.onChange((value) => {
 								this.plugin.settings.emojiMappings[slot] = value;
@@ -172,8 +176,36 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 								this.debouncedPersistMappings();
 							})
 					);
+					return unregister;
 				},
 			});
+		}
+
+		const customColorNameItems: SettingGroupItem[] = [];
+		if (this.plugin.settings.customColorNamesEnabled) {
+			for (const slot of activeSlots) {
+				customColorNameItems.push({
+					name: this.plugin.getColorDisplayLabel(slot),
+					desc: t('settings.customColorName.desc'),
+					searchable: true,
+					render: (setting) => {
+						setting.setName(this.plugin.getColorDisplayLabel(slot)).setDesc(t('settings.customColorName.desc'));
+						const unregister = this.trackColorLabelSetting(slot, setting);
+						setting.addText((text) =>
+							text
+								.setPlaceholder(t('settings.customColorName.placeholder'))
+								.setValue(this.plugin.settings.displayNames[slot])
+								.onChange((value) => {
+									this.plugin.settings.displayNames[slot] = value;
+									this.refreshColorLabels(slot);
+									this.plugin.refreshColorCommandNames();
+									this.debouncedPersistMappings();
+								})
+						);
+						return unregister;
+					},
+				});
+			}
 		}
 
 		return [
@@ -309,8 +341,20 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 			},
 			{
 				type: 'group',
-				heading: t('settings.groups.emojiMappings'),
-				items: emojiMappingItems,
+				heading: t('settings.groups.colorMappings'),
+				items: colorMappingItems,
+			},
+			{
+				type: 'group',
+				heading: t('settings.groups.customColorNames'),
+				items: [
+					{
+						name: t('settings.customColorNames.name'),
+						desc: t('settings.customColorNames.desc'),
+						control: { type: 'toggle', key: 'customColorNamesEnabled' },
+					},
+					...customColorNameItems,
+				],
 			},
 		];
 	}
@@ -388,6 +432,12 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				settings.defaultColorSlot = value;
 				await this.persistAndRefresh();
 				return;
+			case 'customColorNamesEnabled':
+				settings.customColorNamesEnabled = Boolean(value);
+				this.plugin.refreshColorCommandNames();
+				await this.persistAndRefresh();
+				this.update();
+				return;
 			case 'extendedColors':
 				settings.extendedColors = Boolean(value);
 				if (
@@ -439,9 +489,28 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 		}
 	}
 
+	private trackColorLabelSetting(slot: ColorSlotKey, setting: Setting): () => void {
+		const tracked = this.colorLabelSettings.get(slot) ?? new Set<Setting>();
+		this.colorLabelSettings.set(slot, tracked);
+		tracked.add(setting);
+		return () => {
+			tracked.delete(setting);
+			if (tracked.size === 0 && this.colorLabelSettings.get(slot) === tracked) {
+				this.colorLabelSettings.delete(slot);
+			}
+		};
+	}
+
+	private refreshColorLabels(slot: ColorSlotKey): void {
+		const label = this.plugin.getColorDisplayLabel(slot);
+		for (const setting of this.colorLabelSettings.get(slot) ?? []) {
+			setting.setName(label);
+		}
+	}
+
 	private updateMappingDesc(setting: Setting, slot: ColorSlotKey): void {
 		setting.setDesc(
-			t('settings.emojiMapping.desc', {
+			t('settings.colorMapping.desc', {
 				emoji: parseEmojiAliases(this.plugin.settings.emojiMappings[slot])[0] ?? '∅',
 			})
 		);

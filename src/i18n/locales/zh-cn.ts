@@ -7,7 +7,8 @@ const zhCn: BaseMessage = {
 			decoration: '装饰',
 			menu: '菜单',
 			colors: '颜色',
-			emojiMappings: 'Emoji 映射',
+			colorMappings: '颜色映射',
+			customColorNames: '自定义颜色名称',
 		},
 		enabled: {
 			name: '启用多彩高亮',
@@ -76,6 +77,14 @@ const zhCn: BaseMessage = {
 			name: '拓展颜色',
 			desc: '启用额外的 5 个颜色槽位（橙色、青色、紫红色、灰色、黑色（剧透）），共十种颜色。',
 		},
+		customColorNames: {
+			name: '启用自定义颜色名称',
+			desc: '开启后，可为每种颜色自定义在命令和编辑器右键菜单中显示的名称。',
+		},
+		customColorName: {
+			desc: '该颜色的自定义显示名称。留空时使用颜色名称。',
+			placeholder: '显示名称（可选）',
+		},
 		colorSetting: {
 			yellow: '为黄色高亮选择自定义颜色。',
 			green: '为绿色高亮选择自定义颜色。',
@@ -92,10 +101,10 @@ const zhCn: BaseMessage = {
 				disable: '禁用该颜色高亮。',
 			},
 		},
-		emojiMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。所有填写的 emoji 都会被解析成对应颜色，但应用颜色时只会写入第一个 emoji。',
-		emojiMapping: {
+		colorMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。所有填写的 emoji 都会被解析成对应颜色，但应用颜色时只会写入第一个 emoji。',
+		colorMapping: {
 			desc: '回写 emoji：{{emoji}}（列表第一项）',
-			placeholder: '🔴,🟥',
+			emojiPlaceholder: '🔴,🟥',
 		},
 	},
 	colors: {

@@ -10,7 +10,8 @@ export interface BaseMessage {
 			decoration: string;
 			menu: string;
 			colors: string;
-			emojiMappings: string;
+			colorMappings: string;
+			customColorNames: string;
 		};
 		enabled: { name: string; desc: string };
 		highlightStyle: {
@@ -44,6 +45,8 @@ export interface BaseMessage {
 		showPrefixInSource: { name: string; desc: string };
 		readingRenderer: { name: string; desc: string };
 		extendedColors: { name: string; desc: string };
+		customColorNames: { name: string; desc: string };
+		customColorName: { desc: string; placeholder: string };
 		/** Per-slot custom color description shown under each color picker. */
 		colorSetting: {
 			yellow: string;
@@ -61,9 +64,9 @@ export interface BaseMessage {
 				disable: string;
 			};
 		};
-		emojiMappingIntro: string;
+		colorMappingIntro: string;
 		/** "Write-back emoji: {{emoji}} (first alias)" */
-		emojiMapping: { desc: string; placeholder: string };
+		colorMapping: { desc: string; emojiPlaceholder: string };
 	};
 	colors: {
 		yellow: string;

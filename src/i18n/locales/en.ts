@@ -7,7 +7,8 @@ const en: BaseMessage = {
 			decoration: 'Decoration',
 			menu: 'Menu',
 			colors: 'Colors',
-			emojiMappings: 'Emoji mappings',
+			colorMappings: 'Color mappings',
+			customColorNames: 'Custom color names',
 		},
 		enabled: {
 			name: 'Enable colorful highlights',
@@ -76,6 +77,14 @@ const en: BaseMessage = {
 			name: 'Extended colors',
 			desc: 'Enable five extra color slots — orange, cyan, magenta, gray, and black (spoiler). There are ten colors in total.',
 		},
+		customColorNames: {
+			name: 'Use custom color names',
+			desc: 'When enabled, customize the names used by color commands and editor menus.',
+		},
+		customColorName: {
+			desc: 'Custom display name for this color. Leave blank to use the color name.',
+			placeholder: 'Display name (optional)',
+		},
 		colorSetting: {
 			yellow: 'Choose a custom color for yellow highlights.',
 			green: 'Choose a custom color for green highlights.',
@@ -92,11 +101,11 @@ const en: BaseMessage = {
 				disable: 'Disable highlights for this color.',
 			},
 		},
-		emojiMappingIntro:
+		colorMappingIntro:
 			'Comma-separated emoji aliases per color. Every listed emoji is parsed as that color, but the first emoji is the one written into the note when applying a color.',
-		emojiMapping: {
+		colorMapping: {
 			desc: 'Write-back emoji: {{emoji}} (first alias)',
-			placeholder: '🔴,🟥',
+			emojiPlaceholder: '🔴,🟥',
 		},
 	},
 	colors: {

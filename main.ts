@@ -27,10 +27,12 @@ const SLOT_VAR_PREFIX = '--ch-highlight-';
 
 type LoadedSettings = Omit<
 	Partial<ColorfulHighlightsSettings>,
-	'emojiMappings' | 'customColors' | 'defaultColorSlot'
+	'emojiMappings' | 'customColors' | 'displayNames' | 'customColorNamesEnabled' | 'defaultColorSlot'
 > & {
 	emojiMappings?: Partial<Record<ColorSlotKey | 'white', string>>;
 	customColors?: Partial<Record<ColorSlotKey | 'white', string>>;
+	displayNames?: Partial<Record<ColorSlotKey, string>>;
+	customColorNamesEnabled?: boolean;
 	defaultColorSlot?: ColorfulHighlightsSettings['defaultColorSlot'] | 'white';
 };
 
@@ -109,6 +111,10 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			...DEFAULT_SETTINGS.customColors,
 			...(loaded?.customColors ?? {}),
 		};
+		const displayNames = {
+			...DEFAULT_SETTINGS.displayNames,
+			...(loaded?.displayNames ?? {}),
+		};
 		// `white` was the old name of the final extended slot. Keep existing
 		// vault settings working when the slot becomes Black (Spoiler).
 		if (loaded?.emojiMappings?.black === undefined && loaded?.emojiMappings?.white !== undefined) {
@@ -130,6 +136,9 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			enabledColors: { ...DEFAULT_SETTINGS.enabledColors, ...(loaded?.enabledColors ?? {}) },
 			emojiMappings,
 			customColors,
+			customColorNamesEnabled:
+				loaded?.customColorNamesEnabled ?? DEFAULT_SETTINGS.customColorNamesEnabled,
+			displayNames,
 		};
 		const activeSlots = getActiveColorSlots(this.settings.extendedColors, this.settings.enabledColors);
 		if (this.settings.defaultColorSlot !== 'none' && !activeSlots.includes(this.settings.defaultColorSlot)) {
@@ -225,11 +234,31 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 	private addColorCommand(slot: ColorSlotKey): void {
 		this.addCommand({
 			id: `highlight-${slot}`,
-			name: t('commands.setColor', { color: t(`colors.${slot}`) }),
+			name: t('commands.setColor', { color: this.getColorDisplayName(slot) }),
 			editorCallback: (editor) => {
 				applyHighlightAction(editor, { type: 'color', slot }, this.getActionContext());
 			},
 		});
+	}
+
+	getColorDisplayName(slot: ColorSlotKey): string {
+		return this.getConfiguredColorDisplayName(slot) ?? t(`colors.${slot}`);
+	}
+
+	getColorDisplayLabel(slot: ColorSlotKey): string {
+		const colorName = t(`colors.${slot}`);
+		const displayName = this.getConfiguredColorDisplayName(slot);
+		return displayName ? `${displayName} [${colorName}]` : colorName;
+	}
+
+	private getConfiguredColorDisplayName(slot: ColorSlotKey): string | undefined {
+		if (!this.settings.customColorNamesEnabled) {
+			return undefined;
+		}
+		const displayName = this.settings.displayNames[slot];
+		return typeof displayName === 'string' && displayName.trim() !== ''
+			? displayName.trim()
+			: undefined;
 	}
 
 	/**
@@ -282,7 +311,7 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		for (const slot of getActiveColorSlots(this.settings.extendedColors, this.settings.enabledColors)) {
 			menu.addItem((item) => {
 				item
-					.setTitle(t(`colors.${slot}`))
+					.setTitle(this.getColorDisplayName(slot))
 					.setIcon(`ch-dot-${slot}`)
 					.setSection('colorful-highlights')
 					.onClick(() => {
@@ -311,14 +340,22 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 		for (const slot of COLOR_SLOTS) {
 			// addIcon normalizes custom icons into a 100×100 viewBox wrapper —
 			// author the SVG at that size or it renders scaled down.
-			const fallbackColor = slot === 'black' ? '#000000' : DEFAULT_SETTINGS.customColors[slot];
+			const fallbackColor = slot === 'black' ? '#191919' : DEFAULT_SETTINGS.customColors[slot];
 			const liveColor = slot === 'black'
-				? 'var(--text-normal)'
+				? '#191919'
 				: `var(--ch-highlight-${slot}, ${fallbackColor})`;
 			addIcon(
 				`ch-dot-${slot}`,
 				`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="33" fill="${fallbackColor}" style="fill: ${liveColor}" stroke="var(--background-modifier-border)" stroke-width="4"/></svg>`
 			);
+		}
+	}
+
+	/** Re-register active color commands after a display name changes. */
+	refreshColorCommandNames(): void {
+		for (const slot of this.registeredColorCommands) {
+			this.removeCommand(`highlight-${slot}`);
+			this.addColorCommand(slot);
 		}
 	}
 

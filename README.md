@@ -57,7 +57,8 @@ Example results:
 | Decorate in editor / Reading view | Toggle each surface independently. |
 | Extended colors | Reveal five extra color slots (orange / cyan / magenta / gray / Black (Spoiler)) in commands, menus, and settings. Off by default. |
 | Colors | Choose a hex color for each regular slot; Black (Spoiler) uses a fixed text-colored cover. The toggle beside each color controls whether it appears in mappings, commands, menus, and rendering. |
-| Emoji mappings | Comma-separated aliases for each shown slot; the first alias is used for write-back. |
+| Color mappings | Comma-separated emoji aliases for each shown slot; the first alias is used for write-back. |
+| Custom color names | Optional display names for color commands and editor menus. Leave blank to use the color name; off by default. |
 
 ## Compatibility
 

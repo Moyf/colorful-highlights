@@ -103,6 +103,10 @@ export interface ColorfulHighlightsSettings {
 	extendedColors: boolean;
 	/** Whether each color slot is available in mappings, commands, menus, and rendering. */
 	enabledColors: Record<ColorSlotKey, boolean>;
+	/** Whether custom display names are used by color commands and menus. */
+	customColorNamesEnabled: boolean;
+	/** Optional display name used by color commands and menus; blank uses the localized color name. */
+	displayNames: Record<ColorSlotKey, string>;
 	/** Comma-separated emoji aliases per color slot (first alias is used for write-back). */
 	emojiMappings: Record<ColorSlotKey, string>;
 	/** Hex color per slot. */
@@ -134,6 +138,19 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 		gray: true,
 		black: true,
 	},
+	customColorNamesEnabled: false,
+	displayNames: {
+		yellow: '',
+		green: '',
+		red: '',
+		purple: '',
+		blue: '',
+		orange: '',
+		cyan: '',
+		magenta: '',
+		gray: '',
+		black: '',
+	},
 	emojiMappings: {
 		yellow: '🟡,🟨,💛,⭐,🍌',
 		green: '🟢,🟩,💚,🍀,🍏',
@@ -143,8 +160,8 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 		orange: '🟠,🟧,🧡,🍊,🦊',
 		cyan: '🩵,🧊,❄️,🐬',
 		magenta: '🩷,🌸,👛,🐙',
-		gray: '🩶,🌫️,🗿,🐨',
-		black: '🕶️,⬛,🖤,🐈‍⬛',
+		gray: '🌫️,🗿,🩶,🐨',
+		black: '⬛,🕶️,🖤,🐈‍⬛',
 	},
 	customColors: {
 		yellow: '#ffd700',
