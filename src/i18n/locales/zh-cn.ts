@@ -7,8 +7,9 @@ const zhCn: BaseMessage = {
 			decoration: '装饰',
 			menu: '菜单',
 			colors: '颜色',
-			colorMappings: '颜色映射',
+			emojiMappings: 'Emoji 映射',
 			customColorNames: '自定义颜色名称',
+			colorCustomization: '颜色自定义',
 		},
 		enabled: {
 			name: '启用多彩高亮',
@@ -62,7 +63,7 @@ const zhCn: BaseMessage = {
 			desc: '将颜色操作收纳到右键菜单中的单个菜单项下。',
 		},
 		editorDecorator: {
-			name: '编辑器中着色',
+			name: '编辑视图中着色',
 			desc: '在实时预览和源码模式中为 emoji 高亮着色。编辑文本时会临时显示 emoji。',
 		},
 		showPrefixInSource: {
@@ -75,15 +76,20 @@ const zhCn: BaseMessage = {
 		},
 		extendedColors: {
 			name: '拓展颜色',
-			desc: '启用额外的 5 个颜色槽位（橙色、青色、紫红色、灰色、黑色（剧透）），共十种颜色。',
+			desc: '启用额外的 5 个颜色槽位（橙色、青色、紫红色、灰色、黑色（剧透）），共十种颜色。你可以切换颜色旁边的开关，只保留自己偏好的颜色。',
 		},
 		customColorNames: {
 			name: '启用自定义颜色名称',
-			desc: '开启后，可为每种颜色自定义在命令和编辑器右键菜单中显示的名称。',
+			desc: '为颜色自定义显示名称，赋予它们含义，用来建立适合自己的颜色编码体系。会影响右键菜单、命令等。',
+			enabledDesc: '仅显示已启用的颜色。',
 		},
 		customColorName: {
-			desc: '该颜色的自定义显示名称。留空时使用颜色名称。',
+			desc: '留空时使用颜色名称。',
 			placeholder: '显示名称（可选）',
+		},
+		decorationPage: {
+			name: '视图模式渲染选项',
+			desc: '配置编辑和阅读时颜色高亮的显示方式。',
 		},
 		colorSetting: {
 			yellow: '为黄色高亮选择自定义颜色。',
@@ -101,9 +107,10 @@ const zhCn: BaseMessage = {
 				disable: '禁用该颜色高亮。',
 			},
 		},
-		colorMappingIntro: '每种颜色对应一组逗号分隔的 emoji 别名。所有填写的 emoji 都会被解析成对应颜色，但应用颜色时只会写入第一个 emoji。',
+		colorMappingIntro: '你可以将多种不同的 emoji 映射到特定颜色，全都有效。你不需要使用其中所有 emoji！它们都可以代表对应颜色，但通常你只需要其中第一项，写入时也会使用它。',
+		colorMappingDescription: '使用英文逗号分隔多个不同 emoji，任意填写的 emoji 都可以映射到对应颜色。例如你可以用 🍌 作为黄色的符号。在使用插件命令写入高亮时，会使用第一个 emoji 作为写入符号。',
 		colorMapping: {
-			desc: '回写 emoji：{{emoji}}（列表第一项）',
+			desc: '写入时使用的 emoji：{{emoji}}',
 			emojiPlaceholder: '🔴,🟥',
 		},
 	},

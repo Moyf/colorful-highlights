@@ -55,10 +55,10 @@ Example results:
 | Secondary color intensity | Second layer of double-strike and line colors (10–100%). |
 | Color rendering | Plugin styles paint the background directly; theme native only overrides `--text-highlight-bg` and lets your theme paint highlights. |
 | Decorate in editor / Reading view | Toggle each surface independently. |
-| Extended colors | Reveal five extra color slots (orange / cyan / magenta / gray / Black (Spoiler)) in commands, menus, and settings. Off by default. |
+| Extended colors | Reveal five extra color slots (orange / cyan / magenta / gray / Black (Spoiler)) in commands, menus, and settings. Use the toggle beside each color to keep only the colors you prefer. Off by default. |
 | Colors | Choose a hex color for each regular slot; Black (Spoiler) uses a fixed text-colored cover. The toggle beside each color controls whether it appears in mappings, commands, menus, and rendering. |
-| Color mappings | Comma-separated emoji aliases for each shown slot; the first alias is used for write-back. |
-| Custom color names | Optional display names for color commands and editor menus. Leave blank to use the color name; off by default. |
+| Emoji mappings | Map multiple different emojis to a specific color. You do not need to use every emoji; all of them can represent the corresponding color, but usually only the first one is needed for write-back. |
+| Custom color names | Custom display names for the colors. Give them meaning for a color-coding system that fits your workflow. This affects the editor menu and commands; leave blank to use the color name. Off by default. |
 
 ## Compatibility
 

@@ -10,7 +10,7 @@ import {
 	type DefaultColorSlot,
 	type HighlightStyle,
 	type RenderMode,
-} from './settings';
+	} from './settings';
 import { parseEmojiAliases } from './utils/emoji-utils';
 import { t } from './i18n';
 
@@ -154,8 +154,11 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 		const colorMappingItems: SettingGroupItem[] = [
 			{
 				name: '',
-				desc: t('settings.colorMappingIntro'),
+				desc: t('settings.colorMappingDescription'),
 				searchable: false,
+				render: (setting) => {
+					setting.setName('').setDesc(t('settings.colorMappingDescription'));
+				},
 			},
 		];
 		for (const slot of activeSlots) {
@@ -207,6 +210,15 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				});
 			}
 		}
+
+		const customColorNamesPageItems: SettingGroupItem[] = [
+			{
+				name: t('settings.customColorNames.name'),
+				desc: t('settings.customColorNames.enabledDesc'),
+				control: { type: 'toggle', key: 'customColorNamesEnabled' },
+			},
+			...customColorNameItems,
+		];
 
 		return [
 			{
@@ -283,19 +295,26 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				heading: t('settings.groups.decoration'),
 				items: [
 					{
-						name: t('settings.editorDecorator.name'),
-						desc: t('settings.editorDecorator.desc'),
-						control: { type: 'toggle', key: 'editorDecorator' },
-					},
-					{
-						name: t('settings.showPrefixInSource.name'),
-						desc: t('settings.showPrefixInSource.desc'),
-						control: { type: 'toggle', key: 'showPrefixInSourceMode' },
-					},
-					{
-						name: t('settings.readingRenderer.name'),
-						desc: t('settings.readingRenderer.desc'),
-						control: { type: 'toggle', key: 'readingRenderer' },
+						type: 'page',
+						name: t('settings.decorationPage.name'),
+						desc: t('settings.decorationPage.desc'),
+						items: [
+							{
+								name: t('settings.editorDecorator.name'),
+								desc: t('settings.editorDecorator.desc'),
+								control: { type: 'toggle', key: 'editorDecorator' },
+							},
+							{
+								name: t('settings.showPrefixInSource.name'),
+								desc: t('settings.showPrefixInSource.desc'),
+								control: { type: 'toggle', key: 'showPrefixInSourceMode' },
+							},
+							{
+								name: t('settings.readingRenderer.name'),
+								desc: t('settings.readingRenderer.desc'),
+								control: { type: 'toggle', key: 'readingRenderer' },
+							},
+						],
 					},
 					{
 						name: t('settings.renderMode.name'),
@@ -323,6 +342,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 					{
 						name: t('settings.submenu.name'),
 						desc: t('settings.submenu.desc'),
+						visible: () => this.plugin.settings.showColorMenuInEditorMenu,
 						control: { type: 'toggle', key: 'useSubmenu' },
 					},
 				],
@@ -341,19 +361,20 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 			},
 			{
 				type: 'group',
-				heading: t('settings.groups.colorMappings'),
-				items: colorMappingItems,
-			},
-			{
-				type: 'group',
-				heading: t('settings.groups.customColorNames'),
+				heading: t('settings.groups.colorCustomization'),
 				items: [
 					{
-						name: t('settings.customColorNames.name'),
-						desc: t('settings.customColorNames.desc'),
-						control: { type: 'toggle', key: 'customColorNamesEnabled' },
+						type: 'page',
+						name: t('settings.groups.emojiMappings'),
+						desc: t('settings.colorMappingIntro'),
+						items: colorMappingItems,
 					},
-					...customColorNameItems,
+					{
+						type: 'page',
+						name: t('settings.groups.customColorNames'),
+						desc: t('settings.customColorNames.desc'),
+						items: customColorNamesPageItems,
+					},
 				],
 			},
 		];
@@ -398,6 +419,7 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				return;
 			case 'showColorMenuInEditorMenu':
 				settings.showColorMenuInEditorMenu = Boolean(value);
+				this.refreshDomState();
 				await this.persist();
 				return;
 			case 'useSubmenu':

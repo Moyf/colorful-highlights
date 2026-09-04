@@ -7,8 +7,9 @@ const en: BaseMessage = {
 			decoration: 'Decoration',
 			menu: 'Menu',
 			colors: 'Colors',
-			colorMappings: 'Color mappings',
+			emojiMappings: 'Emoji mappings',
 			customColorNames: 'Custom color names',
+			colorCustomization: 'Color customization',
 		},
 		enabled: {
 			name: 'Enable colorful highlights',
@@ -62,7 +63,7 @@ const en: BaseMessage = {
 			desc: 'Nest the color actions under a single menu item in the editor right-click menu.',
 		},
 		editorDecorator: {
-			name: 'Decorate in editor',
+			name: 'Decorate in editing view',
 			desc: 'Color emoji-prefixed highlights in live preview and source mode. The emoji stays hidden until you edit the text.',
 		},
 		showPrefixInSource: {
@@ -75,15 +76,22 @@ const en: BaseMessage = {
 		},
 		extendedColors: {
 			name: 'Extended colors',
-			desc: 'Enable five extra color slots — orange, cyan, magenta, gray, and black (spoiler). There are ten colors in total.',
+			desc: 'Enable five extra color slots — orange, cyan, magenta, gray, and black (spoiler). There are ten colors in total. Use the toggle beside each color to keep only the colors you prefer.',
 		},
 		customColorNames: {
 			name: 'Use custom color names',
-			desc: 'When enabled, customize the names used by color commands and editor menus.',
+			desc: 'Custom display names for the colors. Give them meaning for a color-coding system that fits your workflow. This affects the editor menu and commands.',
+			enabledDesc: 'Only enabled colors will be shown.',
 		},
 		customColorName: {
-			desc: 'Custom display name for this color. Leave blank to use the color name.',
+			desc: 'Leave blank to use the color name.',
 			placeholder: 'Display name (optional)',
+		},
+		decorationPage: {
+			// Keep the requested title case for this subpage label.
+			// eslint-disable-next-line obsidianmd/ui/sentence-case-locale-module
+			name: 'View Mode Rendering',
+			desc: 'Configure how color highlights are decorated while editing and reading.',
 		},
 		colorSetting: {
 			yellow: 'Choose a custom color for yellow highlights.',
@@ -102,9 +110,11 @@ const en: BaseMessage = {
 			},
 		},
 		colorMappingIntro:
-			'Comma-separated emoji aliases per color. Every listed emoji is parsed as that color, but the first emoji is the one written into the note when applying a color.',
+			'Map multiple different emojis to a specific color; all of them work. You do not need to use every emoji here: they can all represent the corresponding color, but usually you only need the first one, which is used as the symbol when writing.',
+		colorMappingDescription:
+			'Use a comma (,) to separate multiple emojis. Any emoji you enter can map to the corresponding color. For example, you can use 🍌 as the symbol for yellow. When writing a highlight with a plugin command, the first emoji is used as the write-back symbol.',
 		colorMapping: {
-			desc: 'Write-back emoji: {{emoji}} (first alias)',
+			desc: 'Write-back emoji: {{emoji}}',
 			emojiPlaceholder: '🔴,🟥',
 		},
 	},
