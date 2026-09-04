@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.2.0](https://github.com/Moyf/colorful-highlights/compare/1.1.1...1.2.0) - 2026-09-04
+
+### 🚀 Added
+
+- **Extended color slots**: add orange, cyan, magenta, gray, and Black (Spoiler), bringing the total to ten colors; each slot can be enabled or disabled independently.
+- **Black (Spoiler) highlights**: add an opaque, theme-text-colored cover that reveals the text on hover, including nested styled text.
+- **Custom color names**: optionally assign display names for each enabled color; names are reflected in commands, editor menus, and settings.
+- **Emoji mappings**: allow multiple emoji aliases per color, with the first alias used when a plugin command writes a highlight.
+
+### ⚡ Changed
+
+- **Settings organization**: add Color customization and View Mode Rendering subpages, and hide Group into a submenu when editor color actions are disabled.
+- **Line-only styles**: remove background color and Color intensity for Underline only and Wavy line only.
+- **Color selection**: disabled colors are removed from mappings, commands, menus, and rendering.
+
+<details>
+<summary>中文说明（点击展开）</summary>
+
+### 🚀 新增
+
+- **拓展颜色槽位**：新增橙色、青色、紫红色、灰色和黑色（剧透），共十种颜色；每个颜色都可以单独启用或禁用。
+- **黑色（剧透）高亮**：使用不透明的主题文字色遮挡条，鼠标悬浮后显示文本，包括嵌套的加粗等样式文本。
+- **自定义颜色名称**：可为每个已启用颜色设置显示名称，并同步应用到命令、编辑器右键菜单和设置页。
+- **Emoji 映射**：允许为每种颜色设置多个 emoji 别名；插件命令写入高亮时使用第一个别名。
+
+### ⚡ 变更
+
+- **设置页结构**：新增「颜色自定义」和「视图模式渲染选项」子页面；关闭编辑器菜单颜色操作时隐藏「收纳为二级菜单」。
+- **仅线条样式**：「仅下划线」和「仅波浪线」不再显示背景色和颜色强度。
+- **颜色选择**：禁用的颜色不再出现在映射、命令、菜单和渲染中。
+
+</details>
+
+---
+
 ## [1.1.1](https://github.com/Moyf/colorful-highlights/compare/1.1.0...1.1.1) - 2026-08-25
 
 ### 🚀 Added
