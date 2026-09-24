@@ -76,6 +76,10 @@ The `==🔴red==` syntax was inspired by the [Octarine](https://octarine.app/) p
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Moyf/colorful-highlights&type=Date)](https://www.star-history.com/#Moyf/colorful-highlights&Date)
 
+## Support
+
+If you like Colorful Highlights, consider [buying me a coffee on Ko-fi](https://ko-fi.com/moy) ☕
+
 ## License
 
 MIT

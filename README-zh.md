@@ -78,6 +78,10 @@ emoji 高亮机制最初作为给 [Sidebar Highlights](https://github.com/trevwa
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Moyf/colorful-highlights&type=Date)](https://www.star-history.com/#Moyf/colorful-highlights&Date)
 
+## 支持作者
+
+如果 Colorful Highlights 对你有帮助，欢迎[请我喝杯咖啡（Ko-fi）](https://ko-fi.com/moy) ☕
+
 ## 许可证
 
 MIT
