@@ -328,6 +328,17 @@ function createViewPlugin(config: ColorHighlightConfig) {
 				this.applied.clear();
 			}
 
+			/**
+			 * Runs synchronously right after CM6 rebuilds the line DOM within
+			 * the same view update, so marks that were (re)built after our
+			 * update() pass get their slot class before anything paints —
+			 * no one-frame unstyled flash while typing or toggling the
+			 * emoji replace widget.
+			 */
+			docViewUpdate(view: EditorView) {
+				syncSlotClasses(view, this.slotRanges, this.applied);
+			}
+
 			/** Rebuild decorations and mirror slot classes onto native marks. */
 			private refresh(view: EditorView): void {
 				const built = buildDecorations(view, config, emojiMap);
@@ -337,11 +348,13 @@ function createViewPlugin(config: ColorHighlightConfig) {
 				const sync = applySlotClasses(view, built.slotRanges, this.applied);
 				// Plugin update() runs BEFORE CM6 rebuilds the line DOM, and the
 				// plugin constructor runs before the first DocView exists at all
-				// — marks that are about to be (re)built lack the mirrored class.
-				// Re-sync on the next frame to repair; it runs on the view's own
-				// window so a popout editor is not throttled by the main one.
-				// Skipped when no highlight is in play, which keeps cursor moves
-				// through highlight-free text free of deferred work.
+				// — docViewUpdate covers the rebuild paths inside the update
+				// flow, so this deferred re-sync only backstops paths that
+				// never dispatch one (initial mount, setState()-style swaps).
+				// It runs on the view's own window so a popout editor is not
+				// throttled by the main one, and is skipped when no highlight
+				// is in play, keeping cursor moves through highlight-free text
+				// free of deferred work.
 				if (sync.found > 0 || built.slotRanges.length > 0) {
 					const win = view.dom.ownerDocument.defaultView ?? window;
 					const pending = { win, handle: 0 };
