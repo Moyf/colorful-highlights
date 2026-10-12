@@ -307,7 +307,7 @@ body[data-ch-highlight-style="gradient"] .markdown-rendered mark[class*="ch-read
 body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"] {
 	background: linear-gradient(
 		to bottom,
-		color-mix(in srgb, var(--ch-active-color) calc(var(--ch-highlight-opacity, 60%) * 0.45), transparent),
+		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent),
 		color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent)
 	);
 }
@@ -316,7 +316,7 @@ body[data-ch-highlight-style="gradient"] .markdown-rendered mark:not([class*="ch
 body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]) {
 	background: linear-gradient(
 		to bottom,
-		color-mix(in srgb, var(--ch-plain-color) calc(var(--ch-highlight-opacity, 60%) * 0.45), transparent),
+		color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent),
 		color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 60%), transparent)
 	);
 }
@@ -441,7 +441,7 @@ body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight
 .ch-style-preview-sample[data-ch-preview-style="gradient"] {
 	background: linear-gradient(
 		to bottom,
-		color-mix(in srgb, var(--ch-active-color) calc(var(--ch-highlight-opacity, 60%) * 0.45), transparent),
+		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent),
 		color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent)
 	);
 }
