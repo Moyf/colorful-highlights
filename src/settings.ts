@@ -123,7 +123,7 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	colorOpacity: 30,
 	secondaryColorOpacity: 60,
 	renderMode: 'plugin',
-	highlightStyle: 'default',
+	highlightStyle: 'gradient',
 	defaultColorSlot: 'yellow',
 	extendedColors: false,
 	enabledColors: {

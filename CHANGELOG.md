@@ -1,5 +1,54 @@
 # Changelog
 
+## [Unreleased]
+
+### ♻️ Refactored
+
+- **Community Review compliance**: the plugin's CSS now uses zero `:has()` and zero `!important`. Highlight classes are mirrored directly onto Obsidian's native editor marks, with the cascade handled by specificity and source order. Known trade-off: theme rules that themselves use `!important` can override the plugin's styling (documented in the README and the style setting).
+
+### 🚀 Added
+
+- **Gradient customization**: the gradient's top stop follows Color intensity and the bottom stop follows Secondary color intensity; the Secondary slider is now shown for the gradient style.
+- **Editor details**: `==` markers and Obsidian 1.14+'s native emoji swatch widget follow the highlight color across styles — flat fill by default, the full two-layer fill in double-strike, the gradient in gradient, and completely unstyled in outline and line-only styles.
+- **Spoiler usability**: the black highlight reveals its text in source mode (treated as hovered), and its `==` markers stay legible while editing.
+
+### 🐛 Fixed
+
+- **Immediate coloring**: freshly typed highlights and newly opened notes color instantly, without a one-frame unstyled flash while editing.
+- **Selection underline**: selecting text inside a highlight keeps the slot-colored underline instead of falling back to black.
+- **Marker color**: the `==` markers use the slot background while editing instead of the theme's plain highlight color.
+
+### ⚡ Changed
+
+- **Default style and intensity**: the default highlight style is now Gradient, and the default Color intensity is 30% (existing settings are unaffected).
+
+<details>
+<summary>中文说明（点击展开）</summary>
+
+### ♻️ 重构
+
+- **Community Review 合规**：插件 CSS 现为零 `:has()`、零 `!important`。高亮类直接镜像到 Obsidian 原生编辑器标记上，级联由特异性和源顺序处理。已知取舍：主题自身使用 `!important` 的规则可以覆盖插件样式（README 与设置页已注明）。
+
+### 🚀 新增
+
+- **渐变自定义**：渐变顶部跟随「颜色强度」、底部跟随「第二层颜色强度」；渐变样式下现在会显示第二层滑杆。
+- **编辑器细节**：`==` 标记与 Obsidian 1.14+ 原生 emoji 色块跟随高亮颜色——默认为平坦底色，「加深填充」下为完整双层，「渐变填充」下为同款渐变，「描边」与两个 line-only 样式下完全不着色。
+- **剧透可用性**：黑色高亮在源码模式中显露文本（视作悬浮），编辑时其 `==` 标记保持可读。
+
+### 🐛 修复
+
+- **即时着色**：新输入的高亮与新打开的笔记立即着色，编辑时不再出现单帧无样式闪烁。
+- **选区下划线**：在高亮内选中文字时，下划线保持槽位颜色，不再回落为黑色。
+- **标记颜色**：编辑时 `==` 标记使用槽位背景色，而非主题的普通高亮色。
+
+### ⚡ 变更
+
+- **默认样式与强度**：默认高亮样式改为「渐变填充」，默认「颜色强度」改为 30%（已有设置不受影响）。
+
+</details>
+
+---
+
 ## [1.2.1](https://github.com/Moyf/colorful-highlights/compare/1.2.0...1.2.1) - 2026-09-04
 
 ### 🐛 Fixed
