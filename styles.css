@@ -15,7 +15,7 @@
  *
  * Runtime-tunable variables (set from plugin settings on <body>):
  *   --ch-highlight-{slot}   hex color per slot
- *   --ch-highlight-opacity  primary background mix percentage (default 60%)
+ *   --ch-highlight-opacity  primary background mix percentage (default 30%)
  *   --ch-underline-opacity  SECOND layer/line mix for double-strike,
  *                           underlines and the gradient bottom (default 60%)
  * Attribute:
@@ -118,8 +118,11 @@ body:not([data-ch-color-mode="native"]) .cm-s-obsidian .cm-highlight:where([clas
  * renders a .cm-highlight-color-widget swatch in their place. It is not a
  * .cm-highlight, so the slot rules above never reach it. Map the native
  * data-highlight names onto the plugin's slot variables and paint the
- * widget with the configured color, same as the == markers. Native names
- * without a plugin slot simply keep Obsidian's own look. */
+ * widget with the configured color, same as the == markers. Limitation:
+ * the mapping is by intrinsic emoji name only — per-slot enable toggles
+ * and user emoji remapping are not consulted (the CSS cannot know which
+ * slot the widget's emoji belongs to). Native names without a plugin
+ * slot simply keep Obsidian's own look. */
 .cm-s-obsidian .cm-highlight-color-widget[data-highlight="yellow"] { --ch-active-color: var(--ch-highlight-yellow, #ffd700); }
 .cm-s-obsidian .cm-highlight-color-widget[data-highlight="green"] { --ch-active-color: var(--ch-highlight-green, #96ceb4); }
 .cm-s-obsidian .cm-highlight-color-widget[data-highlight="red"] { --ch-active-color: var(--ch-highlight-red, #ff6b6b); }
@@ -543,7 +546,7 @@ body .cm-s-obsidian .cm-formatting-highlight.ch-editor-highlight-black.ch-editor
 
 /* Source mode displays the raw text: treat the spoiler as hovered there,
  * so the original text stays legible while reading source. Outranks the
- * spoiler rule above at (0,5,1) vs (0,4,1); live preview and reading
+ * spoiler rule above at (0,6,1) vs (0,4,1); live preview and reading
  * view keep the hiding behavior. (.markdown-source-view wraps the CM
  * editor, drops .is-live-preview in source mode, and carries
  * .cm-s-obsidian itself — the cm-editor below it does not.) */

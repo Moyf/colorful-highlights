@@ -219,16 +219,18 @@ function buildDecorations(
  *
  * Enumerates the native `.cm-highlight` marks currently rendered and
  * matches each against the slot ranges by DOCUMENT-POSITION OVERLAP.
- * This handles every shape CM6 produces: multi-line highlights (split
- * into one mark per line) and marks split by nested marks (e.g. a bold
- * run inside the highlight) — each segment overlaps the range and gets
- * the class.
+ * CM6 splits a highlight's marks around nested runs (e.g. a bold run
+ * inside the highlight); each segment overlaps the range and gets the
+ * class. Highlights are line-scoped — createHighlightRegex excludes
+ * newlines — so cross-line ranges never occur, but the overlap check
+ * would handle them if the regex were ever relaxed.
  *
  * Formatting markers (`==` spans, classed `cm-formatting-highlight`) sit
  * OUTSIDE the interior, so they are matched against the full slot range
- * instead — pre-mirroring, the plugin's own mark covered the full
- * ==...== span and the markers were painted with the slot color; this
- * keeps that look (and keeps the glyphs legible on the black spoiler).
+ * instead of the interior — pre-mirroring, the plugin's own mark covered
+ * the full ==...== span and the markers were painted with the slot
+ * color; this keeps that look (and keeps the glyphs legible on the
+ * black spoiler).
  */
 function syncSlotClasses(
 	view: EditorView,
@@ -280,20 +282,6 @@ function syncSlotClasses(
 	applied.clear();
 	for (const [el, classes] of next) applied.set(el, classes);
 	return { found, added };
-}
-
-/**
- * Mirror `ch-editor-highlight-{slot}` onto the native mark element of
- * each slot range, removing classes from marks that no longer have one.
- * Re-applied after every plugin update, so CM6 rebuilds never leave
- * stale classes behind.
- */
-function applySlotClasses(
-	view: EditorView,
-	slotRanges: SlotRange[],
-	applied: Map<Element, string[]>
-): { found: number; added: number } {
-	return syncSlotClasses(view, slotRanges, applied);
 }
 
 // ── ViewPlugin ──────────────────────────────────────────────────────
@@ -354,7 +342,7 @@ function createViewPlugin(config: ColorHighlightConfig) {
 				this.decorations = built.decorations;
 				this.slotRanges = built.slotRanges;
 				this.cancelSync();
-				const sync = applySlotClasses(view, built.slotRanges, this.applied);
+				const sync = syncSlotClasses(view, built.slotRanges, this.applied);
 				// Plugin update() runs BEFORE CM6 rebuilds the line DOM, and the
 				// plugin constructor runs before the first DocView exists at all
 				// — docViewUpdate covers the rebuild paths inside the update
