@@ -323,6 +323,16 @@ body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not([class
 	);
 }
 
+/* The native swatch widget is not a .cm-highlight; give it the same
+ * gradient so the highlight reads as one continuous fade. */
+body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
+	background: linear-gradient(
+		to bottom,
+		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent),
+		color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent)
+	);
+}
+
 /* Keep the underline stable while selecting text. Chromium repaints the
  * selected range's decoration from the ::selection style and ignores a
  * bare text-decoration-color override there, so ::selection must declare
