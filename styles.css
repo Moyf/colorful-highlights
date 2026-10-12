@@ -149,15 +149,17 @@ body[data-ch-highlight-style="half-strike"] .cm-s-obsidian .cm-highlight:not([cl
 
 /* ── Style variant: double-strike (full fill + stronger bottom half) ── */
 
+/* Markers are excluded: they carry only the flat slot background (like
+ * the native swatch widget), not the two-layer fill. */
 body[data-ch-highlight-style="double-strike"] .markdown-rendered mark[class*="ch-reading-highlight-"],
-body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"] {
+body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight)[class*="ch-editor-highlight-"] {
 	background-image:
 		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent)),
 		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent) 50%);
 }
 
 body[data-ch-highlight-style="double-strike"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
-body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]) {
+body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight):not([class*="ch-editor-highlight-"]) {
 	background-image:
 		linear-gradient(color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent)),
 		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 85%), transparent) 50%);
