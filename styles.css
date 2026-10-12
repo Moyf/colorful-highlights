@@ -113,6 +113,28 @@ body:not([data-ch-color-mode="native"]) .cm-s-obsidian .cm-highlight:where([clas
 	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
 }
 
+/* ── Native emoji-prefix swatch (Obsidian 1.14+) ──
+ * While editing, Obsidian consumes native color emojis (🔵 🟥 ⬛ …) and
+ * renders a .cm-highlight-color-widget swatch in their place. It is not a
+ * .cm-highlight, so the slot rules above never reach it. Map the native
+ * data-highlight names onto the plugin's slot variables and paint the
+ * widget with the configured color, same as the == markers. Native names
+ * without a plugin slot simply keep Obsidian's own look. */
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="yellow"] { --ch-active-color: var(--ch-highlight-yellow, #ffd700); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="green"] { --ch-active-color: var(--ch-highlight-green, #96ceb4); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="red"] { --ch-active-color: var(--ch-highlight-red, #ff6b6b); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="purple"] { --ch-active-color: var(--ch-highlight-purple, #a78bfa); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="blue"] { --ch-active-color: var(--ch-highlight-blue, #45b7d1); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="gray"] { --ch-active-color: var(--ch-highlight-gray, #adb5bd); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="orange"] { --ch-active-color: var(--ch-highlight-orange, #ffa94d); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="cyan"] { --ch-active-color: var(--ch-highlight-cyan, #2dd4bf); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="magenta"] { --ch-active-color: var(--ch-highlight-magenta, #f472b6); }
+.cm-s-obsidian .cm-highlight-color-widget[data-highlight="black"] { --ch-active-color: var(--text-normal); }
+
+body:not([data-ch-color-mode="native"]) .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
+	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+}
+
 /* ── Style variant: half-strike (bottom half filled) ── */
 
 body[data-ch-highlight-style="half-strike"] .markdown-rendered mark[class*="ch-reading-highlight-"],
@@ -299,11 +321,17 @@ body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not([class
 	);
 }
 
-/* Keep underline color stable while selecting text (avoid browser fallback to black). */
+/* Keep underline color stable while selecting text (avoid browser fallback to black).
+ * Covers both surfaces: reading-mode marks, and editor marks — the editor had no
+ * equivalent rule, so the underline painted in the text color while selected. */
 body[data-ch-highlight-style="underline-only"] .markdown-rendered mark::selection,
 body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark::selection,
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selection,
-body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark::selection {
+body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark::selection,
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight::selection,
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight::selection,
+body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight::selection,
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight::selection {
 	text-decoration-color: inherit;
 }
 
@@ -445,4 +473,21 @@ body .cm-s-obsidian .cm-formatting-highlight.ch-editor-highlight-black.ch-editor
 	background: transparent;
 	color: var(--text-normal);
 	-webkit-text-fill-color: var(--text-normal);
+}
+
+/* Source mode displays the raw text: treat the spoiler as hovered there,
+ * so the original text stays legible while reading source. Outranks the
+ * spoiler rule above at (0,5,1) vs (0,4,1); live preview and reading
+ * view keep the hiding behavior. (.markdown-source-view wraps the CM
+ * editor, drops .is-live-preview in source mode, and carries
+ * .cm-s-obsidian itself — the cm-editor below it does not.) */
+body .markdown-source-view.cm-s-obsidian:not(.is-live-preview) .cm-highlight.ch-editor-highlight-black.ch-editor-highlight-black {
+	background: color-mix(in srgb, var(--text-normal) 15%, transparent);
+	color: var(--text-normal);
+	-webkit-text-fill-color: var(--text-normal);
+}
+
+body .markdown-source-view.cm-s-obsidian:not(.is-live-preview) .cm-highlight.ch-editor-highlight-black.ch-editor-highlight-black * {
+	color: inherit;
+	-webkit-text-fill-color: inherit;
 }
