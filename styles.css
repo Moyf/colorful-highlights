@@ -149,17 +149,15 @@ body[data-ch-highlight-style="half-strike"] .cm-s-obsidian .cm-highlight:not([cl
 
 /* ── Style variant: double-strike (full fill + stronger bottom half) ── */
 
-/* Markers are excluded: they carry only the flat slot background (like
- * the native swatch widget), not the two-layer fill. */
 body[data-ch-highlight-style="double-strike"] .markdown-rendered mark[class*="ch-reading-highlight-"],
-body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight)[class*="ch-editor-highlight-"] {
+body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"] {
 	background-image:
 		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent)),
 		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent) 50%);
 }
 
 body[data-ch-highlight-style="double-strike"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
-body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight):not([class*="ch-editor-highlight-"]) {
+body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]) {
 	background-image:
 		linear-gradient(color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent)),
 		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 85%), transparent) 50%);
@@ -331,6 +329,34 @@ body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight-color-widg
 		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent),
 		color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent)
 	);
+}
+
+/* ── == markers & swatch widget across styles ──
+ * Both carry the slot variables (markers via class mirroring, the widget
+ * via data-highlight), so the generic paint gives them the flat slot
+ * background by default. Per style:
+ * - gradient / double-strike: they share the interior's full background
+ *   treatment (declared with their style blocks above);
+ * - outline: stroke-only — the markers and the widget stay completely
+ *   unstyled (the outline rule would otherwise stroke each marker span);
+ * - line-only styles: no background anywhere, so theirs is dropped too. */
+body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
+	background-image:
+		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent)),
+		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent) 50%);
+}
+
+body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight.cm-formatting-highlight,
+body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
+	background: transparent;
+	box-shadow: none;
+}
+
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight.cm-formatting-highlight,
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight],
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight.cm-formatting-highlight,
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
+	background: transparent;
 }
 
 /* Keep the underline stable while selecting text. Chromium repaints the
