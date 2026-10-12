@@ -1,4 +1,4 @@
-/* ────────────────────────────────────────────────────────────────
+﻿/* ────────────────────────────────────────────────────────────────
  * Colorful Highlights
  *
  * Rendering pipeline:
@@ -328,7 +328,7 @@ body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not([class
  * decoration then uses the slot color. Covers both surfaces:
  * reading-mode marks, and editor marks, which had no rule at all. */
 body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark::selection,
-body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight::selection {
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight)::selection {
 	text-decoration-line: underline;
 	text-decoration-thickness: 3px;
 	text-decoration-skip-ink: none;
@@ -336,7 +336,7 @@ body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight::
 }
 
 body[data-ch-highlight-style="underline-only"] .markdown-rendered mark::selection,
-body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight::selection {
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight)::selection {
 	text-decoration-line: underline;
 	text-decoration-thickness: 3px;
 	text-decoration-skip-ink: none;
@@ -344,7 +344,7 @@ body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight::sel
 }
 
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selection,
-body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight::selection {
+body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight)::selection {
 	text-decoration-line: underline;
 	text-decoration-style: wavy;
 	text-decoration-thickness: 2px;
@@ -354,7 +354,7 @@ body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight::sel
 }
 
 body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark::selection,
-body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight::selection {
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight)::selection {
 	text-decoration-line: underline;
 	text-decoration-style: wavy;
 	text-decoration-thickness: 2px;
@@ -519,3 +519,4 @@ body .markdown-source-view.cm-s-obsidian:not(.is-live-preview) .cm-highlight.ch-
 	color: inherit;
 	-webkit-text-fill-color: inherit;
 }
+
