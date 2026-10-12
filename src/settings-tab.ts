@@ -27,7 +27,8 @@ const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
 	'gradient': 'settings.highlightStyle.options.gradient',
 };
 
-// Styles whose second layer or line/stroke is driven by the secondary slider.
+// Styles whose second layer, line/stroke, or gradient bottom is driven by
+// the secondary slider.
 const STYLES_WITH_SECONDARY: HighlightStyle[] = [
 	'double-strike',
 	'underline-with-bg',
@@ -35,6 +36,7 @@ const STYLES_WITH_SECONDARY: HighlightStyle[] = [
 	'underline-only',
 	'wavy-underline-only',
 	'outline',
+	'gradient',
 ];
 
 const STYLES_WITHOUT_BACKGROUND: HighlightStyle[] = [

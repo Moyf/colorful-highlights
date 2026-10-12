@@ -2,12 +2,23 @@
  * CodeMirror 6 editor extension that decorates emoji-prefixed highlights
  * (e.g. ==🔴Important text==) with:
  *
- * 1. A background-color mark matching the configured color slot.
+ * 1. A color class mirrored onto Obsidian's native `.cm-highlight` mark.
  * 2. An optional Decoration.replace that hides the emoji character — unless
  *    the cursor is currently inside that highlight range, mirroring how
  *    Obsidian's Live Preview hides `==` markers until focused.
  * 3. Plain ==highlights== without emoji get the default color slot's
- *    background when a default color is configured.
+ *    class when a default color is configured.
+ *
+ * Why mirror classes instead of emitting mark decorations:
+ * CM6 places our marks INSIDE Obsidian's native `.cm-highlight` (the
+ * nesting order is decided by the editor's own decorations and cannot be
+ * changed via precedence — verified empirically). Styling the highlight
+ * therefore used to require `:has()` selectors in CSS, which Obsidian's
+ * CSS scanner flags and which costs real invalidation work in CM6's
+ * high-frequency DOM. Instead, this plugin resolves each highlight's DOM
+ * element via `view.posAtDOM()` and adds `ch-editor-highlight-{slot}`
+ * directly to the native mark. styles.css then uses plain class
+ * selectors — zero `:has()`, same cascade target, same visual result.
  *
  * Registration:  plugin.registerEditorExtension(extensionArray)
  * Reactivity:    mutate the array contents + app.workspace.updateOptions()
@@ -43,23 +54,19 @@ export interface ColorHighlightConfig {
 	showPrefixInSourceMode: boolean;
 }
 
-// ── Pre-built decoration marks (one per color slot) ─────────────────
-
-const colorMarkDecos: Record<ColorSlotKey, Decoration> = {
-	yellow: Decoration.mark({ class: 'ch-editor-highlight-yellow' }),
-	green: Decoration.mark({ class: 'ch-editor-highlight-green' }),
-	red: Decoration.mark({ class: 'ch-editor-highlight-red' }),
-	purple: Decoration.mark({ class: 'ch-editor-highlight-purple' }),
-	blue: Decoration.mark({ class: 'ch-editor-highlight-blue' }),
-	gray: Decoration.mark({ class: 'ch-editor-highlight-gray' }),
-	orange: Decoration.mark({ class: 'ch-editor-highlight-orange' }),
-	cyan: Decoration.mark({ class: 'ch-editor-highlight-cyan' }),
-	magenta: Decoration.mark({ class: 'ch-editor-highlight-magenta' }),
-	black: Decoration.mark({ class: 'ch-editor-highlight-black' }),
-};
-
 /** Replaces a range with nothing — used to visually hide the emoji character. */
 const hideEmoji = Decoration.replace({});
+
+/** A highlight range resolved to a color slot, for class mirroring. */
+interface SlotRange {
+	/** Range edges including the == markers. */
+	from: number;
+	to: number;
+	/** Interior text range (between the markers). */
+	innerFrom: number;
+	innerTo: number;
+	slot: ColorSlotKey;
+}
 
 function isSourceMode(view: EditorView): boolean {
 	return view.dom.closest('.markdown-source-view')?.classList.contains('is-live-preview') === false;
@@ -135,20 +142,22 @@ function buildDecorations(
 	view: EditorView,
 	config: ColorHighlightConfig,
 	emojiMap: Map<string, ColorSlotKey>
-): DecorationSet {
+): { decorations: DecorationSet; slotRanges: SlotRange[] } {
 	const showEmojiPrefix = config.showPrefixInSourceMode && isSourceMode(view);
 
 	const ranges: Range<Decoration>[] = [];
+	const slotRanges: SlotRange[] = [];
 	const highlightRe = createHighlightRegex();
 	const fencedLines = computeFencedCodeLines(view.state.doc.toString());
 
 	// Collect all selection ranges for cursor-intersection checks
 	const selRanges = view.state.selection.ranges;
 
-	// Resolve the default-slot decoration (for plain ==text== without emoji)
-	const defaultDeco = config.defaultColorSlot !== 'none' && config.activeSlots.includes(config.defaultColorSlot)
-		? colorMarkDecos[config.defaultColorSlot]
-		: null;
+	// Resolve the default-slot class (for plain ==text== without emoji)
+	const defaultSlot: ColorSlotKey | null =
+		config.defaultColorSlot !== 'none' && config.activeSlots.includes(config.defaultColorSlot)
+			? config.defaultColorSlot
+			: null;
 
 	for (const { from, to } of view.visibleRanges) {
 		const text = view.state.doc.sliceString(from, to);
@@ -170,8 +179,7 @@ function buildDecorations(
 
 			if (slot) {
 				// ── Emoji-prefixed highlight: use the emoji's color ──
-				// Cover the full ==...== range including markers
-				ranges.push(colorMarkDecos[slot].range(matchStart, matchEnd));
+				slotRanges.push({ from: matchStart, to: matchEnd, innerFrom: innerStart, innerTo: innerEnd, slot });
 
 				// Hide emoji when configured and cursor is NOT inside this highlight.
 				// Boundaries are inclusive: the emoji stays visible while the cursor
@@ -193,16 +201,87 @@ function buildDecorations(
 						ranges.push(hideEmoji.range(emojiFrom, emojiTo));
 					}
 				}
-			} else if (defaultDeco) {
+			} else if (defaultSlot) {
 				// ── Plain ==text== without emoji: apply default color ──
-				// Cover the full ==...== range including markers
-				ranges.push(defaultDeco.range(matchStart, matchEnd));
+				slotRanges.push({ from: matchStart, to: matchEnd, innerFrom: innerStart, innerTo: innerEnd, slot: defaultSlot });
 			}
 		}
 	}
 
 	// Decoration.set() handles sorting by from/startSide automatically
-	return Decoration.set(ranges, true);
+	return { decorations: Decoration.set(ranges, true), slotRanges };
+}
+
+// ── Slot-class mirroring ────────────────────────────────────────────
+
+/**
+ * Sync mirrored `ch-editor-highlight-{slot}` classes with the DOM.
+ *
+ * Enumerates the native `.cm-highlight` marks currently rendered and
+ * matches each against the slot ranges by DOCUMENT-POSITION OVERLAP.
+ * CM6 splits a highlight's marks around nested runs (e.g. a bold run
+ * inside the highlight); each segment overlaps the range and gets the
+ * class. Highlights are line-scoped — createHighlightRegex excludes
+ * newlines — so cross-line ranges never occur, but the overlap check
+ * would handle them if the regex were ever relaxed.
+ *
+ * Formatting markers (`==` spans, classed `cm-formatting-highlight`) sit
+ * OUTSIDE the interior, so they are matched against the full slot range
+ * instead of the interior — pre-mirroring, the plugin's own mark covered
+ * the full ==...== span and the markers were painted with the slot
+ * color; this keeps that look (and keeps the glyphs legible on the
+ * black spoiler).
+ */
+function syncSlotClasses(
+	view: EditorView,
+	slotRanges: readonly SlotRange[],
+	applied: Map<Element, string[]>
+): { found: number; added: number } {
+	const next = new Map<Element, string[]>();
+	let added = 0;
+	let found = 0;
+	const marks = Array.from(view.contentDOM.querySelectorAll('.cm-highlight'));
+	for (const el of marks) {
+		let elFrom: number;
+		let elTo: number;
+		try {
+			elFrom = view.posAtDOM(el, 0);
+			elTo = view.posAtDOM(el, el.childNodes.length);
+		} catch {
+			continue;
+		}
+		const isMarker = el.classList.contains('cm-formatting-highlight');
+		const wanted: string[] = [];
+		for (const range of slotRanges) {
+			const lo = isMarker ? range.from : range.innerFrom;
+			const hi = isMarker ? range.to : range.innerTo;
+			if (elFrom < hi && lo < elTo) {
+				const cls = `ch-editor-highlight-${range.slot}`;
+				if (!wanted.includes(cls)) wanted.push(cls);
+			}
+		}
+		if (wanted.length === 0) continue;
+		found++;
+		for (const cls of wanted) {
+			if (!el.classList.contains(cls)) {
+				el.classList.add(cls);
+				added++;
+			}
+		}
+		next.set(el, wanted);
+	}
+	// Remove previously-applied classes this sync no longer wants —
+	// including on marks that are still matched, so a race with a CM6
+	// rebuild can never leave a duplicate slot class behind.
+	for (const [el, classes] of applied) {
+		const wanted = next.get(el);
+		for (const cls of classes) {
+			if (!wanted?.includes(cls)) el.classList.remove(cls);
+		}
+	}
+	applied.clear();
+	for (const [el, classes] of next) applied.set(el, classes);
+	return { found, added };
 }
 
 // ── ViewPlugin ──────────────────────────────────────────────────────
@@ -215,10 +294,16 @@ function createViewPlugin(config: ColorHighlightConfig) {
 
 	return ViewPlugin.fromClass(
 		class {
-			decorations: DecorationSet;
+			decorations: DecorationSet = Decoration.none;
+			/** Slot classes this plugin last added to mark elements, for cleanup. */
+			applied = new Map<Element, string[]>();
+			/** Latest slot ranges; re-read by the deferred re-sync. */
+			slotRanges: SlotRange[] = [];
+			/** The single pending deferred re-sync, so stale syncs never run. */
+			pendingSync: { win: Window; handle: number } | null = null;
 
 			constructor(view: EditorView) {
-				this.decorations = buildDecorations(view, config, emojiMap);
+				this.refresh(view);
 			}
 
 			update(update: ViewUpdate) {
@@ -227,7 +312,61 @@ function createViewPlugin(config: ColorHighlightConfig) {
 					update.viewportChanged ||
 					update.selectionSet
 				) {
-					this.decorations = buildDecorations(update.view, config, emojiMap);
+					this.refresh(update.view);
+				}
+			}
+
+			destroy() {
+				this.cancelSync();
+				// Drop mirrored classes so closing/unloading never leaves styling behind
+				for (const [el, classes] of this.applied) {
+					for (const cls of classes) el.classList.remove(cls);
+				}
+				this.applied.clear();
+			}
+
+			/**
+			 * Runs synchronously right after CM6 rebuilds the line DOM within
+			 * the same view update, so marks that were (re)built after our
+			 * update() pass get their slot class before anything paints —
+			 * no one-frame unstyled flash while typing or toggling the
+			 * emoji replace widget.
+			 */
+			docViewUpdate(view: EditorView) {
+				syncSlotClasses(view, this.slotRanges, this.applied);
+			}
+
+			/** Rebuild decorations and mirror slot classes onto native marks. */
+			private refresh(view: EditorView): void {
+				const built = buildDecorations(view, config, emojiMap);
+				this.decorations = built.decorations;
+				this.slotRanges = built.slotRanges;
+				this.cancelSync();
+				const sync = syncSlotClasses(view, built.slotRanges, this.applied);
+				// Plugin update() runs BEFORE CM6 rebuilds the line DOM, and the
+				// plugin constructor runs before the first DocView exists at all
+				// — docViewUpdate covers the rebuild paths inside the update
+				// flow, so this deferred re-sync only backstops paths that
+				// never dispatch one (initial mount, setState()-style swaps).
+				// It runs on the view's own window so a popout editor is not
+				// throttled by the main one, and is skipped when no highlight
+				// is in play, keeping cursor moves through highlight-free text
+				// free of deferred work.
+				if (sync.found > 0 || built.slotRanges.length > 0) {
+					const win = view.dom.ownerDocument.defaultView ?? window;
+					const pending = { win, handle: 0 };
+					pending.handle = win.requestAnimationFrame(() => {
+						this.pendingSync = null;
+						syncSlotClasses(view, this.slotRanges, this.applied);
+					});
+					this.pendingSync = pending;
+				}
+			}
+
+			private cancelSync(): void {
+				if (this.pendingSync) {
+					this.pendingSync.win.cancelAnimationFrame(this.pendingSync.handle);
+					this.pendingSync = null;
 				}
 			}
 		},

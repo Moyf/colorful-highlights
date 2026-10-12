@@ -91,7 +91,7 @@ export interface ColorfulHighlightsSettings {
 	useSubmenu: boolean;
 	/** Background color mix percentage (10–100). */
 	colorOpacity: number;
-	/** Secondary mix percentage (10–100) for double-strike and line colors. */
+	/** Secondary mix percentage (10–100) for double-strike, line colors, and the gradient bottom. */
 	secondaryColorOpacity: number;
 	/** Who paints the colored background: plugin CSS or the theme via --text-highlight-bg. */
 	renderMode: RenderMode;
@@ -120,10 +120,10 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	readingRenderer: true,
 	showColorMenuInEditorMenu: true,
 	useSubmenu: false,
-	colorOpacity: 60,
+	colorOpacity: 30,
 	secondaryColorOpacity: 60,
 	renderMode: 'plugin',
-	highlightStyle: 'default',
+	highlightStyle: 'gradient',
 	defaultColorSlot: 'yellow',
 	extendedColors: false,
 	enabledColors: {

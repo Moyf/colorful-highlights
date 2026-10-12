@@ -52,7 +52,7 @@ Example results:
 | Highlight style | Default / half-strike / double-strike / underline / wavy line / underline only / wavy line only / rounded / outline / gradient. |
 | Default highlight color | Color for plain `==text==`; switching to it removes the emoji prefix. |
 | Color intensity | Background color mix percentage (10–100%). |
-| Secondary color intensity | Second layer of double-strike and line colors (10–100%). |
+| Secondary color intensity | Second layer of double-strike, line colors, and the gradient bottom (10–100%). |
 | Color rendering | Plugin styles paint the background directly; theme native only overrides `--text-highlight-bg` and lets your theme paint highlights. |
 | Decorate in editor / Reading view | Toggle each surface independently. |
 | Extended colors | Reveal five extra color slots (orange / cyan / magenta / gray / Black (Spoiler)) in commands, menus, and settings. Use the toggle beside each color to keep only the colors you prefer. Off by default. |
@@ -65,6 +65,7 @@ Example results:
 - Works on desktop and mobile (`isDesktopOnly: false`).
 - Requires Obsidian 1.13.0+.
 - Uses only local parsing and rendering — no network requests, no data leaves your vault.
+- Theme compatibility: the plugin deliberately avoids `!important` so it cooperates with theme styles. A theme that styles highlights with `!important` rules will override the plugin's highlight styling.
 
 ## Credits
 

@@ -17,7 +17,7 @@ const en: BaseMessage = {
 		},
 		highlightStyle: {
 			name: 'Highlight style',
-			desc: 'Visual style applied to all highlights in the editor and reading view.',
+			desc: 'Visual style applied to all highlights in the editor and reading view. Note: theme rules that use !important can override the plugin\'s styling.',
 			preview: 'Sample text',
 			options: {
 				default: 'Default',
@@ -43,7 +43,7 @@ const en: BaseMessage = {
 		},
 		secondaryOpacity: {
 			name: 'Secondary color intensity',
-			desc: 'Secondary intensity for the double-strike second layer and line colors (10–100%).',
+			desc: 'Secondary intensity for the double-strike second layer, line colors, and the gradient bottom (10–100%).',
 		},
 		renderMode: {
 			name: 'Color rendering',
