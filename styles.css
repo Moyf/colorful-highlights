@@ -167,7 +167,7 @@ body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not([
 
 body[data-ch-highlight-style="underline-only"] .markdown-rendered mark,
 body[data-ch-highlight-style="underline-only"] .markdown-rendered mark:not([class]),
-body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight,
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight),
 body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight:not([class]) {
 	/* Specificity note: these selectors must stay >= the slot background
 	 * rules above (0,3,1). Winning on source order alone is what lets this
@@ -193,7 +193,7 @@ body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight:not(
 /* ── Style variant: underline-with-bg ── */
 
 body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark,
-body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight {
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight) {
 	text-decoration: underline;
 	text-decoration-thickness: 3px;
 	text-decoration-skip-ink: none;
@@ -253,7 +253,7 @@ body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight:not([class*
 /* ── Style variant: wavy-underline (Wavy line) ── */
 
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark,
-body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight {
+body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight) {
 	text-decoration-line: underline;
 	text-decoration-style: wavy;
 	text-decoration-thickness: 2px;
@@ -278,7 +278,7 @@ body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight:not(
 
 body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark,
 body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark:not([class]),
-body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight,
+body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight:not(.cm-formatting-highlight),
 body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight:not([class]) {
 	/* Same specificity contract as underline-only above. */
 	background: transparent;
