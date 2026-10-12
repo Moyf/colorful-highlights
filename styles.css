@@ -38,31 +38,31 @@
 .markdown-rendered mark.ch-reading-highlight-yellow,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-yellow {
 	--ch-active-color: var(--ch-highlight-yellow, #ffd700);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-green,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-green {
 	--ch-active-color: var(--ch-highlight-green, #96ceb4);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-red,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-red {
 	--ch-active-color: var(--ch-highlight-red, #ff6b6b);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-purple,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-purple {
 	--ch-active-color: var(--ch-highlight-purple, #a78bfa);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-blue,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-blue {
 	--ch-active-color: var(--ch-highlight-blue, #45b7d1);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 /* Extended slots — only applied when the extended-colors toggle is on. */
@@ -70,25 +70,25 @@
 .markdown-rendered mark.ch-reading-highlight-gray,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-gray {
 	--ch-active-color: var(--ch-highlight-gray, #adb5bd);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-orange,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-orange {
 	--ch-active-color: var(--ch-highlight-orange, #ffa94d);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-cyan,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-cyan {
 	--ch-active-color: var(--ch-highlight-cyan, #2dd4bf);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-magenta,
 .cm-s-obsidian .cm-highlight.ch-editor-highlight-magenta {
 	--ch-active-color: var(--ch-highlight-magenta, #f472b6);
-	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	--text-highlight-bg: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .markdown-rendered mark.ch-reading-highlight-black,
@@ -110,7 +110,7 @@
 
 body:not([data-ch-color-mode="native"]) .markdown-rendered mark:where([class*="ch-reading-highlight-"]),
 body:not([data-ch-color-mode="native"]) .cm-s-obsidian .cm-highlight:where([class*="ch-editor-highlight-"]) {
-	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 /* ── Native emoji-prefix swatch (Obsidian 1.14+) ──
@@ -132,19 +132,19 @@ body:not([data-ch-color-mode="native"]) .cm-s-obsidian .cm-highlight:where([clas
 .cm-s-obsidian .cm-highlight-color-widget[data-highlight="black"] { --ch-active-color: var(--text-normal); }
 
 body:not([data-ch-color-mode="native"]) .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
-	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 /* ── Style variant: half-strike (bottom half filled) ── */
 
 body[data-ch-highlight-style="half-strike"] .markdown-rendered mark[class*="ch-reading-highlight-"],
 body[data-ch-highlight-style="half-strike"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"] {
-	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent) 50%);
+	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent) 50%);
 }
 
 body[data-ch-highlight-style="half-strike"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
 body[data-ch-highlight-style="half-strike"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]) {
-	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent) 50%);
+	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent) 50%);
 }
 
 /* ── Style variant: double-strike (full fill + stronger bottom half) ── */
@@ -152,14 +152,14 @@ body[data-ch-highlight-style="half-strike"] .cm-s-obsidian .cm-highlight:not([cl
 body[data-ch-highlight-style="double-strike"] .markdown-rendered mark[class*="ch-reading-highlight-"],
 body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"] {
 	background-image:
-		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent)),
+		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent)),
 		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent) 50%);
 }
 
 body[data-ch-highlight-style="double-strike"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
 body[data-ch-highlight-style="double-strike"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]) {
 	background-image:
-		linear-gradient(color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent), color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent)),
+		linear-gradient(color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent)),
 		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 85%), transparent) 50%);
 }
 
@@ -216,7 +216,7 @@ body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight:n
 
 body[data-ch-highlight-style="rounded"] .markdown-rendered mark[class*="ch-reading-highlight-"],
 body[data-ch-highlight-style="rounded"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"] {
-	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 	border-radius: 4px;
 	padding: 0 2px;
 	box-decoration-break: clone;
@@ -225,7 +225,7 @@ body[data-ch-highlight-style="rounded"] .cm-s-obsidian .cm-highlight[class*="ch-
 
 body[data-ch-highlight-style="rounded"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
 body[data-ch-highlight-style="rounded"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]) {
-	background-color: color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent);
+	background-color: color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent);
 	border-radius: 4px;
 	padding: 0 2px;
 	box-decoration-break: clone;
@@ -307,7 +307,7 @@ body[data-ch-highlight-style="gradient"] .markdown-rendered mark[class*="ch-read
 body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"] {
 	background: linear-gradient(
 		to bottom,
-		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent),
+		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent),
 		color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent)
 	);
 }
@@ -316,7 +316,7 @@ body[data-ch-highlight-style="gradient"] .markdown-rendered mark:not([class*="ch
 body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]) {
 	background: linear-gradient(
 		to bottom,
-		color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 60%), transparent),
+		color-mix(in srgb, var(--ch-plain-color) var(--ch-highlight-opacity, 30%), transparent),
 		color-mix(in srgb, var(--ch-plain-color) var(--ch-underline-opacity, 60%), transparent)
 	);
 }
@@ -380,16 +380,16 @@ body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight
 	font-size: var(--font-ui-small);
 	line-height: 1.6;
 	white-space: nowrap;
-	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent);
+	background-color: color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent);
 }
 
 .ch-style-preview-sample[data-ch-preview-style="half-strike"] {
-	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent) 50%);
+	background: linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent) 50%);
 }
 
 .ch-style-preview-sample[data-ch-preview-style="double-strike"] {
 	background-image:
-		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent)),
+		linear-gradient(color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent), color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent)),
 		linear-gradient(transparent 50%, color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 85%), transparent) 50%);
 }
 
@@ -441,7 +441,7 @@ body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight
 .ch-style-preview-sample[data-ch-preview-style="gradient"] {
 	background: linear-gradient(
 		to bottom,
-		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 60%), transparent),
+		color-mix(in srgb, var(--ch-active-color) var(--ch-highlight-opacity, 30%), transparent),
 		color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent)
 	);
 }

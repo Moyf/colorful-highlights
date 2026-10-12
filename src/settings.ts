@@ -120,7 +120,7 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	readingRenderer: true,
 	showColorMenuInEditorMenu: true,
 	useSubmenu: false,
-	colorOpacity: 60,
+	colorOpacity: 30,
 	secondaryColorOpacity: 60,
 	renderMode: 'plugin',
 	highlightStyle: 'default',
