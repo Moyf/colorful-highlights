@@ -321,20 +321,45 @@ body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not([class
 	);
 }
 
-/* Keep underline color stable while selecting text (avoid browser fallback to black).
- * Chromium resolves `inherit` on ::selection against the DOM parent (whose
- * decoration color is the default black), so the slot color is restated
- * with the exact formula the unselected underline uses. Covers both
- * surfaces: reading-mode marks, and editor marks — the editor had no
- * rule at all before. */
-body[data-ch-highlight-style="underline-only"] .markdown-rendered mark::selection,
+/* Keep the underline stable while selecting text. Chromium repaints the
+ * selected range's decoration from the ::selection style and ignores a
+ * bare text-decoration-color override there, so ::selection must declare
+ * its OWN decoration (line + thickness + color) — the selection-owned
+ * decoration then uses the slot color. Covers both surfaces:
+ * reading-mode marks, and editor marks, which had no rule at all. */
 body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark::selection,
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight::selection {
+	text-decoration-line: underline;
+	text-decoration-thickness: 3px;
+	text-decoration-skip-ink: none;
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
+}
+
+body[data-ch-highlight-style="underline-only"] .markdown-rendered mark::selection,
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight::selection {
+	text-decoration-line: underline;
+	text-decoration-thickness: 3px;
+	text-decoration-skip-ink: none;
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
+}
+
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selection,
+body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight::selection {
+	text-decoration-line: underline;
+	text-decoration-style: wavy;
+	text-decoration-thickness: 2px;
+	text-decoration-skip-ink: none;
+	text-underline-offset: 2px;
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
+}
+
 body[data-ch-highlight-style="wavy-underline-only"] .markdown-rendered mark::selection,
-body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight::selection,
-body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight::selection,
-body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight::selection,
 body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight::selection {
+	text-decoration-line: underline;
+	text-decoration-style: wavy;
+	text-decoration-thickness: 2px;
+	text-decoration-skip-ink: none;
+	text-underline-offset: 2px;
 	text-decoration-color: color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
 }
 
