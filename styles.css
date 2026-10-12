@@ -322,8 +322,11 @@ body[data-ch-highlight-style="gradient"] .cm-s-obsidian .cm-highlight:not([class
 }
 
 /* Keep underline color stable while selecting text (avoid browser fallback to black).
- * Covers both surfaces: reading-mode marks, and editor marks — the editor had no
- * equivalent rule, so the underline painted in the text color while selected. */
+ * Chromium resolves `inherit` on ::selection against the DOM parent (whose
+ * decoration color is the default black), so the slot color is restated
+ * with the exact formula the unselected underline uses. Covers both
+ * surfaces: reading-mode marks, and editor marks — the editor had no
+ * rule at all before. */
 body[data-ch-highlight-style="underline-only"] .markdown-rendered mark::selection,
 body[data-ch-highlight-style="underline-with-bg"] .markdown-rendered mark::selection,
 body[data-ch-highlight-style="wavy-underline"] .markdown-rendered mark::selection,
@@ -332,7 +335,16 @@ body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight::sel
 body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight::selection,
 body[data-ch-highlight-style="wavy-underline"] .cm-s-obsidian .cm-highlight::selection,
 body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight::selection {
-	text-decoration-color: inherit;
+	text-decoration-color: color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
+}
+
+/* The native emoji swatch widget contains no text, so text-decoration
+ * cannot reach it; draw a matching bottom bar instead to keep the
+ * underline continuous across the ==…== span. Wavy styles cannot be
+ * reproduced on a non-text box and are left alone. */
+body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight],
+body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
+	box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
 }
 
 /* ── Settings: highlight style live preview ──
