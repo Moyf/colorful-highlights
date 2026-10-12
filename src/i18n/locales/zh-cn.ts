@@ -43,7 +43,7 @@ const zhCn: BaseMessage = {
 		},
 		secondaryOpacity: {
 			name: '第二层颜色强度',
-			desc: '「加深填充」的第二层，以及各种线条的颜色（10–100%）。',
+			desc: '「加深填充」的第二层、各种线条的颜色，以及「渐变填充」底部的强度（10–100%）。',
 		},
 		renderMode: {
 			name: '着色方式',
