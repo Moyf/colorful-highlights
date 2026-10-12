@@ -338,15 +338,6 @@ body[data-ch-highlight-style="wavy-underline-only"] .cm-s-obsidian .cm-highlight
 	text-decoration-color: color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
 }
 
-/* The native emoji swatch widget contains no text, so text-decoration
- * cannot reach it; draw a matching bottom bar instead to keep the
- * underline continuous across the ==…== span. Wavy styles cannot be
- * reproduced on a non-text box and are left alone. */
-body[data-ch-highlight-style="underline-with-bg"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight],
-body[data-ch-highlight-style="underline-only"] .cm-s-obsidian .cm-highlight-color-widget[data-highlight] {
-	box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--ch-active-color, currentColor) var(--ch-underline-opacity, 60%), transparent);
-}
-
 /* ── Settings: highlight style live preview ──
  * Mirrors the global variants, keyed on the element's own
  * data-ch-preview-style attribute so it updates instantly in the
