@@ -223,6 +223,12 @@ function buildDecorations(
  * into one mark per line) and marks split by nested marks (e.g. a bold
  * run inside the highlight) — each segment overlaps the range and gets
  * the class.
+ *
+ * Formatting markers (`==` spans, classed `cm-formatting-highlight`) sit
+ * OUTSIDE the interior, so they are matched against the full slot range
+ * instead — pre-mirroring, the plugin's own mark covered the full
+ * ==...== span and the markers were painted with the slot color; this
+ * keeps that look (and keeps the glyphs legible on the black spoiler).
  */
 function syncSlotClasses(
 	view: EditorView,
@@ -242,10 +248,13 @@ function syncSlotClasses(
 		} catch {
 			continue;
 		}
+		const isMarker = el.classList.contains('cm-formatting-highlight');
 		const wanted: string[] = [];
-		for (const { innerFrom, innerTo, slot } of slotRanges) {
-			if (elFrom < innerTo && innerFrom < elTo) {
-				const cls = `ch-editor-highlight-${slot}`;
+		for (const range of slotRanges) {
+			const lo = isMarker ? range.from : range.innerFrom;
+			const hi = isMarker ? range.to : range.innerTo;
+			if (elFrom < hi && lo < elTo) {
+				const cls = `ch-editor-highlight-${range.slot}`;
 				if (!wanted.includes(cls)) wanted.push(cls);
 			}
 		}

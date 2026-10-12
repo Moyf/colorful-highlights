@@ -436,3 +436,13 @@ body .cm-s-obsidian .cm-highlight.ch-editor-highlight-black.ch-editor-highlight-
 	color: inherit;
 	-webkit-text-fill-color: inherit;
 }
+
+/* Formatting markers on the black spoiler are syntax, not spoiler
+ * content: keep the opening/closing == legible while the enclosed text
+ * stays hidden. Declared after the spoiler block and doubled to tie it
+ * at (0,4,1) — source order decides, no !important. */
+body .cm-s-obsidian .cm-formatting-highlight.ch-editor-highlight-black.ch-editor-highlight-black {
+	background: transparent;
+	color: var(--text-normal);
+	-webkit-text-fill-color: var(--text-normal);
+}
