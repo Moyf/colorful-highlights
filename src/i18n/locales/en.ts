@@ -17,7 +17,7 @@ const en: BaseMessage = {
 		},
 		highlightStyle: {
 			name: 'Highlight style',
-			desc: 'Visual style applied to all highlights in the editor and reading view.',
+			desc: 'Visual style applied to all highlights in the editor and reading view. Note: theme rules that use !important can override the plugin\'s styling.',
 			preview: 'Sample text',
 			options: {
 				default: 'Default',

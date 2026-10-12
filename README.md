@@ -65,6 +65,7 @@ Example results:
 - Works on desktop and mobile (`isDesktopOnly: false`).
 - Requires Obsidian 1.13.0+.
 - Uses only local parsing and rendering — no network requests, no data leaves your vault.
+- Theme compatibility: the plugin deliberately avoids `!important` so it cooperates with theme styles. A theme that styles highlights with `!important` rules will override the plugin's highlight styling.
 
 ## Credits
 

@@ -400,11 +400,13 @@ body .markdown-rendered mark.ch-reading-highlight-black.ch-reading-highlight-bla
 body .cm-s-obsidian .cm-highlight.ch-editor-highlight-black.ch-editor-highlight-black {
 	--ch-active-color: var(--text-normal);
 	--text-highlight-bg: var(--text-normal);
-	/* Spoiler must outrank the generic paint rules above — the base paint
-	 * (:where form) and every style-variant rule sit at (0,5,0) in the
-	 * editor, so the slot class is doubled to reach (0,5,0) and win on
-	 * source order instead of using !important. Accepted trade-off: a
-	 * theme rule that is itself !important will win, and that is OK. */
+	/* Spoiler must outrank the generic paint rules above — the :where()
+	 * base paint sits at (0,3,1) in the editor and every style-variant
+	 * rule at (0,4,1), so the slot class is doubled to match the
+	 * variants at (0,4,1) and win on source order instead of using
+	 * !important. (Reading view: variants (0,3,2) vs doubled spoiler
+	 * (0,3,2) — same tie-break.) Accepted trade-off: a theme rule that
+	 * is itself !important will win, and that is OK. */
 	background: var(--text-normal);
 	background-image: none;
 	border-radius: 0;

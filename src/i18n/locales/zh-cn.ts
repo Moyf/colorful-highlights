@@ -17,7 +17,7 @@ const zhCn: BaseMessage = {
 		},
 		highlightStyle: {
 			name: '高亮样式',
-			desc: '应用于编辑器和阅读视图中所有高亮的视觉样式。',
+			desc: '应用于编辑器和阅读视图中所有高亮的视觉样式。注意：主题中使用 !important 的样式规则会覆盖插件的高亮样式。',
 			preview: '示例文本',
 			options: {
 				default: '默认',

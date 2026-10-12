@@ -16,7 +16,7 @@
  * therefore used to require `:has()` selectors in CSS, which Obsidian's
  * CSS scanner flags and which costs real invalidation work in CM6's
  * high-frequency DOM. Instead, this plugin resolves each highlight's DOM
- * element via `view.domAtPos()` and adds `ch-editor-highlight-{slot}`
+ * element via `view.posAtDOM()` and adds `ch-editor-highlight-{slot}`
  * directly to the native mark. styles.css then uses plain class
  * selectors — zero `:has()`, same cascade target, same visual result.
  *
@@ -155,9 +155,9 @@ function buildDecorations(
 
 	// Resolve the default-slot class (for plain ==text== without emoji)
 	const defaultSlot: ColorSlotKey | null =
-	config.defaultColorSlot !== 'none' && config.activeSlots.includes(config.defaultColorSlot)
-		? config.defaultColorSlot
-		: null;
+		config.defaultColorSlot !== 'none' && config.activeSlots.includes(config.defaultColorSlot)
+			? config.defaultColorSlot
+			: null;
 
 	for (const { from, to } of view.visibleRanges) {
 		const text = view.state.doc.sliceString(from, to);
@@ -226,7 +226,7 @@ function buildDecorations(
  */
 function syncSlotClasses(
 	view: EditorView,
-	slotRanges: SlotRange[],
+	slotRanges: readonly SlotRange[],
 	applied: Map<Element, string[]>
 ): { found: number; added: number } {
 	const next = new Map<Element, string[]>();
@@ -242,23 +242,31 @@ function syncSlotClasses(
 		} catch {
 			continue;
 		}
+		const wanted: string[] = [];
 		for (const { innerFrom, innerTo, slot } of slotRanges) {
 			if (elFrom < innerTo && innerFrom < elTo) {
-				found++;
 				const cls = `ch-editor-highlight-${slot}`;
-				if (!el.classList.contains(cls)) {
-					el.classList.add(cls);
-					added++;
-				}
-				const existing = next.get(el);
-				if (existing) existing.push(cls);
-				else next.set(el, [cls]);
+				if (!wanted.includes(cls)) wanted.push(cls);
 			}
 		}
+		if (wanted.length === 0) continue;
+		found++;
+		for (const cls of wanted) {
+			if (!el.classList.contains(cls)) {
+				el.classList.add(cls);
+				added++;
+			}
+		}
+		next.set(el, wanted);
 	}
+	// Remove previously-applied classes this sync no longer wants —
+	// including on marks that are still matched, so a race with a CM6
+	// rebuild can never leave a duplicate slot class behind.
 	for (const [el, classes] of applied) {
-		if (next.has(el)) continue;
-		for (const cls of classes) el.classList.remove(cls);
+		const wanted = next.get(el);
+		for (const cls of classes) {
+			if (!wanted?.includes(cls)) el.classList.remove(cls);
+		}
 	}
 	applied.clear();
 	for (const [el, classes] of next) applied.set(el, classes);
@@ -275,19 +283,8 @@ function applySlotClasses(
 	view: EditorView,
 	slotRanges: SlotRange[],
 	applied: Map<Element, string[]>
-): void {
-	const sync = syncSlotClasses(view, slotRanges, applied);
-
-	// Re-sync on the next frame: CM6 can rebuild a line's DOM *after* our
-	// update pass (e.g. its own decoration flush), dropping mirrored
-	// classes from marks that still exist. Re-checking without DOM writes
-	// when nothing is missing keeps the common case free.
-	if (sync.found > 0) {
-		const state = { view, slotRanges, applied };
-		window.requestAnimationFrame(() => {
-			syncSlotClasses(state.view, state.slotRanges, state.applied);
-		});
-	}
+): { found: number; added: number } {
+	return syncSlotClasses(view, slotRanges, applied);
 }
 
 // ── ViewPlugin ──────────────────────────────────────────────────────
@@ -300,14 +297,16 @@ function createViewPlugin(config: ColorHighlightConfig) {
 
 	return ViewPlugin.fromClass(
 		class {
-			decorations: DecorationSet;
+			decorations: DecorationSet = Decoration.none;
 			/** Slot classes this plugin last added to mark elements, for cleanup. */
 			applied = new Map<Element, string[]>();
+			/** Latest slot ranges; re-read by the deferred re-sync. */
+			slotRanges: SlotRange[] = [];
+			/** The single pending deferred re-sync, so stale syncs never run. */
+			pendingSync: { win: Window; handle: number } | null = null;
 
 			constructor(view: EditorView) {
-				const built = buildDecorations(view, config, emojiMap);
-				this.decorations = built.decorations;
-				applySlotClasses(view, built.slotRanges, this.applied);
+				this.refresh(view);
 			}
 
 			update(update: ViewUpdate) {
@@ -316,18 +315,49 @@ function createViewPlugin(config: ColorHighlightConfig) {
 					update.viewportChanged ||
 					update.selectionSet
 				) {
-					const built = buildDecorations(update.view, config, emojiMap);
-					this.decorations = built.decorations;
-					applySlotClasses(update.view, built.slotRanges, this.applied);
+					this.refresh(update.view);
 				}
 			}
 
 			destroy() {
+				this.cancelSync();
 				// Drop mirrored classes so closing/unloading never leaves styling behind
 				for (const [el, classes] of this.applied) {
 					for (const cls of classes) el.classList.remove(cls);
 				}
 				this.applied.clear();
+			}
+
+			/** Rebuild decorations and mirror slot classes onto native marks. */
+			private refresh(view: EditorView): void {
+				const built = buildDecorations(view, config, emojiMap);
+				this.decorations = built.decorations;
+				this.slotRanges = built.slotRanges;
+				this.cancelSync();
+				const sync = applySlotClasses(view, built.slotRanges, this.applied);
+				// Plugin update() runs BEFORE CM6 rebuilds the line DOM, and the
+				// plugin constructor runs before the first DocView exists at all
+				// — marks that are about to be (re)built lack the mirrored class.
+				// Re-sync on the next frame to repair; it runs on the view's own
+				// window so a popout editor is not throttled by the main one.
+				// Skipped when no highlight is in play, which keeps cursor moves
+				// through highlight-free text free of deferred work.
+				if (sync.found > 0 || built.slotRanges.length > 0) {
+					const win = view.dom.ownerDocument.defaultView ?? window;
+					const pending = { win, handle: 0 };
+					pending.handle = win.requestAnimationFrame(() => {
+						this.pendingSync = null;
+						syncSlotClasses(view, this.slotRanges, this.applied);
+					});
+					this.pendingSync = pending;
+				}
+			}
+
+			private cancelSync(): void {
+				if (this.pendingSync) {
+					this.pendingSync.win.cancelAnimationFrame(this.pendingSync.handle);
+					this.pendingSync = null;
+				}
 			}
 		},
 		{
