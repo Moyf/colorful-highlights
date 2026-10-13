@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.4.0](https://github.com/Moyf/colorful-highlights/compare/1.3.0...1.4.0) - 2026-10-13
+
+### 🚀 Added
+
+- **Text color style**: a new highlight style that renders highlights as colored text with no background fill. Plain `==highlights==` (default color set to None) use a solid, theme-legible color derived from the plugin's own slots — the red slot in light themes, the yellow slot in dark themes.
+- **Theme adjustment sliders**: "Text color darkening" (light themes, default 25%) and "Text color lightening" (dark themes, default 0%) fine-tune the text-color style's text for the active theme; only the slider matching the current theme is shown.
+- **Plain highlight intensity**: a new slider (default 60%, shown while the default color is None) overrides Obsidian's native `--highlight-opacity`, so plain highlights can match the colored slots' visual weight.
+
+### 🐛 Fixed
+
+- **Disabled slots keep their native look**: Obsidian 1.14 natively colors highlights for disabled color slots (e.g. typing 🟠 with extended colors off). The plugin's style rules now skip those marks entirely instead of overriding them.
+- **Plain highlight double-fade**: style variants no longer re-mix the translucent native highlight chain (30% × 60% = 18% alpha); they use it at its own strength, so plain highlights no longer look washed out next to colored ones.
+
+<details>
+<summary>中文说明（点击展开）</summary>
+
+### 🚀 新增
+
+- **文字着色样式**：全新的高亮样式，高亮渲染为彩色文字、无背景填充。普通 `==高亮==`（默认颜色设为「无」时）使用从插件自身槽位派生的实色——亮色主题取红色槽位、暗色主题取黄色槽位，保证可读。
+- **明暗调节滑块**：「亮色主题文字加深」（默认 25%）与「暗色主题文字提亮」（默认 0%）可微调文字着色样式在当前主题下的显示效果；设置页只显示与当前主题匹配的那个。
+- **普通高亮强度**：新滑块（默认 60%，默认颜色为「无」时显示），覆盖 Obsidian 原生的 `--highlight-opacity`，让普通高亮的浓度与彩色槽位一致。
+
+### 🐛 修复
+
+- **未启用槽位保持原生外观**：Obsidian 1.14 会为未启用的颜色槽位原生着色（如拓展颜色关闭时输入 🟠）。插件的样式规则现在会完全跳过这些元素，不再覆盖。
+- **普通高亮二次淡化**：各样式变体不再对半透明的原生颜色链二次混合（30% × 60% = 18% 透明度），而是按其自身强度使用，普通高亮不再显得发虚。
+
+</details>
+
+---
+
 ## [1.3.0](https://github.com/Moyf/colorful-highlights/compare/1.2.1...1.3.0) - 2026-10-12
 
 ### ♻️ Refactored
