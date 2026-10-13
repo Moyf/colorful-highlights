@@ -30,12 +30,25 @@ const en: BaseMessage = {
 				wavyUnderline: 'Wavy line',
 				wavyUnderlineOnly: 'Wavy line only',
 				gradient: 'Gradient',
+				textColor: 'Text color',
 			},
 		},
 		defaultColor: {
 			name: 'Default highlight color',
 			desc: 'Color used for plain ==highlights== without an emoji prefix. Switching a highlight to this color removes its emoji prefix.',
 			none: 'None (theme default)',
+		},
+		plainColorOpacity: {
+			name: 'Plain highlight intensity',
+			desc: 'Intensity of the native color mix for plain highlights when no default color is set (10–100%).',
+		},
+		textColorDarken: {
+			name: 'Text color darkening',
+			desc: 'Darkens the text-color style\'s text while using a light theme (0–50%). Plain highlights use the red slot\'s color.',
+		},
+		textColorLighten: {
+			name: 'Text color lightening',
+			desc: 'Lightens the text-color style\'s text while using a dark theme (0–50%). Plain highlights use the yellow slot\'s color.',
 		},
 		opacity: {
 			name: 'Color intensity',
