@@ -25,6 +25,7 @@ const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
 	'wavy-underline': 'settings.highlightStyle.options.wavyUnderline',
 	'wavy-underline-only': 'settings.highlightStyle.options.wavyUnderlineOnly',
 	'gradient': 'settings.highlightStyle.options.gradient',
+	'text-color': 'settings.highlightStyle.options.textColor',
 };
 
 // Styles whose second layer, line/stroke, or gradient bottom is driven by
@@ -42,6 +43,7 @@ const STYLES_WITH_SECONDARY: HighlightStyle[] = [
 const STYLES_WITHOUT_BACKGROUND: HighlightStyle[] = [
 	'underline-only',
 	'wavy-underline-only',
+	'text-color',
 ];
 
 const ENABLED_COLOR_KEY_PREFIX = 'enabledColors.';
@@ -286,9 +288,47 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						},
 					},
 					{
+						name: t('settings.textColorDarken.name'),
+						desc: t('settings.textColorDarken.desc'),
+						visible: () =>
+							this.plugin.settings.highlightStyle === 'text-color' && !this.isDarkSettingsTheme(),
+						control: {
+							type: 'slider',
+							key: 'textColorDarken',
+							min: 0,
+							max: 50,
+							step: 5,
+						},
+					},
+					{
+						name: t('settings.textColorLighten.name'),
+						desc: t('settings.textColorLighten.desc'),
+						visible: () =>
+							this.plugin.settings.highlightStyle === 'text-color' && this.isDarkSettingsTheme(),
+						control: {
+							type: 'slider',
+							key: 'textColorLighten',
+							min: 0,
+							max: 50,
+							step: 5,
+						},
+					},
+					{
 						name: t('settings.defaultColor.name'),
 						desc: t('settings.defaultColor.desc'),
 						control: { type: 'dropdown', key: 'defaultColorSlot', options: defaultColorOptions },
+					},
+					{
+						name: t('settings.plainColorOpacity.name'),
+						desc: t('settings.plainColorOpacity.desc'),
+						visible: () => this.plugin.settings.defaultColorSlot === 'none',
+						control: {
+							type: 'slider',
+							key: 'plainColorOpacity',
+							min: 10,
+							max: 100,
+							step: 5,
+						},
 					},
 				],
 			},
@@ -440,6 +480,23 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 				this.plugin.refreshAppearance();
 				this.debouncedPersistAppearance();
 				return;
+			case 'plainColorOpacity':
+				settings.plainColorOpacity = this.readNumber(value);
+				this.plugin.refreshAppearance();
+				this.debouncedPersistAppearance();
+				return;
+			case 'textColorDarken':
+				settings.textColorDarken = this.readNumber(value);
+				this.syncStylePreview();
+				this.plugin.refreshAppearance();
+				this.debouncedPersistAppearance();
+				return;
+			case 'textColorLighten':
+				settings.textColorLighten = this.readNumber(value);
+				this.syncStylePreview();
+				this.plugin.refreshAppearance();
+				this.debouncedPersistAppearance();
+				return;
 			case 'highlightStyle':
 				if (!isHighlightStyle(value)) {
 					throw new Error(`Unknown highlight style: ${String(value)}`);
@@ -510,7 +567,14 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 			// container that does not inherit the plugin's body-level variables.
 			previewEl.style.setProperty('--ch-highlight-opacity', `${settings.colorOpacity}%`);
 			previewEl.style.setProperty('--ch-underline-opacity', `${settings.secondaryColorOpacity}%`);
+			previewEl.style.setProperty('--ch-text-color-darken', `${settings.textColorDarken}%`);
+			previewEl.style.setProperty('--ch-text-color-lighten', `${settings.textColorLighten}%`);
 		}
+	}
+
+	/** Theme of the window the settings tab is rendered in (popouts have their own body). */
+	private isDarkSettingsTheme(): boolean {
+		return this.containerEl.ownerDocument.body.classList.contains('theme-dark');
 	}
 
 	private trackColorLabelSetting(slot: ColorSlotKey, setting: Setting): () => void {

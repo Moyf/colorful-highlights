@@ -24,6 +24,9 @@ const COLOR_MODE_ATTR = 'data-ch-color-mode';
 const OPACITY_VAR = '--ch-highlight-opacity';
 const SECONDARY_OPACITY_VAR = '--ch-underline-opacity';
 const SLOT_VAR_PREFIX = '--ch-highlight-';
+const NATIVE_OPACITY_VAR = '--highlight-opacity';
+const TEXT_DARKEN_VAR = '--ch-text-color-darken';
+const TEXT_LIGHTEN_VAR = '--ch-text-color-lighten';
 
 type LoadedSettings = Omit<
 	Partial<ColorfulHighlightsSettings>,
@@ -95,6 +98,9 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			body.removeAttribute(COLOR_MODE_ATTR);
 			body.style.removeProperty(OPACITY_VAR);
 			body.style.removeProperty(SECONDARY_OPACITY_VAR);
+			body.style.removeProperty(NATIVE_OPACITY_VAR);
+			body.style.removeProperty(TEXT_DARKEN_VAR);
+			body.style.removeProperty(TEXT_LIGHTEN_VAR);
 			for (const slot of COLOR_SLOTS) {
 				body.style.removeProperty(`${SLOT_VAR_PREFIX}${slot}`);
 			}
@@ -208,6 +214,19 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			} else {
 				body.removeAttribute(COLOR_MODE_ATTR);
 			}
+			// Plain highlights (default color = None) are painted by Obsidian
+			// from --highlight-background, which mixes in --highlight-opacity.
+			// Overriding it here re-mixes the native chain body-wide, so the
+			// plain look stays theme-driven but can keep up with the slots.
+			if (this.settings.defaultColorSlot === 'none') {
+				body.style.setProperty(NATIVE_OPACITY_VAR, `${this.settings.plainColorOpacity}%`);
+			} else {
+				body.style.removeProperty(NATIVE_OPACITY_VAR);
+			}
+			// Theme-aware lightness nudges for the text-color style; consumed
+			// by the CSS below only under [data-ch-highlight-style="text-color"].
+			body.style.setProperty(TEXT_DARKEN_VAR, `${this.settings.textColorDarken}%`);
+			body.style.setProperty(TEXT_LIGHTEN_VAR, `${this.settings.textColorLighten}%`);
 		}
 	}
 

@@ -27,12 +27,16 @@ export interface BaseMessage {
 				underlineWithBg: string;
 				rounded: string;
 				outline: string;
-				wavyUnderline: string;
-				wavyUnderlineOnly: string;
-				gradient: string;
+			wavyUnderline: string;
+			wavyUnderlineOnly: string;
+			gradient: string;
+			textColor: string;
 			};
 		};
 		defaultColor: { name: string; desc: string; none: string };
+		plainColorOpacity: { name: string; desc: string };
+		textColorDarken: { name: string; desc: string };
+		textColorLighten: { name: string; desc: string };
 		opacity: { name: string; desc: string };
 		secondaryOpacity: { name: string; desc: string };
 		renderMode: {

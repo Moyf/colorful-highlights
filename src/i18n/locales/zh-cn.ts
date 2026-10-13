@@ -30,12 +30,25 @@ const zhCn: BaseMessage = {
 				wavyUnderline: '波浪线',
 				wavyUnderlineOnly: '仅波浪线',
 				gradient: '渐变填充',
+				textColor: '文字着色',
 			},
 		},
 		defaultColor: {
 			name: '默认高亮颜色',
 			desc: '没有 emoji 前缀的普通 ==高亮== 使用的颜色。将高亮切换到此颜色时会移除其 emoji 前缀。',
 			none: '无（主题默认）',
+		},
+		plainColorOpacity: {
+			name: '普通高亮强度',
+			desc: '默认颜色为「无」时，普通 ==高亮== 原生颜色的混合强度（10–100%）。',
+		},
+		textColorDarken: {
+			name: '亮色主题文字加深',
+			desc: '「文字着色」样式在亮色主题下的文字加深程度（0–50%）。普通高亮会使用红色槽位的色值。',
+		},
+		textColorLighten: {
+			name: '暗色主题文字提亮',
+			desc: '「文字着色」样式在暗色主题下的文字提亮程度（0–50%）。普通高亮会使用黄色槽位的色值。',
 		},
 		opacity: {
 			name: '颜色强度',

@@ -26,7 +26,8 @@ export type HighlightStyle =
 	| 'wavy-underline'
 	| 'underline-with-bg'
 	| 'wavy-underline-only'
-	| 'outline';
+	| 'outline'
+	| 'text-color';
 
 
 
@@ -74,6 +75,7 @@ export const HIGHLIGHT_STYLES: HighlightStyle[] = [
 	'underline-only',
 	'wavy-underline-only',
 	'outline',
+	'text-color',
 ];
 
 export interface ColorfulHighlightsSettings {
@@ -97,8 +99,14 @@ export interface ColorfulHighlightsSettings {
 	renderMode: RenderMode;
 	/** Visual style applied to all highlights. */
 	highlightStyle: HighlightStyle;
-	/** Slot used for plain ==text== without emoji; switching to it strips the prefix. */
+	/** Default color slot; None keeps plain ==text== on the theme's native color. */
 	defaultColorSlot: DefaultColorSlot;
+	/** Native mix override for plain highlights while the default color is None (10–100). */
+	plainColorOpacity: number;
+	/** Darkens text-color style text in light themes (0–90). */
+	textColorDarken: number;
+	/** Lightens text-color style text in dark themes (0–90). */
+	textColorLighten: number;
 	/** Reveal the five extended color slots (orange/cyan/magenta/black/gray). */
 	extendedColors: boolean;
 	/** Whether each color slot is available in mappings, commands, menus, and rendering. */
@@ -125,6 +133,9 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 	renderMode: 'plugin',
 	highlightStyle: 'gradient',
 	defaultColorSlot: 'yellow',
+	plainColorOpacity: 60,
+	textColorDarken: 25,
+	textColorLighten: 0,
 	extendedColors: false,
 	enabledColors: {
 		yellow: true,
