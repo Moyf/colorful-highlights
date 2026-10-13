@@ -511,6 +511,8 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 					throw new Error(`Unknown default color slot: ${String(value)}`);
 				}
 				settings.defaultColorSlot = value;
+				// Re-evaluates the plain-intensity slider's visibility predicate.
+				this.refreshDomState();
 				await this.persistAndRefresh();
 				return;
 			case 'customColorNamesEnabled':

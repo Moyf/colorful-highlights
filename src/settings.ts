@@ -103,9 +103,9 @@ export interface ColorfulHighlightsSettings {
 	defaultColorSlot: DefaultColorSlot;
 	/** Native mix override for plain highlights while the default color is None (10–100). */
 	plainColorOpacity: number;
-	/** Darkens text-color style text in light themes (0–90). */
+	/** Darkens text-color style text in light themes (0–50). */
 	textColorDarken: number;
-	/** Lightens text-color style text in dark themes (0–90). */
+	/** Lightens text-color style text in dark themes (0–50). */
 	textColorLighten: number;
 	/** Reveal the five extended color slots (orange/cyan/magenta/black/gray). */
 	extendedColors: boolean;
