@@ -33,7 +33,7 @@ const en: BaseMessage = {
 				textColor: 'Text color',
 				// Keep the requested title case for this option label.
 				// eslint-disable-next-line obsidianmd/ui/sentence-case-locale-module
-				textWithBg: 'Text Color + Background',
+				appleNotes: 'Apple Notes',
 			},
 		},
 		defaultColor: {
@@ -47,11 +47,13 @@ const en: BaseMessage = {
 		},
 		textColorDarken: {
 			name: 'Text color darkening',
-			desc: 'Darkens the text in the text-color and text-with-bg styles while using a light theme (0–50%). Plain highlights use the red slot\'s color.',
+			// eslint-disable-next-line obsidianmd/ui/sentence-case-locale-module
+			desc: 'Darkens the text in the text-color and Apple Notes styles while using a light theme (0–50%). Plain highlights use the red slot\'s color.',
 		},
 		textColorLighten: {
 			name: 'Text color lightening',
-			desc: 'Lightens the text in the text-color and text-with-bg styles while using a dark theme (0–50%). Plain highlights use the yellow slot\'s color.',
+			// eslint-disable-next-line obsidianmd/ui/sentence-case-locale-module
+			desc: 'Lightens the text in the text-color and Apple Notes styles while using a dark theme (0–50%). Plain highlights use the yellow slot\'s color.',
 		},
 		opacity: {
 			name: 'Color intensity',

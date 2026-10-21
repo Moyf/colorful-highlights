@@ -12,7 +12,7 @@ Want colored highlights in Obsidian? Colorize `==highlights==` with emoji prefix
 
 - **Custom emoji prefixes** — map any emoji to 5 color slots (yellow / green / red / purple / blue), expandable to 10 (orange / cyan / magenta / gray / Black (Spoiler)) via the extended-colors toggle in settings. Each color can be shown or hidden independently. For example, `🍎` can represent red and `🍌` can represent yellow. The first emoji in each slot is used when writing highlights.
 - **Live Preview & Source mode** — Live Preview shows only the colored highlight style; the emoji appears when the cursor enters the highlight. Source mode can optionally keep the emoji visible.
-- **Highlight styles** — default, half-strike, double-strike, underline, wavy line, underline only, wavy line only, rounded, outline, gradient, text color, and text color + background.
+- **Highlight styles** — default, half-strike, double-strike, underline, wavy line, underline only, wavy line only, rounded, outline, gradient, text color, and Apple Notes.
 - **Default highlight color** — plain `==text==` without an emoji can map to a color slot; switching to that color does not add an emoji prefix.
 - **Commands & context menu** — toggle highlights, highlight with a specific color, or remove highlights. Select text (or an existing highlight) and right-click to access the color actions.
 

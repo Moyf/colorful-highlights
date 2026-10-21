@@ -26,7 +26,7 @@ const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
 	'wavy-underline-only': 'settings.highlightStyle.options.wavyUnderlineOnly',
 	'gradient': 'settings.highlightStyle.options.gradient',
 	'text-color': 'settings.highlightStyle.options.textColor',
-	'text-with-bg': 'settings.highlightStyle.options.textWithBg',
+	'apple-notes': 'settings.highlightStyle.options.appleNotes',
 };
 
 // Styles whose second layer, line/stroke, or gradient bottom is driven by
@@ -45,7 +45,7 @@ const STYLES_WITH_SECONDARY: HighlightStyle[] = [
 // (darken in light themes, lighten in dark ones) apply to both.
 const STYLES_WITH_TEXT_ADJUST: HighlightStyle[] = [
 	'text-color',
-	'text-with-bg',
+	'apple-notes',
 ];
 
 const STYLES_WITHOUT_BACKGROUND: HighlightStyle[] = [
