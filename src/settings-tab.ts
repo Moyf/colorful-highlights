@@ -26,6 +26,7 @@ const STYLE_OPTION_KEYS: Record<HighlightStyle, string> = {
 	'wavy-underline-only': 'settings.highlightStyle.options.wavyUnderlineOnly',
 	'gradient': 'settings.highlightStyle.options.gradient',
 	'text-color': 'settings.highlightStyle.options.textColor',
+	'apple-notes': 'settings.highlightStyle.options.appleNotes',
 };
 
 // Styles whose second layer, line/stroke, or gradient bottom is driven by
@@ -38,6 +39,13 @@ const STYLES_WITH_SECONDARY: HighlightStyle[] = [
 	'wavy-underline-only',
 	'outline',
 	'gradient',
+];
+
+// Styles whose text uses the slot colors — the theme lightness sliders
+// (darken in light themes, lighten in dark ones) apply to both.
+const STYLES_WITH_TEXT_ADJUST: HighlightStyle[] = [
+	'text-color',
+	'apple-notes',
 ];
 
 const STYLES_WITHOUT_BACKGROUND: HighlightStyle[] = [
@@ -291,7 +299,8 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						name: t('settings.textColorDarken.name'),
 						desc: t('settings.textColorDarken.desc'),
 						visible: () =>
-							this.plugin.settings.highlightStyle === 'text-color' && !this.isDarkSettingsTheme(),
+							STYLES_WITH_TEXT_ADJUST.includes(this.plugin.settings.highlightStyle) &&
+							!this.isDarkSettingsTheme(),
 						control: {
 							type: 'slider',
 							key: 'textColorDarken',
@@ -304,7 +313,8 @@ export class ColorfulHighlightsSettingTab extends PluginSettingTab {
 						name: t('settings.textColorLighten.name'),
 						desc: t('settings.textColorLighten.desc'),
 						visible: () =>
-							this.plugin.settings.highlightStyle === 'text-color' && this.isDarkSettingsTheme(),
+							STYLES_WITH_TEXT_ADJUST.includes(this.plugin.settings.highlightStyle) &&
+							this.isDarkSettingsTheme(),
 						control: {
 							type: 'slider',
 							key: 'textColorLighten',

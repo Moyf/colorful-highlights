@@ -31,6 +31,7 @@ export interface BaseMessage {
 			wavyUnderlineOnly: string;
 			gradient: string;
 			textColor: string;
+			appleNotes: string;
 			};
 		};
 		defaultColor: { name: string; desc: string; none: string };

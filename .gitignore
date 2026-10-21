@@ -32,3 +32,6 @@ Thumbs.db
 /.sisyphus
 /.omo
 /.codegraph
+
+# Worktrees
+.worktrees/

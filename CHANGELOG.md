@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### 🚀 Added
+
+- **Apple Notes style**: a new highlight style that colors the highlight text with the slot color and adds a light, rounded background fill mixed from the same slot (follows Color intensity).
+
+<details>
+<summary>中文说明（点击展开）</summary>
+
+### 🚀 新增
+
+- **苹果备忘录（Apple Notes）**：新增 Apple Notes 风格着色样式——文字以槽位颜色着色，同时附加同一槽位混合出的浅色圆角背景（跟随「颜色强度」）。
+
+</details>
+
+---
+
 ## [1.4.0](https://github.com/Moyf/colorful-highlights/compare/1.3.0...1.4.0) - 2026-10-13
 
 ### 🚀 Added
