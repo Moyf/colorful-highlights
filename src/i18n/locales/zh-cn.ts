@@ -31,6 +31,7 @@ const zhCn: BaseMessage = {
 				wavyUnderlineOnly: '仅波浪线',
 				gradient: '渐变填充',
 				textColor: '文字着色',
+				textWithBg: '文字颜色 + 背景',
 			},
 		},
 		defaultColor: {
@@ -44,11 +45,11 @@ const zhCn: BaseMessage = {
 		},
 		textColorDarken: {
 			name: '亮色主题文字加深',
-			desc: '「文字着色」样式在亮色主题下的文字加深程度（0–50%）。普通高亮会使用红色槽位的色值。',
+			desc: '「文字着色」与「文字颜色 + 背景」样式在亮色主题下的文字加深程度（0–50%）。普通高亮会使用红色槽位的色值。',
 		},
 		textColorLighten: {
 			name: '暗色主题文字提亮',
-			desc: '「文字着色」样式在暗色主题下的文字提亮程度（0–50%）。普通高亮会使用黄色槽位的色值。',
+			desc: '「文字着色」与「文字颜色 + 背景」样式在暗色主题下的文字提亮程度（0–50%）。普通高亮会使用黄色槽位的色值。',
 		},
 		opacity: {
 			name: '颜色强度',

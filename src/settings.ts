@@ -27,7 +27,8 @@ export type HighlightStyle =
 	| 'underline-with-bg'
 	| 'wavy-underline-only'
 	| 'outline'
-	| 'text-color';
+	| 'text-color'
+	| 'text-with-bg';
 
 
 
@@ -76,6 +77,7 @@ export const HIGHLIGHT_STYLES: HighlightStyle[] = [
 	'wavy-underline-only',
 	'outline',
 	'text-color',
+	'text-with-bg',
 ];
 
 export interface ColorfulHighlightsSettings {

@@ -223,8 +223,9 @@ export default class ColorfulHighlightsPlugin extends Plugin {
 			} else {
 				body.style.removeProperty(NATIVE_OPACITY_VAR);
 			}
-			// Theme-aware lightness nudges for the text-color style; consumed
-			// by the CSS below only under [data-ch-highlight-style="text-color"].
+			// Theme-aware lightness nudges for the colored-text styles
+			// (text-color, text-with-bg); consumed by the CSS only under
+			// those [data-ch-highlight-style] values.
 			body.style.setProperty(TEXT_DARKEN_VAR, `${this.settings.textColorDarken}%`);
 			body.style.setProperty(TEXT_LIGHTEN_VAR, `${this.settings.textColorLighten}%`);
 		}

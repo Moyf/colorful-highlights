@@ -18,15 +18,16 @@
  *   --ch-highlight-opacity  primary background mix percentage (default 30%)
  *   --ch-underline-opacity  SECOND layer/line mix for double-strike,
  *                           underlines and the gradient bottom (default 60%)
- *   --ch-plain-text-color   text-color style's plain-highlight text color
+ *   --ch-plain-text-color   colored-text styles' plain-highlight text color
  *                           (derived from the red slot in light themes,
  *                           the yellow slot in dark themes)
- *   --ch-text-color-darken  text-color style darkening in light themes
- *   --ch-text-color-lighten text-color style lightening in dark themes
+ *   --ch-text-color-darken  text-color / text-with-bg darkening in light themes
+ *   --ch-text-color-lighten text-color / text-with-bg lightening in dark themes
  * Attribute:
  *   body[data-ch-highlight-style]  one of: half-strike | double-strike |
  *     underline-only | underline-with-bg | rounded | outline |
- *     wavy-underline | wavy-underline-only | gradient | text-color
+ *     wavy-underline | wavy-underline-only | gradient | text-color |
+ *     text-with-bg
  *   body[data-ch-color-mode="native"]  defer painting to the theme
  * ──────────────────────────────────────────────────────────────── */
 
@@ -401,6 +402,45 @@ body.theme-dark[data-ch-highlight-style="text-color"] .cm-s-obsidian .cm-highlig
 	color: color-mix(in srgb, var(--ch-plain-color) calc(100% - var(--ch-text-color-lighten, 0%)), white);
 }
 
+/* ── Style variant: text-with-bg (colored text + light slot fill) ── */
+
+/* Background: colored marks keep the base slot fill (and its native-mode
+ * --text-highlight-bg twin) at the primary intensity, so no reset here —
+ * unlike text-color, nothing clears the background. Plain ==text== uses the
+ * pre-faded native chain flat, exactly like the gradient variant. */
+
+/* Text mirrors the text-color rules: the slot color mixed toward black
+ * (light themes) or white (dark themes) per the lightness sliders. Plain
+ * ==text== resolves --ch-plain-text-color directly WITHOUT redefining
+ * --ch-plain-color, because the plain background rule still needs the
+ * original pre-faded chain. Black (Spoiler) stays excluded, so its opaque
+ * bar keeps hiding the text. */
+body.theme-light[data-ch-highlight-style="text-with-bg"] .markdown-rendered mark[class*="ch-reading-highlight-"]:not([class*="-black"]),
+body.theme-light[data-ch-highlight-style="text-with-bg"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"]:not([class*="-black"]) {
+	color: color-mix(in srgb, var(--ch-active-color) calc(100% - var(--ch-text-color-darken, 0%)), black);
+}
+
+body.theme-dark[data-ch-highlight-style="text-with-bg"] .markdown-rendered mark[class*="ch-reading-highlight-"]:not([class*="-black"]),
+body.theme-dark[data-ch-highlight-style="text-with-bg"] .cm-s-obsidian .cm-highlight[class*="ch-editor-highlight-"]:not([class*="-black"]) {
+	color: color-mix(in srgb, var(--ch-active-color) calc(100% - var(--ch-text-color-lighten, 0%)), white);
+}
+
+body[data-ch-highlight-style="text-with-bg"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body[data-ch-highlight-style="text-with-bg"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]):not([class*="cm-highlight-"]) {
+	/* Plain color arrives pre-faded from the theme chain — use it flat. */
+	background: var(--ch-plain-color);
+}
+
+body.theme-light[data-ch-highlight-style="text-with-bg"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body.theme-light[data-ch-highlight-style="text-with-bg"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]):not([class*="cm-highlight-"]) {
+	color: color-mix(in srgb, var(--ch-plain-text-color) calc(100% - var(--ch-text-color-darken, 0%)), black);
+}
+
+body.theme-dark[data-ch-highlight-style="text-with-bg"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
+body.theme-dark[data-ch-highlight-style="text-with-bg"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]):not([class*="cm-highlight-"]) {
+	color: color-mix(in srgb, var(--ch-plain-text-color) calc(100% - var(--ch-text-color-lighten, 0%)), white);
+}
+
 /* ── == markers & swatch widget across styles ──
  * Both carry the slot variables (markers via class mirroring, the widget
  * via data-highlight), so the generic paint gives them the flat slot
@@ -567,6 +607,20 @@ body.theme-light .ch-style-preview-sample[data-ch-preview-style="text-color"] {
 }
 
 body.theme-dark .ch-style-preview-sample[data-ch-preview-style="text-color"] {
+	color: color-mix(in srgb, var(--ch-active-color) calc(100% - var(--ch-text-color-lighten, 0%)), white);
+}
+
+/* text-with-bg keeps the sample's base slot fill (primary intensity) and
+ * applies the same text adjustments as the text-color sample. */
+.ch-style-preview-sample[data-ch-preview-style="text-with-bg"] {
+	color: var(--ch-active-color);
+}
+
+body.theme-light .ch-style-preview-sample[data-ch-preview-style="text-with-bg"] {
+	color: color-mix(in srgb, var(--ch-active-color) calc(100% - var(--ch-text-color-darken, 0%)), black);
+}
+
+body.theme-dark .ch-style-preview-sample[data-ch-preview-style="text-with-bg"] {
 	color: color-mix(in srgb, var(--ch-active-color) calc(100% - var(--ch-text-color-lighten, 0%)), white);
 }
 

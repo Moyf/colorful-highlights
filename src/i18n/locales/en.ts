@@ -31,6 +31,9 @@ const en: BaseMessage = {
 				wavyUnderlineOnly: 'Wavy line only',
 				gradient: 'Gradient',
 				textColor: 'Text color',
+				// Keep the requested title case for this option label.
+				// eslint-disable-next-line obsidianmd/ui/sentence-case-locale-module
+				textWithBg: 'Text Color + Background',
 			},
 		},
 		defaultColor: {
@@ -44,11 +47,11 @@ const en: BaseMessage = {
 		},
 		textColorDarken: {
 			name: 'Text color darkening',
-			desc: 'Darkens the text-color style\'s text while using a light theme (0–50%). Plain highlights use the red slot\'s color.',
+			desc: 'Darkens the text in the text-color and text-with-bg styles while using a light theme (0–50%). Plain highlights use the red slot\'s color.',
 		},
 		textColorLighten: {
 			name: 'Text color lightening',
-			desc: 'Lightens the text-color style\'s text while using a dark theme (0–50%). Plain highlights use the yellow slot\'s color.',
+			desc: 'Lightens the text in the text-color and text-with-bg styles while using a dark theme (0–50%). Plain highlights use the yellow slot\'s color.',
 		},
 		opacity: {
 			name: 'Color intensity',
