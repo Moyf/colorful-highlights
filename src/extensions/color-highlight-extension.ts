@@ -8,6 +8,11 @@
  *    Obsidian's Live Preview hides `==` markers until focused.
  * 3. Plain ==highlights== without emoji get the default color slot's
  *    class when a default color is configured.
+ * 4. Continuation classes `ch-editor-cont-{left,right}` on the interior
+ *    seams of a highlight run — nested formatting splits one ==...== into
+ *    sibling mark segments (flush while the cursor is inside, separated
+ *    by hidden zero-width `**` widgets otherwise), and the box style
+ *    variants square those seams to paint one continuous shape.
  *
  * Why mirror classes instead of emitting mark decorations:
  * CM6 places our marks INSIDE Obsidian's native `.cm-highlight` (the
@@ -231,7 +236,36 @@ function buildDecorations(
  * the full ==...== span and the markers were painted with the slot
  * color; this keeps that look (and keeps the glyphs legible on the
  * black spoiler).
+ *
+ * Interior seams also get `ch-editor-cont-left` / `ch-editor-cont-right`
+ * (see the module header). Runs are computed per slot range: consecutive
+ * DOM segments of one range always join — whether they sit flush (editing
+ * state, the inline `**` glyphs are mark elements themselves) or are
+ * separated by HIDDEN formatting (unfocused Live Preview replaces `**`
+ * with zero-width widgets whose characters still occupy doc positions,
+ * so position equality alone would miss the join and leave notches).
+ * CSS sibling selectors can't do this job either: they can't see text
+ * nodes, so they would also square unrelated highlights elsewhere in the
+ * line. `==` markers never join (they sit outside the pill's edges), and
+ * pairing stops at rendered-line boundaries so soft-wrap fragments keep
+ * the per-line pill look of box-decoration-break: clone.
  */
+
+/** One enumerated `.cm-highlight` mark plus its resolved run metadata. */
+interface MarkEntry {
+	el: Element;
+	elFrom: number;
+	elTo: number;
+	/** Rendered line number, so soft-wrap fragments never pair. */
+	line: number;
+	isMarker: boolean;
+	wanted: string[];
+	/** Slot range this mark paints for; null when unpainted. */
+	range: SlotRange | null;
+	contLeft: boolean;
+	contRight: boolean;
+}
+
 function syncSlotClasses(
 	view: EditorView,
 	slotRanges: readonly SlotRange[],
@@ -240,7 +274,11 @@ function syncSlotClasses(
 	const next = new Map<Element, string[]>();
 	let added = 0;
 	let found = 0;
+
+	// Pass 1: resolve every mark's document range, line, and wanted slot
+	// classes.
 	const marks = Array.from(view.contentDOM.querySelectorAll('.cm-highlight'));
+	const entries: MarkEntry[] = [];
 	for (const el of marks) {
 		let elFrom: number;
 		let elTo: number;
@@ -252,16 +290,60 @@ function syncSlotClasses(
 		}
 		const isMarker = el.classList.contains('cm-formatting-highlight');
 		const wanted: string[] = [];
-		for (const range of slotRanges) {
-			const lo = isMarker ? range.from : range.innerFrom;
-			const hi = isMarker ? range.to : range.innerTo;
+		let range: SlotRange | null = null;
+		for (const candidate of slotRanges) {
+			const lo = isMarker ? candidate.from : candidate.innerFrom;
+			const hi = isMarker ? candidate.to : candidate.innerTo;
 			if (elFrom < hi && lo < elTo) {
-				const cls = `ch-editor-highlight-${range.slot}`;
+				const cls = `ch-editor-highlight-${candidate.slot}`;
 				if (!wanted.includes(cls)) wanted.push(cls);
+				if (!range) range = candidate;
 			}
 		}
+		entries.push({
+			el,
+			elFrom,
+			elTo,
+			line: view.state.doc.lineAt(elFrom).number,
+			isMarker,
+			wanted,
+			range,
+			contLeft: false,
+			contRight: false,
+		});
+	}
+
+	// Pass 2: pair consecutive DOM segments within each slot range. The
+	// interior renders as one continuous pill, so every edge between the
+	// first and last segment is a seam to square — flush segments and
+	// hidden-formatting gaps alike.
+	const byRange = new Map<SlotRange, MarkEntry[]>();
+	for (const entry of entries) {
+		if (entry.isMarker || !entry.range || entry.wanted.length === 0) continue;
+		const list = byRange.get(entry.range);
+		if (list) list.push(entry);
+		else byRange.set(entry.range, [entry]);
+	}
+	for (const list of byRange.values()) {
+		if (list.length < 2) continue;
+		list.sort((a, b) => a.elFrom - b.elFrom || a.elTo - b.elTo);
+		for (let i = 1; i < list.length; i++) {
+			const prev = list[i - 1];
+			const seg = list[i];
+			if (prev.line !== seg.line) continue;
+			prev.contRight = true;
+			seg.contLeft = true;
+		}
+	}
+
+	// Pass 3: apply classes; tag run seams for the box style variants.
+	for (const { el, isMarker, wanted, contLeft, contRight } of entries) {
 		if (wanted.length === 0) continue;
 		found++;
+		if (!isMarker) {
+			if (contLeft) wanted.push('ch-editor-cont-left');
+			if (contRight) wanted.push('ch-editor-cont-right');
+		}
 		for (const cls of wanted) {
 			if (!el.classList.contains(cls)) {
 				el.classList.add(cls);
