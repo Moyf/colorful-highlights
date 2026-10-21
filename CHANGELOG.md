@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.5.0](https://github.com/Moyf/colorful-highlights/compare/1.4.0...1.5.0) - 2026-10-21
 
 ### 🚀 Added
 
