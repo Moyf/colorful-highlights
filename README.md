@@ -49,7 +49,7 @@ Example results:
 | Setting | Description |
 | ------- | ----------- |
 | Enable colorful highlights | Master switch for parsing and decoration. |
-| Highlight style | Default / half-strike / double-strike / underline / wavy line / underline only / wavy line only / rounded / outline / gradient / text color / text color + background. |
+| Highlight style | Default / half-strike / double-strike / underline / wavy line / underline only / wavy line only / rounded / outline / gradient / text color / Apple Notes. |
 | Default highlight color | Color for plain `==text==`; switching to it removes the emoji prefix. |
 | Color intensity | Background color mix percentage (10–100%). |
 | Secondary color intensity | Second layer of double-strike, line colors, and the gradient bottom (10–100%). |
