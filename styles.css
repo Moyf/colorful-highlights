@@ -5,7 +5,10 @@
  * - Editor (CM6): the ViewPlugin mirrors `ch-editor-highlight-{slot}`
  *   classes onto the native `.cm-highlight` mark (see
  *   color-highlight-extension.ts for why); styles.css then targets the
- *   highlight with plain class selectors — no `:has()` anywhere.
+ *   highlight with plain class selectors — no `:has()` anywhere. It also
+ *   mirrors `ch-editor-cont-{left,right}` on segments whose edge joins a
+ *   sibling mark, so box-drawing styles can square the seam (nested
+ *   formatting splits ==...== into A [B] C).
  * - Reading view: the post-processor adds `.ch-reading-highlight-{slot}`
  *   to <mark> elements and hides the emoji prefix.
  *
@@ -451,6 +454,79 @@ body.theme-light[data-ch-highlight-style="apple-notes"] .cm-s-obsidian .cm-highl
 body.theme-dark[data-ch-highlight-style="apple-notes"] .markdown-rendered mark:not([class*="ch-reading-highlight-"]),
 body.theme-dark[data-ch-highlight-style="apple-notes"] .cm-s-obsidian .cm-highlight:not([class*="ch-editor-highlight-"]):not([class*="cm-highlight-"]) {
 	color: color-mix(in srgb, var(--ch-plain-text-color) calc(100% - var(--ch-text-color-lighten, 0%)), white);
+}
+
+/* ── Contiguous segment joins (editor only) ──
+ * Nested formatting splits ==...== into sibling marks (A [B] C), and each
+ * box-drawing variant would give every segment its own rounded box,
+ * notching the seams. The extension tags a joined edge with
+ * ch-editor-cont-left/right (exact doc-position equality — CSS sibling
+ * selectors can't see text nodes, so they would also square unrelated
+ * highlights elsewhere in the line); square that edge and drop its side
+ * padding so the run paints as one continuous shape with normal letter
+ * flow across the seam. Same-specificity ties are broken by this block
+ * living after every variant's own rules. Reading view never splits a
+ * mark, so no `mark` selectors here. */
+
+body[data-ch-highlight-style="rounded"] .cm-s-obsidian .cm-highlight.ch-editor-cont-left {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	padding-left: 0;
+}
+
+body[data-ch-highlight-style="rounded"] .cm-s-obsidian .cm-highlight.ch-editor-cont-right {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	padding-right: 0;
+}
+
+body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight.ch-editor-cont-left {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight.ch-editor-cont-right {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+/* outline strokes with a single inset box-shadow ring, which cannot spare
+ * one side — so seam segments recompose the stroke from per-side offset
+ * bands instead: top+bottom always run through the run, plus the one
+ * outer vertical edge that is not a seam. Standalone segments keep the
+ * original ring untouched. Bands are clipped to the (squared) border box,
+ * so flush seams join with no doubled vertical stroke. The black spoiler
+ * slot is excluded — its opaque bar must never grow colored strokes. */
+body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight.ch-editor-cont-left.ch-editor-cont-right:not(.ch-editor-highlight-black) {
+	box-shadow:
+		inset 0 1.5px 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent),
+		inset 0 -1.5px 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent);
+}
+
+body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight.ch-editor-cont-left:not(.ch-editor-cont-right):not(.ch-editor-highlight-black) {
+	box-shadow:
+		inset 0 1.5px 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent),
+		inset 0 -1.5px 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent),
+		inset -1.5px 0 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent);
+}
+
+body[data-ch-highlight-style="outline"] .cm-s-obsidian .cm-highlight.ch-editor-cont-right:not(.ch-editor-cont-left):not(.ch-editor-highlight-black) {
+	box-shadow:
+		inset 0 1.5px 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent),
+		inset 0 -1.5px 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent),
+		inset 1.5px 0 0 0 color-mix(in srgb, var(--ch-active-color) var(--ch-underline-opacity, 60%), transparent);
+}
+
+body[data-ch-highlight-style="apple-notes"] .cm-s-obsidian .cm-highlight.ch-editor-cont-left {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	padding-left: 0;
+}
+
+body[data-ch-highlight-style="apple-notes"] .cm-s-obsidian .cm-highlight.ch-editor-cont-right {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	padding-right: 0;
 }
 
 /* ── == markers & swatch widget across styles ──
