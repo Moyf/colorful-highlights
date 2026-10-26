@@ -173,7 +173,7 @@ export const DEFAULT_SETTINGS: ColorfulHighlightsSettings = {
 		orange: '🟠,🟧,🧡,🍊,🦊',
 		cyan: '🩵,🧊,❄️,🐬',
 		magenta: '🩷,🌸,👛,🐙',
-		gray: '🌫️,🗿,🩶,🐨',
+		gray: '🌫️,🪨,🩶,🐨',
 		black: '⬛,🕶️,🖤,🐈‍⬛',
 	},
 	customColors: {
